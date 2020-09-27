@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+
+    <!--<link th:href="@{/css/iexam/scrollbar.css}" rel="stylesheet">-->
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/v4-shims.css}">
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link th:href="@{/css/mdb.min.css}" rel="stylesheet">
+
+    <!-- Your custom styles (optional) -->
+    <link th:href="@{/css/addonss/bootstrap-table.min.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/emmo_Apparence.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/bootoast.css}" rel="stylesheet">
+    <link th:href="@{/css/addonss/bootstrap-datetimepicker.min.css}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles -->
+    <style>
+    </style>
+</head>
+
+<body class="single-page cloudy-knoxville-gradient ">
+
+<div class="container">
+    <div class="w-100 justify-content-end d-flex">
+        <button class="btn btn-md btn-danger mx-auto" type="button" onclick="getTicket()">下载为PDF</button>
+    </div>
+    <main>
+
+        <div id="ticketBody">
+            <!-- Section: Blog v.4 -->
+            <section class="pb-3 wow fadeIn">
+                <!-- Grid row -->
+                <div class="row">
+                    <div class="mt-3 px-3 col-12 mb-0 pb-0">
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Grid column -->
+                    <div class="col-md-12">
+                        <!-- Featured image -->
+                        <div class="justify-content-between d-flex">
+                            <div class="mt-0 card p-3 col-12">
+                                <!-- Section: exams -->
+                                <section class="section card-body pb-0">
+                                    <div class="container col-12" style="min-height: 300px;">
+                                        <div class="col-12 h3 pb-3 text-center">
+                                            <span th:text="${tickets.exam.name}"></span>考试<br>
+                                            <span th:text="${tickets.exam.place}"></span> <span th:text="${tickets.examRoom.no}"></span>号考场-<span th:text="${tickets.examRoom.roomName}"></span> 考生信息表
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-6 mb-2" th:each="item:${tickets.ticketVoList}">
+                                                    <div class="ml-1 row border-left border-dark">
+                                                        <div class="col-10 border-top border-dark">
+                                                            <div class="row">
+                                                                <div class="col-md-4 border-dark border-bottom border-right">
+                                                                    准考证号
+                                                                </div>
+                                                                <div class="col-md-8 border-dark border-bottom border-right" th:text="${item.ticket.ticketNumber}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-4 border-dark border-bottom border-right">
+                                                                    报考职称
+                                                                </div>
+                                                                <div class="col-md-8 border-dark border-bottom border-right" th:text="${tickets.exam.titleName}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-4 border-dark border-bottom border-right">
+                                                                    姓名
+                                                                </div>
+                                                                <div class="col-md-8 border-dark border-bottom border-right" th:text="${item.examinees.name}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-4 border-dark border-bottom border-right">
+                                                                    证件号码
+                                                                </div>
+                                                                <div class="col-md-8 border-dark border-bottom border-right" th:text="${item.examinees.idCard}">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-2 border-right border-bottom border-top border-dark p-0">
+                                                            <img style="width:100%;height:100%;" th:src="${item.examinees.photoPath}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+
+<script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}" src="/js/jquery-3.3.1.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/js/Vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/js/popper.min.js}" src="/js/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/js/bootstrap.js}" src="/js/bootstrap.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/js/mdb.min.js}" src="/js/mdb.min.js"></script>
+
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table.min.js}"
+        src="/js/addons/bootstrap-table.min.js"></script>
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table-locale-all.js}"
+        src="/js/addons/bootstrap-table-locale-all.js"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/bootoast.js}"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/emmo_backTable_basicOperator.js}"></script>
+
+<script type="text/javascript" th:src="@{/js/Vue/IexamBack/backTemplates.js}"></script>
+<script src="https://cdn.bootcss.com/html2canvas/0.5.0-beta4/html2canvas.js"></script>
+<script src="https://cdn.bootcss.com/jspdf/1.3.4/jspdf.debug.js"></script>
+<!-- Custom scripts -->
+<script>
+
+    function getTicket() {
+        var target = document.getElementById("ticketBody");
+        console.log(target);
+        target.style.background = "#FFFFFF";
+
+        html2canvas(target, {
+            onrendered: function (canvas) {
+                var contentWidth = canvas.width;
+                var contentHeight = canvas.height;
+
+                console.log(canvas);
+
+                //一页pdf显示html页面生成的canvas高度;
+                var pageHeight = contentWidth / 592.28 * 841.89;
+                //未生成pdf的html页面高度
+                var leftHeight = contentHeight;
+                //页面偏移
+                var position = 0;
+                //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+                var imgWidth = 595.28;
+                var imgHeight = 592.28 / contentWidth * contentHeight;
+
+                var pageData = canvas.toDataURL('image/jpeg', 1.0);
+
+                var pdf = new jsPDF('', 'pt', 'a4');
+
+                //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
+                //当内容未超过pdf一页显示的范围，无需分页
+                if (leftHeight < pageHeight) {
+                    pdf.addImage(pageData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                } else {
+                    while (leftHeight > 0) {
+                        pdf.addImage(pageData, 'JPEG', 0, position, imgWidth, imgHeight)
+                        leftHeight -= pageHeight;
+                        position -= 841.89;
+                        //避免添加空白页
+                        if (leftHeight > 0) {
+                            pdf.addPage();
+                        }
+                    }
+                }
+
+                pdf.save("考生信息表.pdf");
+            }
+        })
+    }
+
+</script>
+
+</body>
+
+</html>

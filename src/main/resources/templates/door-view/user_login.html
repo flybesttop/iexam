@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" th:href="@{/door-static/css/bootstrap.min.css}">
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" th:href="@{/door-static/css/mdb.min.css}">
+
+    <link th:href="@{/css/iexam/bootoast.css}" rel="stylesheet">
+    <!-- Custom styles -->
+    <style>
+        html,
+        body,
+        header,
+        .view {
+            height: 100%;
+        }
+
+        @media (max-width: 740px) {
+            html,
+            body,
+            header,
+            .view {
+                height: 1040px;
+            }
+        }
+
+        @media (min-width: 800px) and (max-width: 850px) {
+            html,
+            body,
+            header,
+            .view {
+                height: 600px;
+            }
+        }
+
+        .input-list {
+            margin-top: 12px;
+            margin-bottom: 6px;
+        }
+
+        .landing-page {
+            /*background: url("../img/bglogin.jpg") no-repeat center center;*/
+            background-size: cover;
+        }
+    </style>
+</head>
+
+<body class="landing-page" th:style="'background: url('+'/door-static/img/bglogin.jpg'+') no-repeat center center;'">
+
+
+<header>
+
+    <!-- Intro Section -->
+    <section class="view intro-2">
+        <div class="mask rgba-gradient" id="app">
+            <div class="container h-100 d-flex justify-content-center align-items-center">
+                <div class="d-flex align-items-center content-height">
+                    <div class="row flex-center pt-5 mt-3">
+                        <div class="col-md-6 text-center text-md-left mb-5">
+                            <div class="white-text">
+                                <h1 class="h1-responsive font-weight-bold wow fadeInLeft" data-wow-delay="0.3s">
+                                    XXXXX大学XXX学院
+                                </h1>
+                                <hr class="hr-light wow fadeInLeft" data-wow-delay="0.3s">
+                                <h6 class="wow fadeInLeft" data-wow-delay="0.3s">
+                                    本栏主要包括XXXX、XXXXX、XXXXXXXX
+                                </h6>
+                                <br>
+                                <a class="btn btn-outline-white btn-rounded wow fadeInLeft"
+                                   data-wow-delay="0.3s">查看公告</a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xl-5 offset-xl-1">
+                            <!-- Form -->
+                            <div class="card wow fadeInRight" data-wow-delay="0.1s"
+                                 style="background:rgba(250,250,250,0.2);">
+                                <div class="card-body">
+                                    <!-- Modal: Login & Register tabs -->
+                                    <div class="modal-dialog cascading-modal" role="document">
+                                        <!-- Content -->
+                                        <div class="modal-content">
+
+                                            <!-- Modal cascading tabs -->
+                                            <div class="modal-c-tabs">
+
+                                                <!-- Nav tabs -->
+                                                <ul class="nav md-tabs tabs-2 info-color darken-3" role="tablist">
+                                                    <li class="nav-item" style="margin-bottom: 0px;">
+                                                        <a class="nav-link active" data-toggle="tab" href="#panel1"
+                                                           role="tab"><i class="fas fa-user mr-1"></i>
+                                                            登陆</a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" data-toggle="tab" href="#panel2" role="tab"><i
+                                                                class="fas fa-user-plus mr-1"></i>
+                                                            注册</a>
+                                                    </li>
+                                                </ul>
+
+                                                <!-- Tab panels -->
+                                                <div class="tab-content" style="padding-top: 0px;">
+
+                                                    <!-- Panel 1 -->
+                                                    <div class="tab-pane fade in show active" id="panel1"
+                                                         role="tabpanel">
+
+                                                        <!-- Body -->
+                                                        <div class="modal-body mb-1">
+
+                                                            <!-- <div class="md-form form-sm">
+                                                              <i class="fas fa-cannabis prefix"></i>
+                                                              <input type="text" id="form11" class="form-control form-control">
+                                                              <label for="form11" class="">账号</label>
+                                                            </div> -->
+
+                                                            <div class="md-form md-outline">
+                                                                <i class="fas fa-cannabis prefix"></i>
+                                                                <input type="text" id="user_id" class="form-control"
+                                                                       v-model="login_msg.account">
+                                                                <label for="user_id">手机号/身份证号</label>
+                                                            </div>
+
+                                                            <div class="md-form md-outline">
+                                                                <i class="fas fa-lock prefix"></i>
+                                                                <input type="password" id="login_password" class="form-control"
+                                                                       v-model="login_msg.pwd">
+                                                                <label for="login_password">密码</label>
+                                                            </div>
+
+
+                                                            <table style="margin-top: -18px;">
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="md-form md-outline input-list"
+                                                                             style="margin-bottom: 0px;margin-top: 16px;">
+                                                                            <i class="fas prefix"></i>
+                                                                            <input type="text" id="LoginCode"
+                                                                                   class="form-control input-list"
+                                                                                   style="margin-bottom:0px;">
+                                                                            <label for="LoginCode">验证码</label>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td style="width: 45%">
+                                                                        <div class="col-md-6 mb-4"
+                                                                             style="max-width:100%;">
+                                                                            <div class="md-form">
+                                                                                <div class="file-field">
+                                                                                    <button style="border:0.4px solid #4285F4!important; margin-top: 0px ; margin-left: -4px;padding: 0px;;height: 36px;"
+                                                                                            type="button"
+                                                                                            class="btn btn-outline-primary waves-effect float-left">
+                                                                                        <img src="/yanzhenma/getLoginyanzhenma" id="LoginCodeImg" onclick="changeLoginYanZhengMa(this)"
+                                                                                             style="width: 100%;height: 100%;">
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+
+                                                            <div class="text-center mt-2">
+                                                                <button class="btn btn-info waves-effect waves-light"
+                                                                        type="button" @click="login">登陆 <i
+                                                                        class="fas fa-sign-in-alt ml-1"></i></button>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <!-- Panel 1 -->
+
+                                                    <!--Panel 2-->
+                                                    <div class="tab-pane fade" id="panel2" role="tabpanel">
+
+                                                        <!-- Body -->
+                                                        <div class="modal-body"
+                                                             style="padding-top:6px;padding-bottom:6px;">
+
+                                                            <div class="md-form md-outline input-list"
+                                                                 style="margin-bottom: 12px;margin-top: 12px;">
+                                                                <i class="fas fa-cannabis prefix"></i>
+                                                                <input type="text" id="reg_name"
+                                                                       class="form-control" v-model="user.name" onfocus="onfocusInput(this)" onblur="checkRegName(this)"
+                                                                       style="margin-bottom:0px;">
+                                                                <label for="reg_name">姓名</label>
+                                                            </div>
+
+                                                            <div class="md-form md-outline input-list"
+                                                                 style="margin-bottom: 12px;margin-top: 12px;">
+                                                                <i class="fas fa-id-card prefix"></i>
+                                                                <input type="text" id="reg_Idcode"
+                                                                       class="form-control input-list" v-model="user.idCard" onfocus="onfocusInput(this)" onblur="checkIdCard(this)"
+                                                                       style="margin-bottom:0px;">
+                                                                <label for="reg_Idcode">身份证</label>
+                                                            </div>
+
+                                                            <div class="md-form md-outline input-list"
+                                                                 style="margin-bottom: 12px;margin-top: 12px;">
+                                                                <i class="fas fa-mobile-alt prefix"></i>
+                                                                <input type="number" id="reg_phone"
+                                                                       class="form-control" v-model="user.phone" onfocus="onfocusInput(this)" onblur="checkPhone(this)"
+                                                                       style="margin-bottom:0px;">
+                                                                <label for="reg_phone">手机号</label>
+                                                            </div>
+
+                                                            <div class="md-form md-outline input-list"
+                                                                 style="margin-bottom: 12px;margin-top: 12px;">
+                                                                <i class="fas fa-lock prefix"></i>
+                                                                <input type="password" id="reg_password"
+                                                                       class="form-control input-list" v-model="user.pwd" onfocus="onfocusInput(this)" onblur="checkPwd(this)"
+                                                                       style="margin-bottom:0px;">
+                                                                <label for="reg_password">密码(6-16位)</label>
+                                                            </div>
+
+                                                            <table style="margin-top: -18px;">
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="md-form md-outline input-list"
+                                                                             style="margin-bottom: 0px;margin-top: 16px;">
+                                                                            <i class="fas prefix"></i>
+                                                                            <input type="text" id="reg_code"
+                                                                                   class="form-control input-list"
+                                                                                   style="margin-bottom:0px;">
+                                                                            <label for="reg_code">验证码</label>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td style="width: 45%">
+                                                                        <div class="col-md-6 mb-4"
+                                                                             style="max-width:100%;">
+                                                                            <div class="md-form">
+                                                                                <div class="file-field">
+                                                                                    <button style="border:0.4px solid #4285F4!important; margin-top: 0px ; margin-left: -4px;padding: 0px;;height: 36px;"
+                                                                                            type="button"
+                                                                                            class="btn btn-outline-primary waves-effect float-left">
+                                                                                        <img src="/yanzhenma/getRegisteryanzhenma" id="regCodeImg" onclick="changeRegisterYanZhengMa(this)"
+                                                                                             style="width: 100%;height: 100%;">
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+                                                            <div class="text-center form-sm mt-2">
+                                                                <button class="btn btn-info waves-effect waves-light" type="button" @click="register">注册
+                                                                    <i class="fas fa-sign-in-alt ml-1"></i></button>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <!-- Panel 2 -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Content -->
+                                    </div>
+                                    <!-- Modal: Login & Register tabs -->
+
+                                </div>
+                            </div>
+                            <!-- /.Form -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</header>
+<!-- SCRIPTS -->
+<!-- JQuery -->
+<script th:src="@{/door-static/js/jquery-3.4.1.min.js}"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/door-static/js/popper.min.js}"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/bootstrap.js}"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/mdb.min.js}"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/bootoast.js}"></script>
+<script type="text/javascript" th:src="@{/door-static/js/vue.js}"></script>
+<script>
+
+    function changeLoginYanZhengMa(e) {
+        $(e).attr("src","/yanzhenma/getLoginyanzhenma?time=" + new Date().getTime());
+    }
+
+    function changeRegisterYanZhengMa(e) {
+        $(e).attr("src","/yanzhenma/getRegisteryanzhenma?time=" + new Date().getTime());
+    }
+
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            login_msg: {
+                account: null,
+                pwd: null
+            },
+            user: {
+                name: null,
+                phone: null,
+                pwd: null,
+                idCard: null
+            },
+            check_word: null,
+        },
+        methods: {
+            login() {
+
+                var checkCode=true;
+
+                if (this.login_msg.account == null) {
+                    toast("账号不可为空", "danger");
+                    return;
+                }
+
+                $.ajax({
+                    url: "/yanzhenma/checkyanzhenma?status=1&yanzheng=" + $("#LoginCode").val(),
+                    type: "post",
+                    async: false,
+                    traditional: true,
+                    datatype: "text",
+                    success: function (data) {
+                        var message = JSON.parse(data);
+                        if (message == "false") {
+                            toast("验证码错误","danger");
+                            $("#LoginCode").val("");
+                            $("#LoginCodeImg").attr("src", "/yanzhenma/getLoginyanzhenma?time=" + new Date().getTime());
+                            checkCode=false;
+                        }
+                    }
+                });
+
+                if (!checkCode){
+                    return;
+                }
+
+                var _this = this;
+                $.ajax({
+                    url: "/examinees/login?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    async: false,
+                    data: {
+                        account: _this.login_msg.account,
+                        password: _this.login_msg.pwd
+                    },
+                    traditional: true,
+                    datatype: "JSON",
+                    success: function (data) {
+                        var msg = JSON.parse(data);
+                        if (msg.status == 1) {
+                            console.log(msg);
+                            window.location.href="/door/index?PAGE_FROM_TYPE=DOOR";
+                        } else {
+                            toast("账号或者密码错误，请重新输入", "danger");
+                            _this.login_msg.pwd = null;
+                            $("#login_password").focus();
+                        }
+                    },
+                    error: function () {
+                        bootoast({
+                            message: '系统繁忙，请稍后重试',
+                            type: 'warning',
+                            position: 'right-bottom',
+                            timeout: 1
+                        });
+                    }
+                });
+            },
+            register() {
+                var _this = this;
+                var checkCode=true;
+                var username = /\w{1,20}|[\u4e00-\u9fa5]{1,20}/;
+                var idCard=/^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
+                var pwdTest = /\w{6,16}/;
+                var phoNumTest = /((^130)|(^131)|(^132)|(^155)|(^156)|(^185)|(^186)|(^145)|(^176)|(^134)|(^135)|(^136)|(^137)|(^138)|(^139)|(^150)|(^151)|(^152)|(^157)|(^158)|(^159)|(^182)|(^183)|(^184)|(^187)|(^188)|(^147)|(^178)|(^133)|(^153)|(^180)|(^189)|(^177)|(^181))\d{8}/;
+
+                if (!username.test(this.user.name)||!idCard.test(this.user.idCard)||!pwdTest.test(this.user.pwd)||!phoNumTest.test(this.user.phone)) {
+                    return;
+                }
+
+                $.ajax({
+                    url: "/yanzhenma/checkyanzhenma?status=0&yanzheng=" + $("#reg_code").val(),
+                    type: "post",
+                    async: false,
+                    traditional: true,
+                    datatype: "text",
+                    success: function (data) {
+                        var message = JSON.parse(data);
+                        if (message == "false") {
+                            toast("验证码错误","danger");
+                            $("#reg_code").val("");
+                            $("#regCodeImg").attr("src", "/yanzhenma/getRegisteryanzhenma?time=" + new Date().getTime());
+                            checkCode=false;
+                        }
+                    }
+                });
+
+                if (!checkCode){
+                    return;
+                }
+
+                $.ajax({
+                    url: "/examinees/addExaminees?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    async: false,
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        name: _this.user.name,
+                        phone: _this.user.phone,
+                        pwd:_this.user.pwd,
+                        idCard:_this.user.idCard
+                    }),
+                    traditional: true,
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status==1){
+                            toast("注册成功",'success');
+                            $("#reg_code").val("");
+                            $("#regCodeImg").attr("src", "/yanzhenma/getRegisteryanzhenma?time=" + new Date().getTime());
+                        } else {
+                            toast("该手机号或身份证已注册过",'danger');
+                        }
+
+
+                    },
+                    error: function () {
+                        bootoast({
+                            message: '系统繁忙，请稍后重试',
+                            type: 'warning',
+                            position: 'right-bottom',
+                            timeout: 1
+                        });
+                    }
+                });
+            }
+        }
+    });
+
+    function onfocusInput(e) {
+        $(e).removeClass("invalid");
+    }
+
+    function checkRegName(e){
+        var username = /\w{1,20}|[\u4e00-\u9fa5]{1,20}/;
+        if(!username.test($(e).val())){
+            $(e).addClass("invalid");
+        }
+    }
+
+    function checkIdCard(e) {
+        var idCard=/^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
+        if(!idCard.test($(e).val())){
+            $(e).addClass("invalid");
+        }
+    }
+
+    function checkPhone(e) {
+        var phoNumTest = /((^130)|(^131)|(^132)|(^155)|(^156)|(^185)|(^186)|(^145)|(^176)|(^134)|(^135)|(^136)|(^137)|(^138)|(^139)|(^150)|(^151)|(^152)|(^157)|(^158)|(^159)|(^182)|(^183)|(^184)|(^187)|(^188)|(^147)|(^178)|(^133)|(^153)|(^180)|(^189)|(^177)|(^181))\d{8}/;
+        if(!phoNumTest.test($(e).val())){
+            $(e).addClass("invalid");
+        }
+    }
+
+    function checkPwd(e) {
+        var pwdTest = /\w{6,16}/;
+        if(!pwdTest.test($(e).val())){
+            $(e).addClass("invalid");
+        }
+    }
+
+</script>
+</body>
+
+</html>

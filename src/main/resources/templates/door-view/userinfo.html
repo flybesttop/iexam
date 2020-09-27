@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Bootstrap core CSS -->
+
+    <link rel="stylesheet" th:href="@{/door-static/css/bootstrap.min.css}">
+    <!-- Material Design Bootstrap -->
+
+    <link rel="stylesheet" th:href="@{/door-static/css/mdb.min.css}">
+    <!-- Custom styles -->
+    <link th:href="@{/css/iexam/bootoast.css}" rel="stylesheet">
+
+    <style>
+        .rgba-gradient {
+            background: -moz-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: -webkit-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: -webkit-gradient(linear, 45deg, from(rgba(42, 27, 161, 0.7)), to(rgba(29, 210, 177, 0.7)));
+            background: -o-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: linear-gradient(to 45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+        }
+
+    </style>
+</head>
+
+<body class="single-page cloudy-knoxville-gradient ">
+
+<div id="app">
+    <header class="rgba-gradient">
+        <img th:src="@{/door-static/img/banner.png}" class="img-fluid" alt="placeholder"
+             style="height: 130px;width: 100%;">
+        <!--Navbar -->
+        <nav class="mb-1 navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item "><a href="/door/index?PAGE_FROM_TYPE=DOOR" class="white-text">主页</a></li>
+                        <li class="breadcrumb-item "><a href="#" class="white-text">个人信息</a></li>
+                    </ol>
+                </nav>
+
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto nav-flex-icons">
+                        <!-- Dropdown -->
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle waves-effect" href="#" id="userDropdown"
+                               data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-user"></i> <span class="clearfix d-none d-sm-inline-block"
+                                                                  th:text="${session.FRONT_USER.name}"></span>
+                                <div class="d-none" id="userId" th:data="${session.FRONT_USER.id}"></div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="/door/userinfo?PAGE_FROM_TYPE=DOOR">个人信息</a>
+                                <a class="dropdown-item" href="#" @click.prevent="logout()"><i
+                                        class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;安全退出</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+
+        <form>
+            <div class="container my-5 z-depth-3" style="padding-top: 40px;padding-bottom: 10px;">
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group row">
+                            <!-- Default input -->
+                            <label for="inputName" class="col-sm-3 col-form-label text-right"
+                                   style="margin-top: 110px;">照片：</label>
+                            <div class="col-sm-9">
+                                <img class="float-left" th:src="@{/door-static/img/user-test.png}"
+                                     v-if="user.photoPath==null"
+                                     style="width: 106px;height: 150px;">
+                                <img class="float-left" :src="user.photoPath"
+                                     v-if="user.photoPath!=null"
+                                     style="width: 106px;height: 150px;">
+                                <div class="text-center mt-1-half float-left">
+                                    <div class="file-field">
+                                        <div class="btn btn-primary btn-sm float-left"
+                                             style="margin-top:110px;margin-left: 30px;">
+                                            <span>上传照片</span>
+                                            <input type="file" id="imgFile" @change="uploadImg">
+                                        </div>
+                                        <div class="file-path-wrapper">
+                                            <input class="file-path" type="text" placeholder="Upload your file"
+                                                   v-model="user.photoPath"
+                                                   hidden="hidden">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label class="col-sm text-muted col-form-label text-left" style="margin-top: 110px;">注：照片将用与准考证，请确保为考生本人近期照片</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group row">
+                            <!-- Default input -->
+                            <label for="inputName" class="col-sm-3 col-form-label text-right">姓名：</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputName" placeholder="注册信息不可修改"
+                                       :value="user.name"
+                                       disabled="disabled">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label class="col-sm text-muted col-form-label text-left">注：姓名为注册时填写信息，不可修改</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group row">
+                            <!-- Default input -->
+                            <label for="inputIDcode" class="col-sm-3 col-form-label text-right">身份证号：</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputIDcode" placeholder="请输入第二代身份证"
+                                       :value="user.idCard"
+                                       disabled="disabled">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label class="col-sm text-muted col-form-label text-left">注：身份证代表考生身份，无法进行修改</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group row">
+                            <!-- Default input -->
+                            <label for="inputPhone" class="col-sm-3 col-form-label text-right">手机号：</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputPhone" placeholder="更改登陆绑定手机"
+                                       v-model="user.phone">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label class="col-sm text-muted col-form-label text-left">注：手机号用于登陆，遗忘或错记将无法登陆</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group row">
+                            <label for="inputSex" class="col-sm-3 col-form-label text-right">性别：</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <select class="browser-default custom-select col-sm-6" id="inputSex" v-model="user.gender">
+                                <option value="2">未知</option>
+                                <option value="1">男</option>
+                                <option value="0">女</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col"></div>
+                </div>
+                <hr class=" wow fadeInLeft" data-wow-delay="0.3s">
+
+                <div class="form-group row text-center">
+                    <div class="col-sm-10">
+                        <button type="button" class="btn btn-primary btn-md" data-toggle="modal"
+                                data-target="#modalSubscription">修改密码
+                        </button>
+                        <button type="button" class="btn btn-primary btn-md" @click="saveData">保存信息</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="modal fade" id="modalSubscription" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog cascading-modal" role="document">
+                <!-- Content -->
+                <div class="modal-content">
+
+                    <!-- Header -->
+                    <div class="modal-header light-blue darken-3 white-text">
+                        <h4 class=""><i class="fas fa-shield-alt"></i> 密码修改</h4>
+                        <button type="button" class="close waves-effect waves-light" data-dismiss="modal"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <!-- Body -->
+                    <div class="modal-body mb-0">
+
+                        <div class="md-form form-sm">
+                            <i class="fas fa-user-lock prefix"></i>
+                            <input type="password" id="form27" class="form-control form-control-sm"
+                                   v-model="password.oldPwd">
+                            <label for="form27">请输入旧密码确认你的身份</label>
+                        </div>
+
+                        <div class="md-form form-sm">
+                            <i class="fas fa-key prefix"></i>
+                            <input type="password" id="form28" class="form-control form-control-sm"
+                                   v-model="password.newPwd">
+                            <label for="form28">在此输入新密码(6-16位)</label>
+                        </div>
+
+                        <div class="text-center mt-1-half">
+                            <button class="btn btn-info mb-1" type="button" @click="updatePwd">确认修改 <i
+                                    class="fas fa-check ml-1"></i></button>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Content -->
+            </div>
+        </div>
+
+    </main>
+    <footer>
+        <div class="footer-copyright py-3 text-center wow fadeIn" data-wow-delay="0.3s">
+            © 2019 Copyright: IEXAM
+        </div>
+    </footer>
+</div>
+<!-- SCRIPTS -->
+<script th:src="@{/door-static/js/jquery-3.4.1.min.js}"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/door-static/js/popper.min.js}"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/bootstrap.js}"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/mdb.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/iexam/bootoast.js}"></script>
+<script type="text/javascript" th:src="@{/door-static/js/vue.js}"></script>
+
+<script th:inline="javascript">
+    var user = [[${session.FRONT_USER}]];
+</script>
+
+
+<script>
+
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            user: {},
+            password: {
+                oldPwd: null,
+                newPwd: null
+            }
+        },
+        methods: {
+            uploadImg() {
+                let formData = new FormData();
+                formData.append('img', $('#imgFile')[0].files[0]);
+                formData.append("userId", vm.user.id);
+                $.ajax({
+                    url: '/examinees/uploadImg?PAGE_FROM_TYPE=DOOR',
+                    type: 'POST',
+                    cache: false,
+                    dataType: "json",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        console.log(data);
+                        if (data.status == 1) {
+                            vm.user.photoPath = data.data.src;
+                            toast("图片修改完毕", "success");
+                        }
+                    }
+                })
+            },
+            logout() {
+                $.ajax({
+                    url: "/examinees/logout?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        window.location.href = "/door/login?PAGE_FROM_TYPE=DOOR";
+                    },
+                    error: function () {
+                    }
+                });
+            },
+            saveData() {
+                var userid = $("#userId").attr("data");
+                var phoNumTest = /((^130)|(^131)|(^132)|(^155)|(^156)|(^185)|(^186)|(^145)|(^176)|(^134)|(^135)|(^136)|(^137)|(^138)|(^139)|(^150)|(^151)|(^152)|(^157)|(^158)|(^159)|(^182)|(^183)|(^184)|(^187)|(^188)|(^147)|(^178)|(^133)|(^153)|(^180)|(^189)|(^177)|(^181))\d{8}/;
+                if (!phoNumTest.test(this.user.phone)) {
+                    toast("请输入正确的手机号", 'danger');
+                    return;
+                }
+
+                $.ajax({
+                    url: "/examinees/updateExaminees?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    contentType: "application/json",
+                    async: false,
+                    dataType: "json",
+                    data: JSON.stringify({
+                        id: userid,
+                        phone: this.user.phone,
+                        gender: parseInt(this.user.gender)
+                    }),
+                    success: function (data) {
+                        toast("保存成功", "success")
+                    },
+                    error: function () {
+                    }
+                });
+            },
+            updatePwd() {
+                var userid = $("#userId").attr("data");
+                var pwdTest = /\w{6,16}/;
+                if (!pwdTest.test(this.password.newPwd)) {
+                    toast("密码长度位6-16位", 'danger');
+                    return;
+                }
+
+                $.ajax({
+                    url: "/examinees/updatePassword?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    data: {
+                        examineesId: userid,
+                        newPwd: this.password.newPwd,
+                        oldPwd: this.password.oldPwd
+                    },
+                    success: function (data) {
+                        if (data.status == 1) {
+                            toast("修改成功", "success")
+                        } else {
+                            toast("原密码输入错误", "danger")
+                        }
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        },
+        created() {
+            var userid = $("#userId").attr("data");
+            var _this = this;
+            $.ajax({
+                url: "/examinees/getExamInfoByExamineesId?PAGE_FROM_TYPE=DOOR",
+                type: "post",
+                async: false,
+                dataType: "json",
+                data: {
+                    examineesId: userid
+                },
+                success: function (data) {
+                    _this.user = data;
+
+                },
+                error: function () {
+                }
+            });
+        }
+    })
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-model="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+
+    <!--<link th:href="@{/css/iexam/scrollbar.css}" rel="stylesheet">-->
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/v4-shims.css}">
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link th:href="@{/css/mdb.min.css}" rel="stylesheet">
+
+    <!-- Your custom styles (optional) -->
+    <link th:href="@{/css/addonss/bootstrap-table.min.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/emmo_Apparence.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/bootoast.css}" rel="stylesheet">
+    <link th:href="@{/css/addonss/bootstrap-datetimepicker.min.css}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+
+    <style type="text/css">
+        ul.stepper li.success a .circle {
+            background-color: #00c851 !important;
+        }
+
+    </style>
+
+</head>
+
+<body class="container-fluid">
+
+<div id="app">
+
+    <div class="card card-cascade narrower">
+
+        <!--Card image-->
+        <div class="view view-cascade gradient-card-header blue-gradient narrower py-2 mx-4 mb-3 d-flex justify-content-between align-items-center"
+             style="overflow: visible">
+
+            <a href="" class="white-text mx-3">考生成绩异常申报</a>
+
+            <form class="form-inline md-form mb-4">
+                <input class="form-control mr-sm-2" style="color: white" type="text" placeholder="搜索" aria-label="搜索">
+                <button class="btn btn-rounded btn-outline-white btn-sm my-0" type="submit">搜索</button>
+            </form>
+        </div>
+
+
+        <div class="px-4">
+
+            <div class="table-wrapper w-100">
+                <!--Table-->
+                <table class="table table-hover mb-0">
+
+                    <thead>
+                    <tr>
+                        <th class="th-lg">
+                            <a>考试名称
+                            </a>
+                        </th>
+
+
+                        <th class="th-lg">
+                            <a href="">申报人
+                            </a>
+                        </th>
+
+                        <th class="th-lg">
+                            <a href="">准考证号
+                            </a>
+                        </th>
+
+                        <th class="th-lg">
+                            <a href="">成绩
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a href="">申报时间
+                            </a>
+                        </th>
+
+                        <th class="th-lg">
+                            <a href="">当前状态
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a href="">操作
+                            </a>
+                        </th>
+                    </tr>
+                    </thead>
+                    <!--Table head-->
+
+                    <!--Table body-->
+                    <tbody>
+                    <tr v-for="(item,index) in controversialGradeModule.controversialGradeList">
+                        <td>
+                            <div class="text-truncate" style="width: 300px">
+                                {{item.exam.name}}
+                            </div>
+                        </td>
+                        <td>{{item.examinees.name}}</td>
+                        <td>{{item.grade.ticketNumber}}</td>
+                        <td>{{item.grade.grade}}</td>
+                        <td>{{item.controversialGrade.createTime}}</td>
+                        <td v-if="item.controversialGrade.status===1" class="text-danger">待处理</td>
+                        <td v-if="item.controversialGrade.status===2">已处理</td>
+                        <td>
+                            <button type="button" class="btn btn-outline-primary btn-sm m-0 waves-effect"
+                                    @click="openExamDetail(item.exam)"
+                                    data-toggle="modal" data-target="#iexam_info_model">考试详情
+                            </button>
+                            <button type="button" class="btn btn-outline-info btn-sm m-0 waves-effect"
+                                    v-if="item.controversialGrade.status===1"
+                                    data-toggle="modal" data-target="#todoGradeModel" @click="editGrade(index)">前往处理
+                            </button>
+                            <button type="button" class="btn btn-outline-primary btn-sm m-0 waves-effect"
+                                    v-if="item.controversialGrade.status===2"
+                                    data-toggle="modal" data-target="#registerExamModel"
+                                    @click="showResult(item.controversialGrade)">处理结果
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <!--Table body-->
+                </table>
+                <div class="md-form input-group d-flex justify-content-center">
+                    <div class="input-group-prepend">
+                        <button class="pages-first btn btn-md btn-primary m-0 px-3" type="button" id="gradePrevStart"
+                                @click="gradePrevStart"><i
+                                class="fas fa-angle-double-left"></i></button>
+                        <button class="pages-prev btn btn-md btn-primary m-0 px-3" type="button" id="gradePrev"
+                                @click="gradePrev"><i
+                                class="fas fa-angle-left"></i></button>
+                    </div>
+                    <input type="text" class="form-control text-center col-4 pages-active" id="gradePage"
+                           @onfocus="gradePageFocus" @onblur="gradePageFocusOut" @onkeyup="gradePageKeyUp"
+                           :value="controversialGradeModule.page.showtext">
+                    <div class="input-group-append">
+                        <button class="pages-next btn btn-md btn-primary m-0 px-3" type="button" id="gradeNext"
+                                @click="gradeNext"><i
+                                class="fas fa-angle-right"></i></button>
+                        <button class="pages-last btn btn-md btn-primary m-0 px-3" type="button" id="gradeNextTop"
+                                @click="gradeNextTop"><i
+                                class="fas fa-angle-double-right"></i></button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--考试详情-->
+    <div class="modal fade top " id="iexam_info_model" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+
+        <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+        <div class="modal-dialog modal-full-height modal-top" role="document">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title w-100" id="myModalLabel2">考试当前状态：{{NowEditExamInfo.status | examStatus}}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="container" style="background-color: white;margin-top: -6px;">
+                        <main>
+                            <div>
+                                <!-- Section: Blog v.4 -->
+                                <section class="mt-2 pb-3 wow fadeIn">
+                                    <!-- Grid row -->
+                                    <div class="row">
+                                        <!-- Grid column -->
+                                        <div class="col-md-12">
+                                            <!-- Featured image -->
+                                            <div class="justify-content-between d-flex">
+                                                <div class="mt-3 card p-3 col-12">
+                                                    <!-- Section: exams -->
+                                                    <section class="section card-body">
+                                                        <div class="container col-12">
+                                                            <div class="row mb-1">
+                                                                <div class="d-none" id="examId"
+                                                                     v-text="NowEditExamInfo.id"></div>
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    考试名：
+                                                                </div>
+                                                                <div class="col-7 attrubute_Content"
+                                                                     v-text="NowEditExamInfo.name"></div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="d-none" id="titleName"
+                                                                     v-text="NowEditExamInfo.id"></div>
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    职称：
+                                                                </div>
+                                                                <div class="col-7 attrubute_Content"
+                                                                     v-text="NowEditExamInfo.titleName"></div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    报名时间：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content">
+                                                                    <span v-text="NowEditExamInfo.registrationStartTime"></span>
+                                                                    ~ <span
+                                                                        v-text="NowEditExamInfo.registrationFinishTime"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    考试安排截至时间：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content"
+                                                                     v-text="NowEditExamInfo.ticketGenerateTime"></div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    获取准考证时间：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content"
+                                                                     v-text="NowEditExamInfo.ticketPublicizeTime"></div>
+                                                            </div>
+
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    考试时间：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content">
+                                                                    <span v-text="NowEditExamInfo.examinationStartTime"></span>
+                                                                    ~ <span
+                                                                        v-text="NowEditExamInfo.examinationEndTime"></span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    阅卷时间：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content">
+                                                                    <span v-text="NowEditExamInfo.reviewStartTime"></span>
+                                                                    ~ <span
+                                                                        v-text="NowEditExamInfo.reviewEndTime"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    成绩获取时间：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content"
+                                                                     v-text="NowEditExamInfo.gradePublicizeTime"></div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    考试地点：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content"
+                                                                     v-text="NowEditExamInfo.place"></div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    报名费用：
+                                                                </div>
+
+                                                                <div class="col-7  attrubute_Content"><span
+                                                                        v-text="NowEditExamInfo.examFee"></span>￥
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    报名人数：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content">
+                                                                    <span v-text="NowEditExamInfo.num"></span>/
+                                                                    <span v-text="NowEditExamInfo.capacity"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    考试分数：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content">
+                                                                    满分：<span v-text="NowEditExamInfo.maxGrade"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    通过分数：<span
+                                                                        v-text="NowEditExamInfo.passGrade"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    考试说明：
+                                                                </div>
+
+                                                                <p class="col-7 attrubute_Content"
+                                                                   v-text="NowEditExamInfo.comment"></p>
+                                                            </div>
+                                                            <hr>
+                                                            <div class="row">
+                                                                <div class="col-10 offset-1">
+                                                                    <div class="font-weight-bolder attribute_Name">
+                                                                        注意事项：
+                                                                    </div>
+                                                                    <p v-text="NowEditExamInfo.precautions"></p>
+                                                                </div>
+                                                            </div>
+                                                            <hr>
+                                                            <div class="row">
+
+                                                                <div class="col-10 offset-1">
+                                                                    <h5 class="my-3 text-lg-left "><i
+                                                                            class="fas fa-link"></i> 相关链接：</h5>
+                                                                    <ol>
+                                                                        <li v-for="(item,index) in file_links">
+                                                                            <p><a :href="item.titlePath"><i
+                                                                                    class="far fa-file-alt"></i> <span
+                                                                                    v-text="item.fileTitle"></span></a>
+                                                                            </p>
+                                                                        </li>
+                                                                    </ol>
+
+                                                                </div>
+
+                                                            </div>
+                                                            <hr>
+                                                            <div class="row"
+                                                                 v-if="NowEditExamInfo.status>4||NowEditExamInfo.status==='10'">
+
+                                                                <div class="col-10 offset-1">
+                                                                    <h5 class="my-3 text-lg-left "><i
+                                                                            class="fas fa-link"></i> 考试安排详情：</h5>
+                                                                    <table class="table text-center">
+                                                                        <thead class="lighten-2">
+                                                                        <tr>
+                                                                            <th scope="col">考场</th>
+                                                                            <th scope="col">考场容量</th>
+                                                                            <th scope="col">相关监考</th>
+                                                                            <th scope="col">对应阅卷</th>
+                                                                            <th scope="col">操作</th>
+                                                                        </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                        <tr v-for="(item,index) in arrangeMessage">
+                                                                            <td>
+                                                                                <span v-text="item.examRoom.no"></span>号考场
+                                                                                - <span
+                                                                                    v-text="item.examRoom.roomName"></span>
+                                                                            </td>
+                                                                            <td v-text="item.examRoom.capacity"></td>
+                                                                            <td>
+                                                                                <ul style="list-style: none">
+                                                                                    <li v-text="item1.realName"
+                                                                                        v-for="item1 in item.invigilatorList"></li>
+                                                                                </ul>
+                                                                            </td>
+                                                                            <td v-text="item.reviewer.realName"></td>
+
+                                                                            <td class="px-0 mx-0">
+                                                                                <div class="btn-group px-0 mx-0"
+                                                                                     role="group"
+                                                                                     aria-label="Basic example">
+                                                                                    <button type="button"
+                                                                                            class=" btn btn-sm btn-outline-deep-purple btn-rounded waves-effect"
+                                                                                            @click="chooseExam(index)"
+                                                                                            data-toggle="modal"
+                                                                                            data-target="#exampleModalCenter">
+                                                                                        获取考生信息
+                                                                                    </button>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </section>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </main>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="todoGradeModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title w-100">异常成绩处理</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body mb-0 text-center">
+                    <table class="table table-bordered border">
+                        <tbody>
+                        <tr>
+                            <td>考试名</td>
+                            <td><div class="text-truncate" style="width: 300px">{{NowEditGrade.exam.name}}</div></td>
+                        </tr>
+                        <tr>
+                            <td>考生</td>
+                            <td>{{NowEditGrade.examinees.name}}</td>
+                        </tr>
+                        <tr>
+                            <td>准考证号</td>
+                            <td>{{NowEditGrade.grade.ticketNumber}}</td>
+                        </tr>
+                        <tr>
+                            <td>成绩修改</td>
+                            <td class="d-flex justify-content-between align-items-center">
+                                <input class="form-control form-control-sm mr-sm-2 mb-0" style="width: 180px;" type="number" v-model="editGradeNum" placeholder="请输入修改后成绩">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>回复</td>
+                            <td>
+                                <textarea type="text" id="form2" class="md-textarea form-control" v-model="editText" rows="2"></textarea>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+
+                    <button type="button" class="btn btn-info mb-1" data-dismiss="modal">关闭
+                        <i class="fas fa-times ml-1"></i></button>
+                    <button type="button" class="btn btn-success mb-1" data-dismiss="modal" @click="doneEdit">完成
+                        <i class="fas fa-check ml-1"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="registerExamModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2"
+         aria-hidden="true">
+        <div class="modal-dialog cascading-modal" role="document">
+            <div class="modal-content">
+
+                <div class="modal-body mb-0 text-center">
+                    <div>
+                        <h3><i class="fas fa-exclamation ml-1 text-danger"></i> 处理结果</h3>
+                        <hr>
+                        <p class="text-left" v-text="result.respond"></p>
+                    </div>
+                    <button type="button" class="btn btn-info mb-1" data-dismiss="modal">关闭
+                        <i class="fas fa-times ml-1"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- JQuery -->
+<script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}" src="/js/jquery-3.3.1.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/js/Vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/js/popper.min.js}" src="/js/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/js/bootstrap.js}" src="/js/bootstrap.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/js/mdb.min.js}" src="/js/mdb.min.js"></script>
+
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table.min.js}"
+        src="/js/addons/bootstrap-table.min.js"></script>
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table-locale-all.js}"
+        src="/js/addons/bootstrap-table-locale-all.js"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/bootoast.js}"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/emmo_backTable_basicOperator.js}"></script>
+<!--<script type="text/javascript" th:src="@{/js/addons/datepicker/bootstrap-datetimepicker.min.js}"></script>-->
+<!--<script type="text/javascript" th:src="@{/js/addons/datepicker/locales/bootstrap-datetimepicker.zh-CN.js}"></script>-->
+
+<script type="text/javascript" th:src="@{/js/Vue/IexamBack/backTemplates.js}"></script>
+
+<script type="text/javascript">
+
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            result: {
+                status: '1',
+                respond: null
+            },
+
+            NowEditGrade:{
+                exam:{
+                    name:null,
+                },
+                examinees:{
+                    name:null,
+                },
+                grade:{
+                    ticketNumber:null,
+                }
+            },
+
+            editGradeNum:0,
+            editText:null,
+
+            file_links: [],
+            NowEditExamInfo: {
+                id: 0
+            },
+            controversialGradeModule: {
+                controversialGradeList: [],
+                page: {
+                    showtext: null,
+                    keyPage: 1,
+                    active_paper: 1,
+                    grade_search: null,
+                    page_size: 10,
+                    all_page: 1
+                }
+            },
+            nowchoose:0
+        },
+        methods: {
+            doneEdit(){
+                var _this=this;
+                $.ajax({
+                    url: '/grade/updateGrade?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        id:this.NowEditGrade.grade.id,
+                        grade:this.editGradeNum
+                    }),
+                    success: function () {
+                        $.ajax({
+                            url: '/controversialGrade/updateControversialGrade?PAGE_FROM_TYPE=BACK',
+                            type: "post",
+                            dataType: "json",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                id:_this.NowEditGrade.controversialGrade.id,
+                                respond:_this.editText,
+                                status:2
+                            }),
+                            success: function (examList) {
+                                toast("处理完成","success");
+                                _this.controversialGradeModule.controversialGradeList[_this.nowchoose].grade.grade=_this.editGradeNum;
+                                _this.controversialGradeModule.controversialGradeList[_this.nowchoose].controversialGrade.respond=_this.editText;
+                                _this.controversialGradeModule.controversialGradeList[_this.nowchoose].controversialGrade.status=2;
+                            }, error: function (data) {
+                            }
+                        });
+                    }, error: function (data) {
+                    }
+                });
+
+            },
+            editGrade(value){
+                this.nowchoose=value;
+                this.NowEditGrade=this.controversialGradeModule.controversialGradeList[value];
+                this.editGradeNum=this.controversialGradeModule.controversialGradeList[value].grade.grade;
+            },
+            openExamDetail(value) {
+                var _this = this;
+                this.NowEditExamInfo = value;
+                $.ajax({
+                    url: '/examFiles/getFilesList?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        page: 1,
+                        size: 1000,
+                        examNews: {
+                            examId: this.NowEditExamInfo.id
+                        }
+                    }),
+                    success: function (examList) {
+                        console.log(examList);
+                        _this.file_links = examList.data;
+                    }, error: function (data) {
+                    }
+                });
+
+
+                $.ajax({
+                    url: '/examRelatedPeople/getExamArrangeInfo?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {examId: this.NowEditExamInfo.id},
+                    success: function (examList) {
+                        console.log(examList);
+                        _this.arrangeMessage = examList.data;
+                    }, error: function (data) {
+                    }
+                });
+
+            },
+            showResult(value) {
+                if (value.status === 1) {
+                    this.result.respond = "处理中，请等候";
+                } else {
+                    this.result = value;
+                }
+
+            },
+            loadControversialGrade() {
+                let _this = this;
+                $.ajax({
+                    url: '/controversialGrade/getControversialGradeList?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        "page": _this.controversialGradeModule.page.active_paper,
+                        "size": _this.controversialGradeModule.page.page_size,
+                        "controversialGrade": {}
+
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (examList) {
+                        console.log(examList);
+                        _this.controversialGradeModule.controversialGradeList = examList.data;
+                        if (parseInt(examList.count) % _this.controversialGradeModule.page.page_size == 0) {
+                            _this.controversialGradeModule.page.all_page = parseInt(examList.count / _this.controversialGradeModule.page.page_size);
+                        } else {
+                            _this.controversialGradeModule.page.all_page = parseInt(examList.count / _this.controversialGradeModule.page.page_size) + 1;
+                        }
+                        if (_this.controversialGradeModule.page.all_page==0){
+                            _this.controversialGradeModule.page.all_page=1;
+                        }
+                        _this.controversialGradeModule.page.showtext = "第" + _this.controversialGradeModule.page.active_paper + "页/共" + _this.controversialGradeModule.page.all_page + "页";
+                    }, error: function (data) {
+
+                    }
+
+                });
+            },
+            gradePrevStart() {
+                this.controversialGradeModule.page.active_paper = 1;
+                this.controversialGradeModule.page.keyPage = this.controversialGradeModule.page.active_paper;
+                //change(this.page.active_paper);
+                $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                this.loadControversialGrade();
+            },
+            gradeNextTop() {
+                this.controversialGradeModule.page.active_paper = this.controversialGradeModule.page.all_page;
+                this.controversialGradeModule.page.keyPage = this.controversialGradeModule.page.active_paper;
+                //change(this.page.active_paper);
+                $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                this.loadControversialGrade();
+            },
+            gradeNext() {
+                if (this.controversialGradeModule.page.active_paper == this.controversialGradeModule.page.all_page) {
+                    console.log("当前页：" + this.controversialGradeModule.page.active_paper + "，无法继续点击");
+                    return false; //如果大于总页数就禁用下一页
+                } else {
+                    $("#gradePage").text(++this.controversialGradeModule.page.active_paper); //点击下一页的时候当前页数的值就加1
+                    this.controversialGradeModule.page.keyPage = this.controversialGradeModule.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                }
+                this.loadControversialGrade();
+            },
+            gradePrev() {
+                if (this.controversialGradeModule.page.active_paper == 1) {
+                    console.log("当前页：" + this.controversialGradeModule.page.active_paper + "，无法继续点击");
+                    return false;
+                } else {
+                    $("#gradePage").text(--this.controversialGradeModule.page.active_paper);
+                    this.controversialGradeModule.page.keyPage = this.controversialGradeModule.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                }
+                this.loadControversialGrade();
+            },
+            gradePageFocus() {
+                $("#gradePage").val(this.controversialGradeModule.page.active_paper).select();
+            },
+            gradePageFocusOut() {
+                this.controversialGradeModule.page.keyPage = parseInt($("#gradePage").val());
+                if (this.controversialGradeModule.page.keyPage > this.controversialGradeModule.page.all_page | this.controversialGradeModule.page.keyPage < 0 | isNaN(this.controversialGradeModule.page.keyPage)) {
+                    $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                } else {
+                    this.controversialGradeModule.page.active_paper = this.controversialGradeModule.page.keyPage;
+
+                    $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                }
+                this.loadControversialGrade();
+            },
+            gradePageKeyUp() {
+                let key = event.keyCode;
+                if (key == 13) {
+                    this.controversialGradeModule.page.keyPage = parseInt($("#gradePage").val());
+                    if (this.controversialGradeModule.page.keyPage > this.controversialGradeModule.page.all_page | this.controversialGradeModule.page.keyPage < 0 | isNaN(this.controversialGradeModule.page.keyPage)) {
+                        $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                    } else {
+                        this.controversialGradeModule.page.active_paper = this.controversialGradeModule.page.keyPage;
+                        $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                        this.loadControversialGrade();
+                    }
+                }
+            },
+
+
+        },
+        created() {
+            this.loadControversialGrade();
+        },
+        filters: {
+            examStatus(value) {
+                if (value == "000") {
+                    return "考场安排中"
+                }
+                if (value == "001") {
+                    return "监考安排中"
+                }
+                if (value == "011") {
+                    return "阅卷安排中"
+                }
+                if (value == "111") {
+                    return "安排完成"
+                }
+                if (value == "101") {
+                    return "阅卷安排中";
+                }
+                if (value === "0") {
+                    return "考试报名未开始"
+                }
+                if (value === "1") {
+                    return "正在报名"
+                }
+                if (value === "4") {
+                    return "考试安排结束"
+                }
+                if (value === "5") {
+                    return "准考证发布"
+                }
+                if (value === "6") {
+                    return "考试进行中"
+                }
+                if (value === "7") {
+                    return "考试结束"
+                }
+                if (value === "8") {
+                    return "阅卷中"
+                }
+                if (value === "9") {
+                    return "阅卷结束"
+                }
+                if (value === "10") {
+                    return "成绩公布"
+                }
+            }
+        }
+    });
+
+
+</script>
+
+
+</body>
+
+</html>

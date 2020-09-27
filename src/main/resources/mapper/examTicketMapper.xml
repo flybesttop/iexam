@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.examTicketMapper">
+    <resultMap id="examTicket" type="com.sot.iexam.DO.examTicket">
+        <id column="id" property="id"/>
+        <result column="exam_id" property="examId"/>
+        <result column="examinees_id" property="examineesId"/>
+        <result column="ticket_number" property="ticketNumber"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+    <!--
+    namespace:名称空间;指定为接口的全类名
+    id：唯一标识
+    resultType：返回值类型（接收的bean的全类名比较合适，别名也行）
+    #{id}：从传递过来的参数中取出id值
+
+    public Employee getEmpById(Integer id);
+     -->
+
+
+    <insert id="insert">
+        insert into examinees_ticket(exam_id, examinees_id, ticket_number, status, create_time, modify_time)
+        VALUES (#{ticket.examId}, #{ticket.examineesId}, #{ticket.ticketNumber}, #{ticket.status},
+                #{ticket.createTime}, #{ticket.modifyTime})
+    </insert>
+    <select id="getTicketNumberByExamId" resultType="java.lang.Integer">
+        select count(1)
+        from examinees_ticket
+        where exam_id = #{id}
+    </select>
+
+    <select id="getTicket" resultType="java.lang.Integer">
+        select *
+        from examinees_ticket
+        where exam_id = #{examId} and examinees_id=#{userId}
+    </select>
+
+</mapper>

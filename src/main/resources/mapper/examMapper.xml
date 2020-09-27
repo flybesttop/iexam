@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.examMapper">
+    <resultMap id="exam" type="com.sot.iexam.DO.exam">
+        <id column="id" property="id"/>
+        <result column="review_workload" property="reviewWorkload"/>
+        <result column="review_start_time" property="reviewStartTime"/>
+        <result column="review_end_time" property="reviewEndTime"/>
+        <result column="name" property="name"/>
+        <result column="examination_end_time" property="examinationEndTime"/>
+        <result column="examination_start_time" property="examinationStartTime"/>
+        <result column="registration_finish_time" property="registrationFinishTime"/>
+        <result column="registration_start_time" property="registrationStartTime"/>
+        <result column="publish_time" property="publishTime"/>
+        <result column="capacity" property="capacity"/>
+        <result column="num" property="num"/>
+        <result column="title_id" property="titleId"/>
+        <result column="title_name" property="titleName"/>
+        <result column="publish_man_id" property="publishManId"/>
+        <result column="publish_man_name" property="publishManName"/>
+        <result column="comment" property="comment"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="exam_fee" property="examFee"/>
+        <result column="place" property="place"/>
+        <result column="precautions" property="precautions"/>
+        <result column="ticket_publicize_time" property="ticketPublicizeTime"/>
+        <result column="grade_publicize_time" property="gradePublicizeTime"/>
+        <result column="ticket_generate_time" property="ticketGenerateTime"/>
+        <result column="max_grade" property="maxGrade"/>
+        <result column="pass_grade" property="passGrade"/>
+
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="exam.id">
+        insert into exam(review_workload, review_start_time, review_end_time, name,
+                         examination_end_time, examination_start_time, registration_finish_time,
+                         registration_start_time,
+                         publish_time, capacity, num, title_id, title_name, publish_man_id, publish_man_name,
+                         comment, status, create_time, modify_time, exam_fee, place, precautions, ticket_publicize_time,
+                         grade_publicize_time,ticket_generate_time,max_grade,pass_grade)
+        values (#{exam.reviewWorkload}, #{exam.reviewStartTime}, #{exam.reviewEndTime}, #{exam.name},
+                #{exam.examinationEndTime}, #{exam.examinationStartTime}, #{exam.registrationFinishTime},
+                #{exam.registrationStartTime},
+                #{exam.publishTime}, #{exam.capacity}, #{exam.num}, #{exam.titleId},
+                #{exam.titleName}, #{exam.publishManId}, #{exam.publishManName}, #{exam.comment},
+                #{exam.status}, #{exam.createTime}, #{exam.modifyTime},
+                #{exam.examFee}, #{exam.place}, #{exam.precautions}, #{exam.ticketPublicizeTime},
+                #{exam.gradePublicizeTime},#{exam.ticketGenerateTime},#{exam.maxGrade},#{exam.passGrade})
+    </insert>
+    <update id="update">
+        update exam
+        <trim prefix="set" suffixOverrides=",">
+            <if test="exam.reviewWorkload!=null">review_workload =#{exam.reviewWorkload},</if>
+            <if test="exam.reviewStartTime!=null">review_start_time =#{exam.reviewStartTime},</if>
+            <if test="exam.reviewEndTime!=null">review_end_time =#{exam.reviewEndTime},</if>
+            <if test="exam.name!=null">name =#{exam.name},</if>
+            <if test="exam.examinationEndTime!=null">examination_end_time =#{exam.examinationEndTime},</if>
+            <if test="exam.examinationStartTime!=null">examination_start_time =#{exam.examinationStartTime},</if>
+            <if test="exam.registrationFinishTime!=null">registration_finish_time =#{exam.registrationFinishTime},</if>
+            <if test="exam.registrationStartTime!=null">registration_start_time =#{exam.registrationStartTime},</if>
+            <if test="exam.publishTime!=null">publish_time =#{exam.publishTime},</if>
+            <if test="exam.capacity!=null">capacity =#{exam.capacity},</if>
+            <if test="exam.num!=null">num =#{exam.num},</if>
+            <if test="exam.titleId!=null">title_id =#{exam.titleId},</if>
+            <if test="exam.titleName!=null">title_name =#{exam.titleName},</if>
+            <if test="exam.publishManId!=null">publish_man_id =#{exam.publishManId},</if>
+            <if test="exam.publishManName!=null">publish_man_name =#{exam.publishManName},</if>
+            <if test="exam.comment!=null">comment =#{exam.comment},</if>
+            <if test="exam.status!=null">status =#{exam.status},</if>
+            <if test="exam.createTime!=null">create_time =#{exam.createTime},</if>
+            <if test="exam.modifyTime!=null">modify_time =#{exam.modifyTime},</if>
+            <if test="exam.examFee!=null">modify_time =#{exam.examFee},</if>
+            <if test="exam.place!=null">place =#{exam.place},</if>
+            <if test="exam.precautions!=null">precautions =#{exam.precautions},</if>
+            <if test="exam.ticketPublicizeTime!=null">ticket_publicize_time =#{exam.ticketPublicizeTime},</if>
+            <if test="exam.gradePublicizeTime!=null">grade_publicize_time =#{exam.gradePublicizeTime},</if>
+            <if test="exam.ticketGenerateTime!=null">ticket_generate_time =#{exam.ticketGenerateTime},</if>
+            <if test="exam.maxGrade!=null">max_grade =#{exam.maxGrade},</if>
+            <if test="exam.passGrade!=null">pass_grade =#{exam.passGrade},</if>
+            <if test="exam.maxGrade!=null">max_grade =#{exam.maxGrade},</if>
+            <if test="exam.passGrade!=null"> pass_grade =#{exam.passGrade},</if>
+        </trim>
+        where id =#{exam.id}
+    </update>
+    <update id="updateStatus">
+        update exam
+        set status     = #{exam.status},
+            modify_time=#{exam.modifyTime}
+        where id = #{exam.id}
+
+    </update>
+
+    <!--
+    namespace:名称空间;指定为接口的全类名
+    id：唯一标识
+    resultType：返回值类型（接收的bean的全类名比较合适，别名也行）
+    #{id}：从传递过来的参数中取出id值
+
+    public Employee getEmpById(Integer id);
+     -->
+
+
+    <select id="getExamInfoListToReviewer" resultType="com.sot.iexam.DO.exam">
+        select e.*
+        from exam e,reviewer_exam r
+        where r.exam_id=e.id and r.reviewer_id=#{userId}
+    </select>
+
+    <select id="getCountExamInfoListToReviewer" resultType="java.lang.Integer">
+        select count(*)
+        from exam e,reviewer_exam r
+        where r.exam_id=e.id and r.reviewer_id=#{userId}
+    </select>
+
+
+    <select id="getExamById" resultType="com.sot.iexam.DO.exam">
+        select id,
+               review_workload,
+               review_start_time,
+               review_end_time,
+               name,
+               examination_end_time,
+               examination_start_time,
+               registration_finish_time,
+               registration_start_time,
+               publish_time,
+               capacity,
+               num,
+               title_id,
+               title_name,
+               publish_man_id,
+               publish_man_name,
+               comment,
+               status,
+               create_time,
+               modify_time,
+               exam_fee,
+               place,
+               precautions,
+               ticket_publicize_time,
+               grade_publicize_time,
+               ticket_generate_time,
+               max_grade,
+               pass_grade
+        from exam
+        where id = #{1};
+    </select>
+
+    <select id="getExamListToPublish" resultType="com.sot.iexam.DO.exam">
+        select id,
+               review_workload,
+               review_start_time,
+               review_end_time,
+               name,
+               examination_end_time,
+               examination_start_time,
+               registration_finish_time,
+               registration_start_time,
+               publish_time,
+               capacity,
+               num,
+               title_id,
+               title_name,
+               publish_man_id,
+               publish_man_name,
+               comment,
+               status,
+               create_time,
+               modify_time,
+               exam_fee,
+               place,
+               precautions,
+               ticket_publicize_time,
+               grade_publicize_time,
+               ticket_generate_time,
+               max_grade,
+               pass_grade
+        from exam
+        where status = '0' and (name like concat('%',#{search},'%') or title_name like concat('%',#{search},'%') or publish_man_name like concat('%',#{search},'%'))
+    </select>
+
+
+    <select id="getCountToPublish" resultType="java.lang.Integer">
+        select count(*)
+        from exam
+        where status = '0' and (name like concat('%',#{search},'%') or title_name like concat('%',#{search},'%') or publish_man_name like concat('%',#{search},'%'))
+    </select>
+
+    <select id="getExamList" resultType="com.sot.iexam.DO.exam">
+        select id,
+        review_workload,
+        review_start_time,
+        review_end_time,
+        name,
+        examination_end_time,
+        examination_start_time,
+        registration_finish_time,
+        registration_start_time,
+        publish_time,
+        capacity,
+        num,
+        title_id,
+        title_name,
+        publish_man_id,
+        publish_man_name,
+        comment,
+        status,
+        create_time,
+        modify_time,
+        exam_fee,
+        place,
+        precautions,
+        ticket_publicize_time,
+        grade_publicize_time,
+        ticket_generate_time,
+        max_grade,
+        pass_grade
+        from exam
+        <include refid="ExamWhereSQL"></include>
+    </select>
+
+    <select id="getExamlistArrange" resultType="com.sot.iexam.DO.exam">
+        select *
+        from exam
+
+        where LENGTH(status)=3
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(1)
+        from exam
+
+        <include refid="ExamWhereSQL"></include>
+    </select>
+
+
+    <resultMap id="examListVO" type="com.sot.iexam.VO.examListVo">
+        <association property="exam" column="exam" javaType="com.sot.iexam.DO.exam" resultMap="exam">
+        </association>
+        <association property="examRoom" column="room" javaType="com.sot.iexam.DO.examRoom"
+                     resultMap="com.sot.iexam.DAO.mybatis.mapper.examRoomMapper.examRoom">
+        </association>
+        <association property="examTicket" column="ticket" javaType="com.sot.iexam.DO.examTicket"
+                     resultMap="com.sot.iexam.DAO.mybatis.mapper.examTicketMapper.examTicket">
+        </association>
+    </resultMap>
+
+    <select id="getExamVoList" resultMap="examListVO">
+        select exam.*,
+        ticket.*,
+        room.*
+        from examinees_ticket ticket,
+        exam exam,
+        exam_room room
+        <trim prefix="where" prefixOverrides="and |or ">
+            <if test="1 == 1">and exam.id = ticket.exam_id</if>
+            <if test="1 == 1">and 0 + substr(ticket.ticket_number, 13, 3) = room.no</if>
+            <if test="1 == 1">and room.exam_id = exam.id</if>
+            <if test="examTicket.examineesId != null">and examinees_id = #{examTicket.examineesId}</if>
+            <if test="examTicket.examRoomNumber != null">and room.no = #{examTicket.examRoomNumber}</if>
+            <if test="examTicket.siteNumber != null">and 0 + substr(ticket.ticket_number, 16, 3) =
+                #{examTicket.siteNumber}
+            </if>
+            <if test="examTicket.examId != null">and exam.id = #{examTicket.examId}</if>
+        </trim>
+    </select>
+    <select id="getExamVoCount" resultType="java.lang.Integer">
+        select count(1)
+        from examinees_ticket ticket,
+        exam exam,
+        exam_room room
+        <trim prefix="where" prefixOverrides="and |or ">
+            <if test="1 == 1">and exam.id = ticket.exam_id</if>
+            <if test="1 == 1">and 0 + substr(ticket.ticket_number, 13, 3) = room.no</if>
+            <if test="1 == 1">and room.exam_id = exam.id</if>
+            <if test="examTicket.examineesId != null">and examinees_id = #{examTicket.examineesId}</if>
+            <if test="examTicket.examRoomNumber != null">and room.no = #{examTicket.examRoomNumber}</if>
+            <if test="examTicket.siteNumber != null">and 0 + substr(ticket.ticket_number, 16, 3) =
+                #{examTicket.siteNumber}
+            </if>
+            <if test="examTicket.examId != null">and exam.id = #{examTicket.examId}</if>
+        </trim>
+    </select>
+
+    <sql id="ExamWhereSQL">
+        <trim prefix="where" prefixOverrides="and |or ">
+            <if test="exam.reviewWorkload!=null">and review_workload =#{exam.reviewWorkload}</if>
+            <if test="exam.reviewStartTime!=null">and review_start_time =#{exam.reviewStartTime}</if>
+            <if test="exam.reviewEndTime!=null">and review_end_time =#{exam.reviewEndTime}</if>
+            <if test="exam.name!=null">or name like concat('%',#{exam.name},'%')</if>
+            <if test="exam.examinationEndTime!=null">and examination_end_time =#{exam.examinationEndTime}</if>
+            <if test="exam.examinationStartTime!=null">and examination_start_time =#{exam.examinationStartTime}</if>
+            <if test="exam.registrationFinishTime!=null">and registration_finish_time =#{exam.registrationFinishTime}
+            </if>
+            <if test="exam.registrationStartTime!=null">and registration_start_time =#{exam.registrationStartTime}</if>
+            <if test="exam.publishTime!=null">and publish_time =#{exam.publishTime}</if>
+            <if test="exam.capacity!=null">and capacity =#{exam.capacity}</if>
+            <if test="exam.num!=null">and num =#{exam.num}</if>
+            <if test="exam.titleId!=null">and title_id =#{exam.titleId}</if>
+            <if test="exam.titleName!=null">or title_name like concat('%',#{exam.titleName},'%')</if>
+            <if test="exam.publishManId!=null">and publish_man_id =#{exam.publishManId}</if>
+            <if test="exam.publishManName!=null">or publish_man_name like concat('%',#{exam.publishManName},'%')</if>
+            <if test="exam.comment!=null">and comment =#{exam.comment}</if>
+            <if test="exam.status!=null">and status =#{exam.status}</if>
+            <if test="exam.createTime!=null">and create_time =#{exam.createTime}</if>
+            <if test="exam.modifyTime!=null">and modify_time =#{exam.modifyTime}</if>
+            <if test="exam.examFee!=null">and modify_time =#{exam.examFee}</if>
+            <if test="exam.place!=null">and modify_time =#{exam.place}</if>
+            <if test="exam.precautions!=null">and modify_time =#{exam.precautions}</if>
+            <if test="exam.ticketPublicizeTime!=null">and modify_time =#{exam.ticketPublicizeTime}</if>
+            <if test="exam.gradePublicizeTime!=null">and grade_publicize_time =#{exam.gradePublicizeTime}</if>
+            <if test="exam.ticketGenerateTime!=null">and ticket_generate_time =#{exam.ticketGenerateTime}</if>
+            <if test="exam.maxGrade!=null">and max_grade =#{exam.maxGrade}</if>
+            <if test="exam.passGrade!=null">and pass_grade =#{exam.passGrade}</if>
+        </trim>
+    </sql>
+</mapper>

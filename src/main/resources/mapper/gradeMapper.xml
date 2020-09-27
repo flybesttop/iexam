@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.gradeMapper">
+
+    <resultMap id="grade" type="com.sot.iexam.DO.grade">
+        <id column="id" property="id"></id>
+        <result column="examinee_id" property="examineeId"></result>
+        <result column="exam_id" property="examId"></result>
+        <result column="ticket_number" property="ticketNumber"></result>
+        <result column="grade" property="grade"></result>
+        <result column="status" property="status"></result>
+        <result column="operator_id" property="operatorId"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="modify_time" property="modifyTime"></result>
+        <result column="exam_room_id" property="examRoomId"></result>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="grade.id">
+        insert into grade (examinee_id, exam_id, ticket_number, grade, status, operator_id, create_time, modify_time,
+                           exam_room_id)
+        values (#{grade.examineeId}, #{grade.examId}, #{grade.ticketNumber}, #{grade.grade},
+                #{grade.status}, #{grade.operatorId}, #{grade.createTime}, #{grade.modifyTime}, #{grade.examRoomId});
+    </insert>
+    <update id="update">
+        update grade
+        <trim prefix="set" suffixOverrides=",">
+            <if test="grade.examineeId != null">examinee_id = #{grade.examineeId},</if>
+            <if test="grade.examId != null">exam_id = #{grade.examId},</if>
+            <if test="grade.ticketNumber != null">ticket_number = #{grade.ticketNumber},</if>
+            <if test="grade.grade!= null">grade = #{grade.grade},</if>
+            <if test="grade.status!= null">status = #{grade.status},</if>
+            <if test="grade.operatorId!= null">operator_id = #{grade.operatorId},</if>
+            <if test="grade.examRoomId!= null">exam_room_id = #{grade.examRoomId},</if>
+            <if test="grade.createTime!= null">create_time = #{grade.createTime},</if>
+            <if test="grade.modifyTime!= null">modify_time = #{grade.modifyTime},</if>
+        </trim>
+        where id = #{grade.id}
+    </update>
+    <select id="getGradeListByExamRoomId" resultType="com.sot.iexam.DO.grade">
+        select id,
+        examinee_id,
+        exam_id,
+        ticket_number,
+        grade,
+        status,
+        operator_id,
+        exam_room_id,
+        create_time,
+        modify_time
+        from grade
+        where exam_room_id=#{examRoomId}
+    </select>
+
+
+    <select id="getTicket" resultType="com.sot.iexam.DO.grade">
+        select id,
+        examinee_id,
+        exam_id,
+        ticket_number,
+        grade,
+        status,
+        operator_id,
+        exam_room_id,
+        create_time,
+        modify_time
+        from grade
+        where exam_id=#{examId} and examinee_id=#{userId}
+    </select>
+
+    <select id="getGradeList" resultType="com.sot.iexam.DO.grade">
+        select id,
+        examinee_id,
+        exam_id,
+        ticket_number,
+        grade,
+        status,
+        operator_id,
+        exam_room_id,
+        create_time,
+        modify_time
+        from grade
+        <include refid="gradeWhereSQL"></include>
+    </select>
+
+
+    <select id="getGradeListCount" resultType="java.lang.Integer">
+        select count(*)
+        from grade
+        <include refid="gradeWhereSQL"></include>
+    </select>
+
+
+    <sql id="gradeWhereSQL">
+        <trim prefix="where" prefixOverrides="and |or ">
+            <if test="grade.examineeId != null">and examinee_id = #{grade.examineeId}</if>
+            <if test="grade.examId != null">and exam_id = #{grade.examId}</if>
+            <if test="grade.ticketNumber != null">and ticket_number = #{grade.ticketNumber}</if>
+            <if test="grade.grade!= null">and grade = #{grade.grade}</if>
+            <if test="grade.status!= null">and status = #{grade.status}</if>
+            <if test="grade.operatorId!= null">and operator_id = #{grade.operatorId}</if>
+            <if test="grade.examRoomId!= null">and exam_room_id = #{grade.examRoomId}</if>
+        </trim>
+    </sql>
+
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.examRoomMapper">
+    <resultMap id="examRoom" type="com.sot.iexam.DO.examRoom">
+        <id column="id" property="id"/>
+        <result column="class_room_id" property="classRoomId"/>
+        <result column="exam_id" property="examId"/>
+        <result column="invigilator_num" property="invigilatorNum"/>
+        <result column="from_time" property="fromTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="capacity" property="capacity"/>
+        <result column="no" property="no"/>
+        <result column="room_name" property="roomName"/>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="examRoom.id">
+        insert into exam_room(class_room_id, exam_id, invigilator_num, from_time, end_time, create_time, modify_time,
+                              capacity, no, room_name)
+        values (#{examRoom.classRoomId}, #{examRoom.examId}, #{examRoom.invigilatorNum}, #{examRoom.fromTime},
+                #{examRoom.endTime}, #{examRoom.createTime}, #{examRoom.modifyTime}, #{examRoom.capacity},
+                #{examRoom.no}, #{examRoom.roomName})    </insert>
+    <update id="update">
+        update exam_room
+        <trim prefix="set" suffixOverrides=",">
+            <if test="examRoom.classRoomId != null">class_room_id = #{examRoom.classRoomId},</if>
+            <if test="examRoom.examId != null">exam_id = #{examRoom.examId},</if>
+            <if test="examRoom.invigilatorNum != null">invigilator_num = #{examRoom.invigilatorNum},</if>
+            <if test="examRoom.fromTime != null">from_time = #{examRoom.fromTime},</if>
+            <if test="examRoom.endTime != null">end_time = #{examRoom.endTime},</if>
+            <if test="examRoom.createTime != null">create_time = #{examRoom.createTime},</if>
+            <if test="examRoom.modifyTime != null">modify_time = #{examRoom.modifyTime},</if>
+        </trim>
+        where id = #{examRoom.id}
+    </update>
+
+    <delete id="deleteByExamRoomId">
+        delete
+        from exam_room
+        where id = #{examRoomId}
+    </delete>
+    <delete id="deleteByExamId">
+        delete
+        from exam_room
+        where exam_id = #{examId};
+
+    </delete>
+    <!--
+    namespace:名称空间;指定为接口的全类名
+    id：唯一标识
+    resultType：返回值类型（接收的bean的全类名比较合适，别名也行）
+    #{id}：从传递过来的参数中取出id值
+
+    public Employee getEmpById(Integer id);
+     -->
+    <select id="getExamRoomArrangement" resultType="com.sot.iexam.DO.classRoom">
+        select classRoom.id,
+               classRoom.name,
+               classRoom.capacity,
+               classRoom.comment,
+               classRoom.status,
+               classRoom.create_time,
+               classRoom.modify_time
+        from exam_room examRoom,
+             classroom classRoom
+        where exam_id = #{examId}
+          and examRoom.class_room_id = classRoom.id
+
+
+    </select>
+    <select id="getExamRoomInfoByExamId" resultType="com.sot.iexam.DO.examRoom">
+        select id,
+               class_room_id,
+               exam_id,
+               invigilator_num,
+               from_time,
+               end_time,
+               create_time,
+               modify_time,
+               capacity,
+               no,
+               room_name
+        from exam_room
+        where exam_id = #{eaxmId}
+    </select>
+    <select id="getExamRoomByExamId" resultType="com.sot.iexam.DO.examRoom">
+        select *
+        from exam_room
+        where exam_id = #{id}
+    </select>
+    <resultMap id="roomVo" type="com.sot.iexam.VO.roomVo">
+        <association property="examRoom" column="examRoom" javaType="com.sot.iexam.DO.examRoom"
+                     resultMap="examRoom"/>
+        <association property="classRoom" column="classRoom" javaType="com.sot.iexam.DO.classRoom"
+                     resultMap="com.sot.iexam.DAO.mybatis.mapper.classRoomMapper.classRoom"/>
+    </resultMap>
+    <select id="getExamRoomById" resultMap="roomVo">
+        select examRoom.*, classRoom.*
+        from exam_room examRoom,
+             classroom classRoom
+        where examRoom.id = #{examRoomId}
+          and examRoom.class_room_id = classRoom.id
+    </select>
+    <select id="getExamRoomByIdSingle" resultType="com.sot.iexam.DO.examRoom">
+        select *
+        from exam_room
+        where id = #{examRoomId}
+    </select>
+</mapper>

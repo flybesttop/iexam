@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.reviewerExamRoomMapper">
+
+
+    <insert id="insert" keyProperty="reviewerExamRoom.id" useGeneratedKeys="true">
+        insert into reviewer_exam_room(reviewer_exam_id, exam_room_id, create_time, modify_time)
+        VALUES (#{reviewerExamRoom.reviewerExamId},
+                #{reviewerExamRoom.examRoomId},
+                #{reviewerExamRoom.createTime},
+                #{reviewerExamRoom.modifyTime})
+    </insert>
+    <delete id="resetReviewer">
+        delete
+        from reviewer_exam_room
+        where reviewer_exam_id in (select id from reviewer_exam where exam_id = #{examId})
+    </delete>
+    <delete id="cancelReviewerExamRoom">
+        delete
+        from reviewer_exam_room
+        where exam_room_id = #{examRoomId}
+          and reviewer_exam_id = #{reviewerExamId}
+    </delete>
+    <delete id="deleteByReviewerExamId">
+        delete
+        from reviewer_exam_room
+        where reviewer_exam_id = #{reviewerExamId}
+    </delete>
+    <delete id="deleteByExamRoomId">
+        delete
+        from reviewer_exam_room
+        where exam_room_id = #{id}
+    </delete>
+    <select id="getByReviewerExamId" resultType="com.sot.iexam.DO.examRoom">select er.*
+                                                                            from reviewer_exam_room rer,
+                                                                                 exam_room er
+                                                                            where reviewer_exam_id = #{reviewerExamId}
+                                                                              and rer.exam_room_id = er.id </select>
+    <select id="getXuerByExamRoomId" resultType="com.sot.iexam.DO.XUser">
+        select u.*
+        from reviewer_exam_room rer,
+             reviewer_exam re,
+             x_user u
+        where rer.exam_room_id = #{examRoomId}
+          and rer.reviewer_exam_id = re.id
+          and re.reviewer_id = u.id
+    </select>
+
+    <select id="getManagedRoomByReviewerExamId" resultType="java.lang.Integer">
+        select exam_room_id
+        from reviewer_exam_room
+        where reviewer_exam_id = #{id}
+    </select>
+</mapper>

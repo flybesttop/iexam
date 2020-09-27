@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.examNewsMapper">
+    <resultMap id="examNews" type="com.sot.iexam.DO.examNews">
+        <id column="id" property="id"/>
+        <result column="publish_time" property="publishTime"/>
+        <result column="status" property="status"/>
+        <result column="title" property="title"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="text" property="text"/>
+        <result column="publish_id" property="publishId"/>
+        <result column="exam_id" property="examId"/>
+        <result column="type" property="type"/>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="examNews.id">
+        insert into exam_news(publish_time, status, title, create_time, modify_time, text, publish_id, exam_id, type)
+        values (#{examNews.publishTime}, #{examNews.status}, #{examNews.title}, #{examNews.createTime},
+                #{examNews.modifyTime}, #{examNews.text}, #{examNews.publishId}, #{examNews.examId},
+                #{examNews.type})
+    </insert>
+    <update id="update">
+        update exam_news
+        <trim prefix="set" suffixOverrides=",">
+            <if test="examNews.publishTime != null">publish_time = #{examNews.publishTime},</if>
+            <if test="examNews.status != null">status = #{examNews.status},</if>
+            <if test="examNews.title != null">title = #{examNews.title},</if>
+            <if test="examNews.createTime != null">create_time = #{examNews.createTime},</if>
+            <if test="examNews.modifyTime != null">modify_time = #{examNews.modifyTime},</if>
+            <if test="examNews.text != null">text = #{examNews.text},</if>
+            <if test="examNews.publishId != null">publish_id = #{examNews.publishId},</if>
+            <if test="examNews.examId != null">exam_id = #{examNews.examId},</if>
+            <if test="examNews.type != null">type = #{examNews.type},</if>
+        </trim>
+        where id = #{examNews.id}
+    </update>
+    <delete id="deleteById">
+        delete
+        from exam_news
+        where id = #{id}
+    </delete>
+
+    <resultMap id="examNewsVo" type="com.sot.iexam.VO.examNewsVo">
+        <association property="examNews" column="examNews" javaType="com.sot.iexam.DO.examNews"
+                     resultMap="examNews"></association>
+        <association property="xUser" column="xUser" javaType="com.sot.iexam.DO.XUser">
+            <result column="real_name" property="realName"></result>
+        </association>
+    </resultMap>
+    <select id="getExamNewsListVO" resultMap="examNewsVo">
+        select examNews.id, examNews.publish_time, examNews.status, examNews.title,examNews.publish_id,
+        examNews.type,examNews.text,
+        xUser.real_name
+        from exam_news examNews,x_user xUser
+        <include refid="ExamNewsWhereSQL"></include>
+    </select>
+
+    <select id="getDoorIndexNewsList" resultType="com.sot.iexam.DO.examNews">
+        select id,
+               publish_time,
+               status,
+               title,
+               create_time,
+               modify_time,
+               text,
+               publish_id,
+               exam_id,
+               type
+        from exam_news
+        where type = #{type} order by id desc limit 0,10 ;
+    </select>
+
+
+
+    <select id="getExamNewsInfoById" resultType="com.sot.iexam.DO.examNews">
+        select id,
+               publish_time,
+               status,
+               title,
+               create_time,
+               modify_time,
+               text,
+               publish_id,
+               exam_id,
+               type
+        from exam_news
+        where id = #{newsId};
+    </select>
+
+    <select id="getPrev" resultType="com.sot.iexam.DO.examNews">
+        select id,
+               publish_time,
+               status,
+               title,
+               create_time,
+               modify_time,
+               text,
+               publish_id,
+               exam_id,
+               type
+        from exam_news
+        where id = (select max(id) from exam_news where #{newsId} > id);
+    </select>
+    <select id="getNext" resultType="com.sot.iexam.DO.examNews">
+        select id,
+        publish_time,
+        status,
+        title,
+        create_time,
+        modify_time,
+        text,
+        publish_id,
+        exam_id,
+        type
+        from exam_news
+        where id = (select min(id) from exam_news where id > #{newsId});
+    </select>
+
+
+
+
+
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(1)
+        from exam_news
+        <include refid="ExamNewsWhereSQL2"></include>
+    </select>
+    <sql id="ExamNewsWhereSQL">
+        <trim prefix="where" prefixOverrides="and |or ">
+            and xUser.id = examNews.publish_id
+            <if test="examNews.publishTime != null">and examNews.publish_time = #{examNews.publishTime}</if>
+            <if test="examNews.status != null">and examNews.status = #{examNews.status}</if>
+            <if test="examNews.title != null">and examNews.title like concat('%',#{examNews.title},'%')</if>
+            <if test="examNews.createTime != null">and examNews.create_time = #{examNews.createTime}</if>
+            <if test="examNews.modifyTime != null">and examNews.modify_time = #{examNews.modifyTime}</if>
+            <if test="examNews.text != null">and examNews.text = #{examNews.text}</if>
+            <if test="examNews.publishId != null">and examNews.publish_id = #{examNews.publishId}</if>
+            <if test="examNews.examId != null">and examNews.exam_id = #{examNews.examId}</if>
+            <if test="examNews.type != null">and examNews.type = #{examNews.type}</if>
+        </trim>
+    </sql>
+    <sql id="ExamNewsWhereSQL2">
+        <trim prefix="where" prefixOverrides="and |or ">
+            <if test="examNews.publishTime != null">and publish_time = #{examNews.publishTime}</if>
+            <if test="examNews.status != null">and status = #{examNews.status}</if>
+            <if test="examNews.title != null">and title like concat('%',#{examNews.title},'%')</if>
+            <if test="examNews.createTime != null">and create_time = #{examNews.createTime}</if>
+            <if test="examNews.modifyTime != null">and modify_time = #{examNews.modifyTime}</if>
+            <if test="examNews.text != null">and text = #{examNews.text}</if>
+            <if test="examNews.publishId != null">and publish_id = #{examNews.publishId}</if>
+            <if test="examNews.examId != null">and exam_id = #{examNews.examId}</if>
+            <if test="examNews.type != null">and type = #{examNews.type}</if>
+        </trim>
+    </sql>
+</mapper>

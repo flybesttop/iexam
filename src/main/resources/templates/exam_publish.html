@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+
+    <!--<link th:href="@{/css/iexam/scrollbar.css}" rel="stylesheet">-->
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/v4-shims.css}">
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link th:href="@{/css/mdb.min.css}" rel="stylesheet">
+
+    <!-- Your custom styles (optional) -->
+    <link th:href="@{/css/addonss/bootstrap-table.min.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/emmo_Apparence.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/bootoast.css}" rel="stylesheet">
+    <link th:href="@{/css/addonss/bootstrap-datetimepicker.min.css}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+
+    <style type="text/css">
+
+    </style>
+</head>
+
+<body id="innerBody">
+
+<div class="d-none" id="nowUserId" th:text="${session.BACKSYS_USER.id}"></div>
+<div class="d-none" id="nowUserName" th:text="${session.BACKSYS_USER.realName}"></div>
+<div id="app">
+
+    <div class="card card-cascade narrower">
+
+        <!--Card image-->
+        <div class="view view-cascade gradient-card-header blue-gradient narrower py-2 mx-4 mb-3 d-flex justify-content-between align-items-center"
+             style="overflow: visible">
+
+            <a href="" class="white-text mx-3">已发布的考试</a>
+
+            <form class="form-inline md-form mb-4">
+                <input class="form-control mr-sm-2" style="color: white" type="text" placeholder="搜索" aria-label="搜索"
+                       v-model="exam.page.exam_search">
+                <button class="btn btn-rounded btn-outline-white btn-sm my-0" @click.prevent="loadExams">搜索</button>
+            </form>
+
+            <div>
+                <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2" data-toggle="modal"
+                        data-target="#iexam_info_model" @click="addExamInit">
+                    <i class="fas fa-pencil-alt mt-0"></i> 添加考试
+                </button>
+            </div>
+
+        </div>
+
+
+        <div class="px-4">
+
+            <div class="table-wrapper w-100">
+                <!--Table-->
+                <table class="table table-hover mb-0">
+
+                    <thead>
+                    <tr>
+                        <th class="th-lg">
+                            <a>考试名称
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a href="">职称
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a href="">发布人
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a href="">发布时间
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a href="">报名开始时间
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a href="">操作
+                            </a>
+                        </th>
+                    </tr>
+                    </thead>
+                    <!--Table head-->
+
+                    <!--Table body-->
+                    <tbody>
+                    <tr v-for="(item,index) in exam.exams">
+                        <td v-text="item.name"></td>
+                        <td v-text="item.titleName"></td>
+                        <td v-text="item.publishManName">3</td>
+                        <td v-text="item.publishTime"></td>
+                        <td v-text="item.registrationStartTime"></td>
+                        <td>
+                            <button type="button" class="btn btn-outline-info btn-sm m-0 waves-effect"
+                                    data-toggle="modal" data-target="#iexam_info_model" @click="chooseExam(index)">考试修改
+                            </button>
+                            <button type="button"
+                                    class="btn btn-outline-danger btn-sm m-0 waves-effect" @click="deleteExam(index)">删除
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <!--Table body-->
+                </table>
+
+                <div class="md-form input-group d-flex justify-content-center">
+                    <div class="input-group-prepend">
+                        <button class="pages-first btn btn-md btn-primary m-0 px-3" type="button" id="examPrevStart"
+                                @click="examPrevStart"><i
+                                class="fas fa-angle-double-left"></i></button>
+                        <button class="pages-prev btn btn-md btn-primary m-0 px-3" type="button" id="examPrev"
+                                @click="examPrev"><i
+                                class="fas fa-angle-left"></i></button>
+                    </div>
+                    <input type="text" class="form-control text-center col-4 pages-active" id="examPage"
+                           @onfocus="examPageFocus" @onblur="examPageFocusOut" @onkeyup="examPageKeyUp"
+                           :value="exam.page.showtext">
+                    <div class="input-group-append">
+                        <button class="pages-next btn btn-md btn-primary m-0 px-3" type="button" id="examNext"
+                                @click="examNext"><i
+                                class="fas fa-angle-right"></i></button>
+                        <button class="pages-last btn btn-md btn-primary m-0 px-3" type="button" id="examNextTop"
+                                @click="examNextTop"><i
+                                class="fas fa-angle-double-right"></i></button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade top " id="iexam_info_model" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+
+        <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+        <div class="modal-dialog modal-full-height modal-top" role="document">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title w-100" id="myModalLabel2">考试发布</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="container">
+
+                        <form onsubmit="return publish_exam()" action="#">
+                            <div class="container-fluid">
+                                <div class="container">
+
+                                    <div class="row">
+                                        <div class="col-lg-8">
+
+                                            <div class="card mb-4 post-title-panel">
+                                                <div class="card-body">
+                                                    <div class="md-form mt-1 mb-0">
+                                                        <input type="text" id="form1" class="form-control"
+                                                               v-model="exam_name" required>
+                                                        <label class="form-check-label" for="form1"
+                                                               id="kaoshimingcheng">考试名称</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex">
+                                                <div class="card mb-4 post-title-panel w-50 mr-1">
+                                                    <div class="card-body ">
+                                                        <div class="md-form mt-1 mb-0 d-flex">
+                                                            <div class="md-form input-group">
+                                                                <input placeholder="选择日期" type="text"
+                                                                       id="date-picker-start"
+                                                                       class="form-control datepicker pl-0"
+                                                                       onchange="changeRegistration_start_date(this)"
+                                                                       required
+                                                                       :value="registration_start_date">
+                                                                <input placeholder="选择时间" type="text"
+                                                                       id="input_starttime"
+                                                                       class="form-control timepicker pl-0"
+                                                                       onchange="changeRegistration_start_time(this)"
+                                                                       required
+                                                                       :value="registration_start_time">
+                                                                <label for="date-picker-start">选择报名开始时间</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card mb-4 post-title-panel w-50 ml-1">
+                                                    <div class="card-body ">
+                                                        <div class="md-form mt-1 mb-0 d-flex">
+                                                            <div class="md-form input-group">
+                                                                <input placeholder="选择日期" type="text"
+                                                                       id="date-picker-end"
+                                                                       class="form-control datepicker pl-0"
+                                                                       onchange="changeRegistration_end_date(this)"
+                                                                       required
+                                                                       :value="registration_end_date">
+                                                                <input placeholder="选择时间" type="text" id="input_endtime"
+                                                                       class="form-control timepicker pl-0"
+                                                                       onchange="changeRegistration_end_time(this)"
+                                                                       required
+                                                                       :value="registration_end_time">
+                                                                <label for="date-picker-end">选择报名结束时间</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex">
+                                                <div class="card mb-4 post-title-panel w-50 mr-1">
+                                                    <div class="card-body ">
+                                                        <div class="md-form mt-1 mb-0 d-flex">
+                                                            <div class="md-form input-group">
+                                                                <input placeholder="选择日期" type="text"
+                                                                       id="date_ticket_generate_time"
+                                                                       class="form-control datepicker pl-0"
+                                                                       onchange="ticket_generate_date(this)" required
+                                                                       :value="ticket_generate_date">
+                                                                <input placeholder="选择时间" type="text"
+                                                                       id="time_ticket_generate_time"
+                                                                       class="form-control timepicker pl-0"
+                                                                       onchange="ticket_generate_time(this)" required
+                                                                       :value="ticket_generate_time">
+                                                                <label for="time_ticket_generate_time">选择生成准考证日期和时间</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card mb-4 post-title-panel w-50 ml-1">
+                                                    <div class="card-body ">
+                                                        <div class="md-form mt-1 mb-0 d-flex">
+                                                            <div class="md-form input-group">
+                                                                <input placeholder="选择日期" type="text"
+                                                                       id="date-picker-ticket"
+                                                                       class="form-control datepicker pl-0"
+                                                                       onchange="changeTicket_date(this)" required
+                                                                       :value="ticket_date">
+                                                                <input placeholder="选择时间" type="text"
+                                                                       id="input_startime_ticket"
+                                                                       class="form-control timepicker pl-0"
+                                                                       onchange="changeTicket_time(this)" required
+                                                                       :value="ticket_time">
+                                                                <label for="date-picker-start">选择获取准考证日期和时间</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex">
+                                                <div class="card mb-4 post-title-panel w-50 mr-1">
+                                                    <div class="card-body ">
+                                                        <div class="md-form mt-1 mb-0 d-flex">
+                                                            <div class="md-form input-group">
+                                                                <input placeholder="选择日期" type="text"
+                                                                       id="date-picker-exam"
+                                                                       class="form-control datepicker pl-0"
+                                                                       onchange="changeExam_date(this)"
+                                                                       required
+                                                                       :value="exam_date">
+                                                                <label for="date-picker-start">选择考试日期</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card mb-4 post-title-panel w-50 ml-1">
+                                                    <div class="card-body ">
+                                                        <div class="md-form mt-1 mb-0 d-flex">
+                                                            <div class="md-form input-group">
+                                                                <input placeholder="开始时间" type="text"
+                                                                       id="input_startime_exam"
+                                                                       class="form-control timepicker pl-0" required
+                                                                       onchange="changeExam_start_time(this)"
+                                                                       :value="exam_start_time">
+                                                                <span class="ml-1 mr-3 mt-2">一</span>
+                                                                <input placeholder="结束时间" type="text"
+                                                                       id="input_endtime-exam"
+                                                                       class="form-control timepicker pl-0" required
+                                                                       onchange="changeExam_end_time(this)"
+                                                                       :value="exam_end_time">
+                                                                <label for="input_startime_exam">选择考试时间</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex">
+                                                <div class="card mb-4 post-title-panel w-50 mr-1">
+                                                    <div class="card-body ">
+                                                        <div class="md-form mt-1 mb-0 d-flex">
+                                                            <div class="md-form input-group">
+                                                                <input placeholder="选择日期" type="text"
+                                                                       id="date-review-start"
+                                                                       class="form-control datepicker pl-0"
+                                                                       onchange="changeReview_start_date(this)" required
+                                                                       :value="review_start_date">
+                                                                <input placeholder="选择时间" type="text"
+                                                                       id="time_review_start"
+                                                                       class="form-control timepicker pl-0"
+                                                                       onchange="changeReview_start_time(this)" required
+                                                                       :value="review_start_time">
+                                                                <label for="date-picker-start">选择阅卷开始时间</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card mb-4 post-title-panel w-50 ml-1">
+                                                    <div class="card-body ">
+                                                        <div class="md-form mt-1 mb-0 d-flex">
+                                                            <div class="md-form input-group">
+                                                                <input placeholder="选择日期" type="text"
+                                                                       id="date-review-end"
+                                                                       class="form-control datepicker pl-0"
+                                                                       onchange="changeReview_end_date(this)" required
+                                                                       :value="review_end_date">
+                                                                <input placeholder="选择时间" type="text"
+                                                                       id="time_review_end"
+                                                                       class="form-control timepicker pl-0"
+                                                                       onchange="changeReview_end_time(this)" required
+                                                                       :value="review_end_time">
+                                                                <label for="date-review-end">选择阅卷截至时间</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex">
+                                                <div class="card mb-4 post-title-panel w-50">
+                                                    <div class="card-body ">
+                                                        <div class="md-form mt-1 mb-0 d-flex">
+                                                            <div class="md-form input-group">
+                                                                <input placeholder="选择日期" type="text"
+                                                                       id="date-picker-chengji"
+                                                                       class="form-control datepicker pl-0"
+                                                                       onchange="changeGet_examination_results_date(this)"
+                                                                       required
+                                                                       :value="get_examination_results_date">
+                                                                <input placeholder="选择时间" type="text"
+                                                                       id="input_startime_chengji"
+                                                                       class="form-control timepicker pl-0"
+                                                                       onchange="changeGet_examination_results_time(this)"
+                                                                       required
+                                                                       :value="get_examination_results_time">
+                                                                <label for="date-picker-chengji">选择允许查看成绩日期和时间</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="card mb-4">
+                                                <div class="card-body">
+                                                    <div class="md-form mb-0 mt-2">
+                                <textarea type="text" id="form2" class="md-textarea form-control" rows="2"
+                                          v-model="examination_explanation"></textarea>
+                                                        <label class="form-check-label" id="kaoshishuoming" for="form2">考试说明</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card mb-4">
+                                                <div class="card-body">
+                                                    <div class="md-form mb-0 mt-2">
+                                <textarea type="text" id="form7" class="md-textarea form-control" rows="3"
+                                          v-model="examination_notes"></textarea>
+                                                        <label class="form-check-label" id="kaoshizhuyishixiang"
+                                                               for="form7">考试注意事项</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Third Card -->
+
+                                        </div>
+                                        <!-- Grid column -->
+
+                                        <!-- Grid column -->
+                                        <div class="col-lg-4">
+
+                                            <div class="card card-cascade narrower mb-5">
+
+                                                <div class="view view-cascade gradient-card-header blue-gradient">
+                                                    <h4 class="font-weight-500 mb-0">发布考试</h4>
+                                                </div>
+
+                                                <div class="card-body card-body-cascade">
+
+                                                    <div class="md-form input-group input-group-sm">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text md-addon"
+                                                                  id="inputExamPeopleNum">人数限制：</span>
+                                                        </div>
+                                                        <input type="number" class="form-control"
+                                                               aria-label="Sizing example input"
+                                                               v-model="max_num" required
+                                                               aria-describedby="inputExamPeopleNum">
+                                                    </div>
+                                                    <div class="md-form input-group input-group-sm">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text md-addon"
+                                                                  id="maxGrade">满分：</span>
+                                                        </div>
+                                                        <input type="number" class="form-control"
+                                                               aria-label="Sizing example input"
+                                                               v-model="max_grade" required
+                                                               aria-describedby="inputExamPeopleNum">
+                                                    </div>
+                                                    <div class="md-form input-group input-group-sm">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text md-addon"
+                                                                  id="passGrade">通过分数：</span>
+                                                        </div>
+                                                        <input type="number" class="form-control"
+                                                               aria-label="Sizing example input"
+                                                               v-model="pass_grade" required
+                                                               aria-describedby="inputExamPeopleNum">
+                                                    </div>
+
+                                                    <div class="md-form input-group input-group-sm">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text md-addon"
+                                                                  id="inputExam   Fee">考试费用（￥）：</span>
+                                                        </div>
+                                                        <input type="number" class="form-control"
+                                                               aria-label="Sizing example input"
+                                                               v-model="examination_fee" required
+                                                               aria-describedby="inputExamFee">
+                                                    </div>
+
+                                                    <div class="md-form input-group input-group-sm">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text md-addon">考试时长（分钟）：{{exam_length}}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="md-form input-group input-group-sm w-100">
+                                                        <div class="d-flex justify-content-between w-100">
+                                                            <span :class="['input-group-text', 'md-addon',{'text-danger':title_module.titleSelect.wrong==false}]">对应职称：{{title_module.titleSelect.titleName}}</span>
+                                                            <button type="button" class="btn btn-primary btn-sm"
+                                                                    data-toggle="modal"
+                                                                    data-target="#selectTitle"
+                                                                    @click="selectTitleModel">
+                                                                选择
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="text-right">
+                                                        <button type="submit" class="btn btn-primary">发布</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card card-cascade narrower">
+
+                                                <div class="view view-cascade gradient-card-header blue-gradient">
+                                                    <h4 class="font-weight-500 mb-0">相关链接</h4>
+                                                </div>
+
+                                                <div class="card-body card-body-cascade">
+
+                                                    <div class="text-truncate pl-0 d-flex justify-content-between"
+                                                         v-for="(item,index) in file_links">
+
+                                                        <span class="text-truncate" style="width: 250px">{{item.fileTitle}}： <i
+                                                                class="fas fa-link"></i>
+                                                            <a :href="item.filePath">{{item.fileName}}</a>
+                                                        </span>
+
+                                                        <span class="text-truncate" v-if="operateType == 0">
+                                                            <i class="fas fa-trash pointer"
+                                                               @click="removeFile(index,item)"></i>
+                                                        </span>
+
+                                                    </div>
+
+                                                    <div class="text-right" v-if="operateType == 0">
+                                                        <button type="button" class="btn btn-primary"
+                                                                data-toggle="modal"
+                                                                data-target="#addFileModal">
+                                                            添加链接
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--选择职称-->
+    <div class="modal fade" id="selectTitle" tabindex="-1" role="dialog" data-backdrop="static"
+         aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header d-flex">
+                    <h5 class="modal-title mt-2">选择考试职称</h5>
+
+                    <form class="form-inline md-form ml-4" style="margin: 0">
+                        <input class="form-control mr-sm-2" type="text" placeholder="搜索"
+                               v-model="title_module.title_search">
+                        <button class="btn btn-rounded btn-primary btn-sm my-0" type="button" @click="selectTitleModel">
+                            搜索
+                        </button>
+                    </form>
+                    <button type="button" onclick="closeTitleSelect()" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">职称</th>
+                            <th scope="col" width="30%">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(item,index) in title_module.titles">
+                            <td>{{item.titleName}}</td>
+                            <td>
+                                <button type="button" class="btn btn-outline-primary btn-sm m-0 waves-effect"
+                                        @click="chooseTitle(index)">选择
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="md-form input-group d-flex justify-content-center">
+                        <div class="input-group-prepend">
+                            <button class="pages-first btn btn-md btn-primary m-0 px-3" type="button"><i
+                                    class="fas fa-angle-double-left"></i></button>
+                            <button class="pages-prev btn btn-md btn-primary m-0 px-3" type="button"><i
+                                    class="fas fa-angle-left"></i></button>
+                        </div>
+                        <input type="text" class="form-control text-center col-4 pages-active"
+                               :value="title_module.showtext">
+                        <div class="input-group-append">
+                            <button class="pages-next btn btn-md btn-primary m-0 px-3" type="button"><i
+                                    class="fas fa-angle-right"></i></button>
+                            <button class="pages-last btn btn-md btn-primary m-0 px-3" type="button"><i
+                                    class="fas fa-angle-double-right"></i></button>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>-->
+                    <button type="button" class="btn btn-primary">完成</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--添加对应文件-->
+    <div class="modal fade" id="addFileModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         data-backdrop="static"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">选择需要添加的文件链接</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                            onclick="closeFileSelect()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <form class="md-form">
+
+                        <div class="md-form input-group input-group-sm mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text md-addon" id="inputGroupMaterial-sizing-sm">链接名：</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="Sizing example input"
+                                   aria-describedby="inputGroupMaterial-sizing-sm" v-model="addFileInfo.show_name">
+                        </div>
+
+                        <div class="file-field">
+                            <a class="btn-floating peach-gradient mt-0 float-left">
+                                <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                <input type="file" :id="'file'+ addFileInfo.id_index">
+                            </a>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Upload your file">
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>-->
+                    <button type="button" class="btn btn-primary" @click="addFile()">完成</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- JQuery -->
+<script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}" src="/js/jquery-3.3.1.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/js/Vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/js/popper.min.js}" src="/js/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/js/bootstrap.js}" src="/js/bootstrap.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/js/mdb.min.js}" src="/js/mdb.min.js"></script>
+
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table.min.js}"
+        src="/js/addons/bootstrap-table.min.js"></script>
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table-locale-all.js}"
+        src="/js/addons/bootstrap-table-locale-all.js"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/bootoast.js}"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/emmo_backTable_basicOperator.js}"></script>
+<!--<script type="text/javascript" th:src="@{/js/addons/datepicker/bootstrap-datetimepicker.min.js}"></script>-->
+<!--<script type="text/javascript" th:src="@{/js/addons/datepicker/locales/bootstrap-datetimepicker.zh-CN.js}"></script>-->
+
+<script type="text/javascript" th:src="@{/js/Vue/IexamBack/backTemplates.js}"></script>
+
+<!--<script type="text/javascript" th:src="@{/js/iexam/pages.js}"></script>-->
+
+<script type="text/javascript">
+
+    function closeFileSelect() {
+
+        $("#addFileModal").modal('hide');
+        $("#addFileModal").on('hidden.bs.modal', function () {
+            $("#innerBody").addClass("modal-open");
+        });
+    }
+
+
+    function closeTitleSelect() {
+        console.log(111);
+        $("#selectTitle").modal('hide');
+        $("#selectTitle").on('hidden.bs.modal', function () {
+            $("#innerBody").addClass("modal-open");
+        });
+    }
+
+
+    var vm = new Vue({
+        el: "#app",
+        data: {
+
+            exam: {
+                exams: [],
+                page: {
+                    showtext: null,
+                    keyPage: 1,
+                    active_paper: 1,
+                    exam_search: null,
+                    page_size: 10,
+                    all_page: 1
+                }
+            },
+
+            user_id: $("#nowUserId").text(),
+            user_name: $("#nowUserName").text(),
+            exam_name: null,
+
+            nowExamId: null,
+
+            //报名时间
+            registration_start_date: "2019-07-01",
+            registration_start_time: "10:00",
+            registration_end_date: "2019-08-01",
+            registration_end_time: "12:00",
+
+            //阅卷时间
+            review_start_date: "2019-09-01",
+            review_start_time: "10:00",
+            review_end_date: "2019-09-03",
+            review_end_time: "10:00",
+
+            //考试时间
+            exam_date: "2019-08-15",
+            exam_start_time: "08:00",
+            exam_end_time: "10:30",
+            exam_length: 150,
+
+            //准考证获取时间
+            ticket_date: "2019-08-07",
+            ticket_time: "12:00",
+
+            //成绩获取时间
+            get_examination_results_date: "2019-10-10",
+            get_examination_results_time: "10:10",
+
+            //生成准考证的时间
+            ticket_generate_date: "2019-08-10",
+            ticket_generate_time: "00:00",
+
+            examination_explanation: null,
+            examination_notes: null,
+
+            max_num: 100,
+            examination_fee: 30,
+            max_grade: 100,
+            pass_grade: 60,
+
+            //考试添加还安排
+            operateType: 0,
+
+            //自动安排考试
+            automatic_test_arrangement: true,
+
+            //文件链接
+            file_links: [],
+
+            addFileInfo: {
+                show_name: "",
+                id_index: 0
+            },
+
+            title_module: {
+                showtext: null,
+                keyPage: 1,
+                active_paper: 1,
+                title_search: null,
+                page_size: 5,
+                all_page: 1,
+                titles: [],
+                titleSelect: {
+                    id: -1,
+                    status: 1,
+                    titleName: "无",
+                    wrong: true
+                },
+                title_selected: 1
+            },
+
+            //所有职称
+
+        },
+        methods: {
+
+            addExamInit() {
+                this.operateType = 0;
+                //添加考试时的初始化
+                this.nowExamId = null;
+                this.exam_name = null;
+
+                //报名时间
+                this.registration_start_date = null;
+                this.registration_start_time = null;
+                this.registration_end_date = null;
+                this.registration_end_time = null;
+
+                //阅卷时间
+                this.review_start_date = null;
+                this.review_start_time = null;
+                this.review_end_date = null;
+                this.review_end_time = null;
+
+                //考试时间
+                this.exam_date = null;
+                this.exam_start_time = null;
+                this.exam_end_time = null;
+
+                this.exam_length = 0;
+
+                //准考证获取时间
+                this.ticket_date = null;
+                this.ticket_time = null;
+
+                //成绩获取时间
+                this.get_examination_results_date = null;
+                this.get_examination_results_time = null;
+
+                //生成准考证的时间
+                this.ticket_generate_date = null;
+                this.ticket_generate_time = null;
+
+                this.examination_explanation = null;
+
+                this.examination_notes = null;
+
+                this.max_num = 100;
+
+                this.max_grade = 100;
+                this.pass_grade = 60;
+
+                this.examination_fee = 30;
+
+                this.file_links = [];
+
+                this.title_module.titleSelect.id = -1;
+                this.title_module.titleSelect.titleName = "无";
+
+            },
+
+            deleteExam(index){
+                this.exam.exams.splice(index,1);
+            },
+
+            chooseExam(index) {
+                this.operateType = 1;
+                this.nowExamId = this.exam.exams[index].id;
+                this.exam_name = this.exam.exams[index].name;
+                $("#kaoshimingcheng").addClass("active");
+
+                //报名时间
+                this.registration_start_date = this.exam.exams[index].registrationStartTime.substr(0, 10);
+                this.registration_start_time = this.exam.exams[index].registrationStartTime.substr(11, 5);
+                this.registration_end_date = this.exam.exams[index].registrationFinishTime.substr(0, 10);
+                this.registration_end_time = this.exam.exams[index].registrationFinishTime.substr(11, 5);
+
+                //阅卷时间
+                this.review_start_date = this.exam.exams[index].reviewStartTime.substr(0, 10);
+                this.review_start_time = this.exam.exams[index].reviewStartTime.substr(11, 5);
+                this.review_end_date = this.exam.exams[index].reviewEndTime.substr(0, 10);
+                this.review_end_time = this.exam.exams[index].reviewEndTime.substr(11, 5);
+
+                //考试时间
+                this.exam_date = this.exam.exams[index].examinationStartTime.substr(0, 10);
+                this.exam_start_time = this.exam.exams[index].examinationStartTime.substr(11, 5);
+                this.exam_end_time = this.exam.exams[index].examinationEndTime.substr(11, 5);
+
+
+                var time1 = Date.parse("1970-01-01 " + this.exam_start_time + ':00') / 1000;
+                var time2 = Date.parse("1970-01-01 " + this.exam_end_time + ':00') / 1000;
+                this.exam_length = (time2 - time1) / 60;
+
+                //准考证获取时间
+                this.ticket_date = this.exam.exams[index].ticketPublicizeTime.substr(0, 10);
+                this.ticket_time = this.exam.exams[index].ticketPublicizeTime.substr(11, 5);
+
+                //成绩获取时间
+                this.get_examination_results_date = this.exam.exams[index].gradePublicizeTime.substr(0, 10);
+                this.get_examination_results_time = this.exam.exams[index].gradePublicizeTime.substr(11, 5);
+
+                //生成准考证的时间
+                this.ticket_generate_date = this.exam.exams[index].ticketGenerateTime.substr(0, 10);
+                this.ticket_generate_time = this.exam.exams[index].ticketGenerateTime.substr(11, 5);
+
+                this.examination_explanation = this.exam.exams[index].comment;
+                $("#kaoshishuoming").addClass("active");
+
+                this.examination_notes = this.exam.exams[index].precautions;
+                $("#kaoshizhuyishixiang").addClass("active");
+
+                this.max_num = this.exam.exams[index].capacity;
+                this.max_grade = this.exam.exams[index].maxGrade;
+                this.pass_grade = this.exam.exams[index].passGrade;
+
+                this.examination_fee = this.exam.exams[index].examFee;
+
+                this.file_links = [];
+
+                this.title_module.titleSelect.id = this.exam.exams[index].titleId;
+                this.title_module.titleSelect.titleName = this.exam.exams[index].titleName;
+
+                var _this = this;
+
+                $.ajax({
+                    url: '/examFiles/getFilesList?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        page: 1,
+                        size: 1000,
+                        examNews: {
+                            examId: this.nowExamId
+                        }
+                    }),
+                    success: function (examList) {
+                        console.log(examList);
+                        _this.file_links = examList.data;
+                    }, error: function (data) {
+                    }
+                });
+
+            },
+
+            examPrevStart() {
+                this.exam.page.active_paper = 1;
+                this.exam.page.keyPage = this.exam.page.active_paper;
+                //change(this.page.active_paper);
+                $("#examPage").val("第" + this.exam.page.active_paper + "页/共" + this.exam.page.all_page + "页");
+                this.loadExams();
+            },
+            examNextTop() {
+                this.exam.page.active_paper = this.exam.page.all_page;
+                this.exam.page.keyPage = this.exam.page.active_paper;
+                //change(this.page.active_paper);
+                $("#examPage").val("第" + this.exam.page.active_paper + "页/共" + this.exam.page.all_page + "页");
+                this.loadExams();
+            },
+            examNext() {
+                if (this.exam.page.active_paper == this.exam.page.all_page) {
+                    console.log("当前页：" + this.exam.page.active_paper + "，无法继续点击");
+                    return false; //如果大于总页数就禁用下一页
+                } else {
+                    $("#examPage").text(++this.exam.page.active_paper); //点击下一页的时候当前页数的值就加1
+                    this.exam.page.keyPage = this.exam.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#examPage").val("第" + this.exam.page.active_paper + "页/共" + this.exam.page.all_page + "页");
+                }
+                this.loadExams();
+            },
+            examPrev() {
+                if (this.exam.page.active_paper == 1) {
+                    console.log("当前页：" + this.exam.page.active_paper + "，无法继续点击");
+                    return false;
+                } else {
+                    $("#examPage").text(--this.exam.page.active_paper);
+                    this.exam.page.keyPage = this.exam.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#examPage").val("第" + this.exam.page.active_paper + "页/共" + this.exam.page.all_page + "页");
+                }
+                this.loadExams();
+            },
+            examPageFocus() {
+                $("#examPage").val(this.exam.page.active_paper).select();
+            },
+            examPageFocusOut() {
+                this.exam.page.keyPage = parseInt($("#examPage").val());
+                if (this.exam.page.keyPage > this.exam.page.all_page | this.exam.page.keyPage < 0 | isNaN(this.exam.page.keyPage)) {
+                    $("#examPage").val("第" + this.exam.page.active_paper + "页/共" + this.exam.page.all_page + "页")
+                } else {
+                    this.exam.page.active_paper = this.exam.page.keyPage;
+
+                    $("#examPage").val("第" + this.exam.page.active_paper + "页/共" + this.exam.page.all_page + "页")
+                }
+                this.loadExams();
+            },
+            examPageKeyUp() {
+                let key = event.keyCode;
+                if (key == 13) {
+                    this.exam.page.keyPage = parseInt($("#examPage").val());
+                    if (this.exam.page.keyPage > this.exam.page.all_page | this.exam.page.keyPage < 0 | isNaN(this.exam.page.keyPage)) {
+                        $("#examPage").val("第" + this.exam.page.active_paper + "页/共" + this.exam.page.all_page + "页")
+                    } else {
+                        this.exam.page.active_paper = this.exam.page.keyPage;
+                        $("#examPage").val("第" + this.exam.page.active_paper + "页/共" + this.exam.page.all_page + "页")
+                        this.loadExams();
+                    }
+                }
+            },
+            loadExams() {
+
+                let _this = this;
+                $.ajax({
+                    url: '/exam/getExamInfoListToPublish?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        "page": _this.exam.page.active_paper,
+                        "size": _this.exam.page.page_size,
+                        "search": _this.exam.page.exam_search
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (examList) {
+                        _this.exam.exams = examList.data;
+                        if (parseInt(examList.count) % _this.exam.page.page_size == 0) {
+                            _this.exam.page.all_page = parseInt(examList.count / _this.exam.page.page_size);
+                        } else {
+                            _this.exam.page.all_page = parseInt(examList.count / _this.exam.page.page_size) + 1;
+                        }
+                        if (_this.exam.page.all_page==0){
+                            _this.exam.page.all_page=1;
+                        }
+                        _this.exam.page.showtext = "第" + _this.exam.page.active_paper + "页/共" + _this.exam.page.all_page + "页";
+                    }, error: function (data) {
+
+                    }
+
+                });
+
+
+            },
+
+            removeFile(index) {
+                //修改状态
+                if (this.operateType == 1) {
+
+                } else {
+                    this.file_links.splice(index, 1);
+                }
+            },
+            addFile(e) {
+                let fileInfo = $(`#file${vm.addFileInfo.id_index}`)[0].files[0];
+                vm.addFileInfo.id_index++;
+                this.file_links.push({
+                    fileTitle: this.addFileInfo.show_name,
+                    fileName: fileInfo.name,
+                    fileInfo: fileInfo
+                });
+                $("#addFileModal").modal('hide');
+                $("#innerBody").addClass("modal-open");
+                this.addFileInfo.show_name = null;
+            },
+            chooseTitle(index) {
+                this.title_module.titleSelect.wrong = false;
+                this.title_module.titleSelect = this.title_module.titles[index];
+                // console.log(this.user_id);
+                $('#selectTitle').modal('hide');
+                $("#innerBody").addClass("modal-open");
+
+            },
+
+            publish_exam() {
+
+            },
+            selectTitleModel() {
+                var _this = this;
+                $.ajax({
+                    url: "/title/getTitleList?PAGE_FROM_TYPE=BACK",
+                    type: "post",
+                    async: false,
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        page: _this.title_module.active_paper,
+                        size: _this.title_module.page_size,
+                        title: {titleName: _this.title_module.title_search}
+                    }),
+
+                    dataType: "json",
+                    success: function (data) {
+                        var msg = data;
+                        if (parseInt(msg.count) % _this.title_module.page_size == 0) {
+                            _this.title_module.all_page = parseInt(msg.count / _this.title_module.page_size);
+                        } else {
+                            _this.title_module.all_page = parseInt(msg.count / _this.title_module.page_size) + 1;
+                        }
+                        if (_this.title_module.all_page==0){
+                            _this.title_module.all_page=1;
+                        }
+                        _this.title_module.titles = msg.data;
+                        _this.title_module.showtext = "第" + _this.title_module.active_paper + "页/共" + _this.title_module.all_page + "页";
+
+                    },
+                    error: function () {
+                        bootoast({
+                            message: '系统繁忙，请稍后重试',
+                            type: 'warning',
+                            position: 'right-bottom',
+                            timeout: 1
+                        });
+                    }
+                });
+            }
+
+        },
+        created() {
+            this.loadExams();
+        }
+    });
+
+    function publish_exam() {
+
+        if (vm.registration_start_date == "") {
+            toast("请填写报名开始日期", 'danger');
+            // $("#date-picker-start").addClass("invalid");
+            return false;
+        }
+        if (vm.registration_end_date == "") {
+            toast("请填写报名截至日期", 'danger');
+            return false;
+        }
+        if (vm.ticket_generate_date == "") {
+            toast("请填写准考证生成日期", 'danger');
+            return false;
+        }
+        if (vm.ticket_date == "") {
+            toast("请填写准考证获取日期", 'danger');
+            return false;
+        }
+        if (vm.exam_date == "") {
+            toast("请填写考试日期", 'danger');
+            return false;
+        }
+        if (vm.review_start_date == "") {
+            toast("请填写阅卷开始日期", 'danger');
+            return false;
+        }
+        if (vm.review_end_date == "") {
+            toast("请填写阅卷截至日期", 'danger');
+            return false;
+        }
+        if (vm.get_examination_results_date == "") {
+            toast("请填写查看成绩日期", 'danger');
+            return false;
+        }
+        if (vm.title_module.titleSelect.id == -1) {
+            toast("请选择职称信息", "danger");
+            vm.title_module.titleSelect.wrong = false;
+            return false;
+        }
+
+        var registrationStartTime = vm.registration_start_date + " " + vm.registration_start_time + ":00";//报名开始时间
+        var registrationFinishTime = vm.registration_end_date + " " + vm.registration_end_time + ":05";//报名结束时间
+        var reviewStartTime = vm.review_start_date + " " + vm.review_start_time + ":00";//阅卷开始时间
+        var reviewEndTime = vm.review_end_date + " " + vm.review_end_time + ":00";//阅卷结束时间
+        var examinationStartTime = vm.exam_date + " " + vm.exam_start_time + ":00";//考试开始时间
+        var examinationEndTime = vm.exam_date + " " + vm.exam_end_time + ":00";//考试结束时间
+        var ticketGenerateTime = vm.ticket_generate_date + " " + vm.ticket_generate_time + ":00";//准考证生成时间
+        var ticketPublicizeTime = vm.ticket_date + " " + vm.ticket_time + ":05";//准考证发布时间
+        var gradePublicizeTime = vm.get_examination_results_date + " " + vm.get_examination_results_time + ":00";//成绩发布时间
+
+        if (registrationStartTime >= registrationFinishTime) {
+            toast("报名的开始时间应该早于结束时间", 'danger');
+            return false;
+        }
+
+        if (ticketGenerateTime <= registrationFinishTime) {
+            toast("准考证的生成时间应该在报名结束后", 'danger');
+            return false;
+        }
+
+        if (ticketGenerateTime >= ticketPublicizeTime) {
+            toast("准考证的生成时间应该在准考证发布前", 'danger');
+            return false;
+        }
+
+        if (ticketPublicizeTime >= examinationStartTime) {
+            toast("准考证的发布时间应该在考试开始前", 'danger');
+            return false;
+        }
+
+        if (examinationStartTime >= examinationEndTime) {
+            toast("考试开始时间应该在考试结束时间前", 'danger');
+            return false;
+        }
+
+        if (examinationEndTime >= reviewStartTime) {
+            toast("阅卷开始时间应该在考试结束后", 'danger');
+            return false;
+        }
+
+        if (reviewStartTime >= reviewEndTime) {
+            toast("阅卷的开始时间应该早于结束时间", 'danger');
+            return false;
+        }
+
+        if (reviewEndTime >= gradePublicizeTime) {
+            toast("成绩发布时间应该在阅卷结束时间后", 'danger');
+            return false;
+        }
+
+        vm.title_module.titleSelect.wrong = true;
+
+        if (vm.nowExamId != null) {
+            $.ajax({
+                url: "/exam/updateExam2?PAGE_FROM_TYPE=BACK",
+                type: "post",
+                async: false,
+                contentType: "application/json ",
+                data: JSON.stringify({
+                    id: vm.nowExamId,
+                    reviewWorkload: 100,
+                    registrationStartTime: registrationStartTime,
+                    registrationFinishTime: registrationFinishTime,
+                    name: vm.exam_name,
+                    examinationEndTime: examinationEndTime,
+                    examinationStartTime: examinationStartTime,
+                    reviewStartTime: reviewStartTime,
+                    reviewEndTime: reviewEndTime,
+                    capacity: vm.max_num,
+                    titleId: vm.title_module.titleSelect.id,
+                    titleName: vm.title_module.titleSelect.titleName,
+                    publishManId: vm.user_id,
+                    publishManName: vm.user_name,
+                    comment: vm.examination_explanation,
+                    examFee: vm.examination_fee,
+                    precautions: vm.examination_notes,
+                    place: "杭州电子科技大学信息工程学院",
+                    ticketPublicizeTime: ticketPublicizeTime,
+                    gradePublicizeTime: gradePublicizeTime,
+                    ticketGenerateTime: ticketGenerateTime,
+                    maxGrade: vm.max_grade,
+                    passGrade: vm.pass_grade
+
+                }),
+
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    if (data.status == 1) {
+                        toast("考试修改完毕，刷新后生效", "success");
+                    }
+
+                },
+                error: function () {
+                    bootoast({
+                        message: '系统繁忙，请稍后重试',
+                        type: 'warning',
+                        position: 'right-bottom',
+                        timeout: 1
+                    });
+                }
+            });
+        } else {
+            $.ajax({
+                url: "/exam/addExam?PAGE_FROM_TYPE=BACK",
+                type: "post",
+                async: false,
+                contentType: "application/json ",
+                data: JSON.stringify({
+
+                    reviewWorkload: 100,
+                    registrationStartTime: registrationStartTime,
+                    registrationFinishTime: registrationFinishTime,
+                    name: vm.exam_name,
+                    examinationEndTime: examinationEndTime,
+                    examinationStartTime: examinationStartTime,
+                    reviewStartTime: reviewStartTime,
+                    reviewEndTime: reviewEndTime,
+                    capacity: vm.max_num,
+                    titleId: vm.title_module.titleSelect.id,
+                    titleName: vm.title_module.titleSelect.titleName,
+                    publishManId: vm.user_id,
+                    publishManName: vm.user_name,
+                    comment: vm.examination_explanation,
+                    examFee: vm.examination_fee,
+                    precautions: vm.examination_notes,
+                    place: "杭州电子科技大学信息工程学院",
+                    ticketPublicizeTime: ticketPublicizeTime,
+                    gradePublicizeTime: gradePublicizeTime,
+                    ticketGenerateTime: ticketGenerateTime,
+                    maxGrade: vm.max_grade,
+                    passGrade: vm.pass_grade
+
+                }),
+
+                dataType: "json",
+                success: function (data) {
+                    if (data.status == 1) {
+                        toast("考试添加完毕", "success");
+                    }
+                    let fileTitle = [];
+
+                    let formData = new FormData();
+
+                    for (let i = 0; i < vm.file_links.length; i++) {
+                        formData.append('file', vm.file_links[i].fileInfo);
+                        fileTitle.push(vm.file_links[i].fileTitle)
+                    }
+
+                    formData.append("fileTitle", fileTitle);
+                    formData.append("examId", data.data.id);
+
+                    $.ajax({
+                        url: '/exam/uploadExamFile?PAGE_FROM_TYPE=BACK',
+                        type: 'POST',
+                        cache: false,
+                        dataType: "json",
+                        data: formData,
+                        traditional: true,
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            console.log(data);
+                        }
+                    })
+                },
+                error: function () {
+                    bootoast({
+                        message: '系统繁忙，请稍后重试',
+                        type: 'warning',
+                        position: 'right-bottom',
+                        timeout: 1
+                    });
+                }
+            });
+        }
+
+        return false;
+    }
+
+    //点击至首页
+    $('.pages-first').click(function () {
+        vm.title_module.active_paper = 1;
+        vm.title_module.keyPage = vm.title_module.active_paper;
+        //change(vm.title_module.active_paper);
+        $(".pages-active").val("第" + vm.title_module.active_paper + "页/共" + vm.title_module.all_page + "页");
+        vm.selectTitleModel();
+    });
+
+    //点击至尾页
+    $('.pages-last').click(function () {
+        vm.title_module.active_paper = vm.title_module.all_page;
+        vm.title_module.keyPage = vm.title_module.active_paper;
+        //change(vm.title_module.active_paper);
+        $(".pages-active").val("第" + vm.title_module.active_paper + "页/共" + vm.title_module.all_page + "页");
+        vm.selectTitleModel();
+    });
+
+    //下一页
+    $(".pages-next").click(function () {
+        if (vm.title_module.active_paper == vm.title_module.all_page) {
+            console.log("当前页：" + vm.title_module.active_paper + "，无法继续点击");
+            return false; //如果大于总页数就禁用下一页
+        } else {
+            $(".pages-active").text(++vm.title_module.active_paper); //点击下一页的时候当前页数的值就加1
+            vm.title_module.keyPage = vm.title_module.active_paper;
+            //change(vm.title_module.active_paper);
+            $(".pages-active").val("第" + vm.title_module.active_paper + "页/共" + vm.title_module.all_page + "页");
+        }
+        vm.selectTitleModel();
+    });
+
+    //上一页
+    $(".pages-prev").click(function () {
+        if (vm.title_module.active_paper == 1) {
+            console.log("当前页：" + vm.title_module.active_paper + "，无法继续点击");
+            return false;
+        } else {
+            $(".pages-active").text(--vm.title_module.active_paper);
+            vm.title_module.keyPage = vm.title_module.active_paper;
+            //change(vm.title_module.active_paper);
+            $(".pages-active").val("第" + vm.title_module.active_paper + "页/共" + vm.title_module.all_page + "页");
+        }
+        vm.selectTitleModel();
+    });
+
+    $(".pages-active").focus(function (event) {
+        $(this).val(vm.title_module.active_paper).select();
+    });
+
+    $(".pages-active").focusout(function (event) {
+        /* Act on the event */
+        vm.title_module.keyPage = parseInt($(this).val());
+        if (vm.title_module.keyPage > vm.title_module.all_page | vm.title_module.keyPage < 0 | isNaN(vm.title_module.keyPage)) {
+            $(this).val("第" + vm.title_module.active_paper + "页/共" + vm.title_module.all_page + "页")
+        } else {
+
+            vm.title_module.active_paper = vm.title_module.keyPage;
+            //change(vm.title_module.active_paper);
+            $(this).val("第" + vm.title_module.active_paper + "页/共" + vm.title_module.all_page + "页")
+        }
+        vm.selectTitleModel();
+    });
+
+    $(".pages-active").keyup(function (event) {
+        let key = event.keyCode;
+        if (key == 13) {
+            vm.title_module.keyPage = parseInt($(this).val());
+            if (vm.title_module.keyPage > vm.title_module.all_page | vm.title_module.keyPage < 0 | isNaN(vm.title_module.keyPage)) {
+                $(this).val("第" + vm.title_module.active_paper + "页/共" + vm.title_module.all_page + "页")
+            } else {
+                vm.title_module.active_paper = vm.title_module.keyPage;
+                $(this).val("第" + vm.title_module.active_paper + "页/共" + vm.title_module.all_page + "页")
+                vm.selectTitleModel();
+            }
+        }
+    });
+
+
+    function ticket_generate_date(e) {
+        vm.ticket_generate_date = $(e).val();
+    }
+
+    function ticket_generate_time(e) {
+        vm.ticket_generate_time = $(e).val();
+    }
+
+    function changeReview_start_date(e) {
+        vm.review_start_date = $(e).val();
+    }
+
+    function changeReview_start_time(e) {
+        vm.review_start_time = $(e).val();
+    }
+
+    function changeReview_end_date(e) {
+        vm.review_end_date = $(e).val();
+    }
+
+    function changeReview_end_time(e) {
+        vm.review_end_time = $(e).val();
+    }
+
+    function changeRegistration_start_date(e) {
+        vm.registration_start_date = $(e).val();
+    }
+
+    function changeRegistration_start_time(e) {
+        vm.registration_start_time = $(e).val();
+    }
+
+    function changeRegistration_end_date(e) {
+        vm.registration_end_date = $(e).val();
+    }
+
+    function changeRegistration_end_time(e) {
+        vm.registration_end_time = $(e).val();
+    }
+
+    function changeExam_date(e) {
+        vm.exam_date = $(e).val();
+    }
+
+    function changeExam_start_time(e) {
+        vm.exam_start_time = $(e).val();
+        if (vm.exam_start_time != null && vm.exam_end_time != null) {
+            var time1 = Date.parse("1970-01-01 " + vm.exam_start_time + ':00') / 1000;
+            var time2 = Date.parse("1970-01-01 " + vm.exam_end_time + ':00') / 1000;
+            vm.exam_length = (time2 - time1) / 60;
+        } else {
+            vm.exam_length = 0;
+        }
+    }
+
+    function changeExam_end_time(e) {
+        vm.exam_end_time = $(e).val();
+        if (vm.exam_start_time != null && vm.exam_end_time != null) {
+            var time1 = Date.parse("1970-01-01 " + vm.exam_start_time + ':00') / 1000;
+            var time2 = Date.parse("1970-01-01 " + vm.exam_end_time + ':00') / 1000;
+            vm.exam_length = (time2 - time1) / 60;
+        } else {
+            vm.exam_length = 0;
+        }
+    }
+
+    function removeInvalid(e) {
+        $(e).removeClass("invalid");
+    }
+
+    function changeTicket_date(e) {
+        vm.ticket_date = $(e).val();
+    }
+
+    function changeTicket_time(e) {
+        vm.ticket_time = $(e).val();
+    }
+
+    function changeGet_examination_results_date(e) {
+        vm.get_examination_results_date = $(e).val();
+    }
+
+    function changeGet_examination_results_time(e) {
+        vm.get_examination_results_time = $(e).val();
+    }
+
+    $('.datepicker').pickadate({
+        monthsFull: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+        monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+        weekdaysFull: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'],
+        weekdaysShort: ['一', '二', '三', '四', '五', '六', '日'],
+
+        today: '今天',
+        clear: '清除',
+        close: '关闭',
+
+        labelMonthNext: '下个月',
+        labelMonthPrev: '上个月',
+        labelMonthSelect: '选择月份',
+        labelYearSelect: '选择年份',
+        format: 'yyyy-mm-dd'
+    });
+
+    $('.datepicker').pickadate().on('hide', function (ev) {
+        console.log($(this).val());
+        $(this).next().value = $(this).val();
+    });
+
+    $('.timepicker').pickatime({
+        donetext: '完成',
+        cleartext: '清空'
+    });
+
+</script>
+
+</body>
+</html>

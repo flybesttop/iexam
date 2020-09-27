@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.invigilatorMapper">
+    <resultMap id="invigilator" type="com.sot.iexam.DO.invigilator">
+        <result column="id" property="id"/>
+        <result column="invigilator_id" property="invigilatorId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="invigilator.id">
+        insert into invigilator(invigilator_id, create_time, modify_time, status)
+        VALUES (#{invigilator.invigilatorId}, #{invigilator.createTime}, #{invigilator.modifyTime},
+                #{invigilator.status})
+    </insert>
+    <update id="disableInvigilatorMapper">
+        update invigilator
+        set status = 0
+        where invigilator_id = #{userId}
+    </update>
+    <update id="enableInvigilatorMapper">
+        update invigilator
+        set status = 1
+        where invigilator_id = #{userId}
+    </update>
+    <update id="update">
+        update invigilator
+        <trim prefix="set" suffixOverrides=",">
+            <if test="invigilator.invigilatorId != null">invigilator_id = #{invigilator.invigilatorId},</if>
+            <if test="invigilator.createTime != null">create_time = #{invigilator.createTime},</if>
+            <if test="invigilator.modifyTime != null">modify_time = #{invigilator.modifyTime},</if>
+            <if test="invigilator.status != null">status = #{invigilator.status},</if>
+        </trim>
+        where id = #{invigilator.id}
+    </update>
+    <delete id="resetInvigilator">
+        delete
+        from invigilator_examroom
+        where exam_id = #{examId}
+    </delete>
+
+    <select id="getAllInvigilators" resultType="java.lang.Integer">
+        select invigilator_id
+        from invigilator
+        where status = 1;
+    </select>
+    <select id="getInvigilatorAssignment" resultType="java.lang.Integer">
+        select count(id)
+        from invigilator
+        where invigilator_id = #{userId};
+    </select>
+    <select id="getInvigilatorById" resultType="com.sot.iexam.DO.XUser">
+        select id,
+               phone,
+               real_name,
+               username
+        from x_user
+        where id = #{invigilatorId}
+    </select>
+    <select id="getInfo" resultType="com.sot.iexam.DO.XUser">
+        select id, phone, real_name, username, create_time, modified_time
+        from x_user
+        where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getInfoCount" resultType="java.lang.Integer">
+        select count(*)
+        from x_user
+        where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

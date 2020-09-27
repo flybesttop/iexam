@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+    <!--<link th:href="@{/css/iexam/scrollbar.css}" rel="stylesheet">-->
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/v4-shims.css}">
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link th:href="@{/css/mdb.min.css}" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link th:href="@{/css/addonss/bootstrap-table.min.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/emmo_Apparence.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/bootoast.css}" rel="stylesheet">
+    <link th:href="@{/css/addonss/bootstrap-datetimepicker.min.css}" rel="stylesheet">
+
+    <style>
+
+    </style>
+</head>
+
+<body class="single-page">
+<div id="app">
+    <div class="container" style="margin-top: -6px;">
+        <main>
+
+            <div>
+                <!-- Section: Blog v.4 -->
+                <section class="mt-0 pb-3 wow fadeIn">
+                    <!-- Grid row -->
+                    <div class="row">
+                        <div class="mt-3 px-3 pt-0 col-12 mb-0 pb-0">
+                            <!--Navbar-->
+                            <nav class="float-left">
+                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab"
+                                       href="#nav-home"
+                                       role="tab"
+                                       aria-controls="nav-home" aria-selected="true" @click="changeNewsType(1)">考试新闻</a>
+                                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab"
+                                       href="#nav-home"
+                                       role="tab"
+                                       aria-controls="nav-profile" aria-selected="false"
+                                       @click="changeNewsType(2)">招考政策</a>
+                                    <!--<a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab"-->
+                                    <!--href="#nav-home"-->
+                                    <!--role="tab"-->
+                                    <!--aria-controls="nav-contact" aria-selected="false"-->
+                                    <!--@click="changeNewsType(3)">信息公告</a>-->
+                                </div>
+                            </nav>
+                            <form class="form-inline float-right mb-0 pb-0">
+                                <div class="md-form my-0 mb-0 pb-0">
+                                    <input class="form-control mr-sm-0 float-left mb-0 pb-0" type="text"
+                                           v-model="news_selection.search_title"
+                                           placeholder="搜索" aria-label="搜索">
+                                    <button class="btn btn-primary btn-md my-0 my-sm-0 ml-0 px-2 pb-1 pt-2 float-left" type="button"
+                                            @click="getNewsList"><i class="fas fa-search fa-2x"></i></button>
+                                    <button type="button"
+                                            class="btn btn-primary btn-md my-0 my-sm-0 ml-0 pb-2 float-left"
+                                            data-toggle="modal" data-target="#exampleModalCenter" @click="beginAddNews">
+                                        发布新闻
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Grid column -->
+                        <div class="col-md-12">
+                            <!-- Featured image -->
+                            <div class="justify-content-between d-flex">
+                                <div class="mt-0 card p-3 pt-0 col-12">
+                                    <!-- Section: exams -->
+                                    <section class="section card-body pb-0">
+                                        <div class="container col-12" style="min-height: 300px;">
+                                            <div class="tab-content pt-0" id="nav-tabContent">
+                                                <div
+                                                        class="tab-pane fade show active" id="nav-home" role="tabpanel"
+                                                        aria-labelledby="nav-home-tab">
+
+                                                    <table class="table table-striped" v-if="news_List">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>标题</th>
+                                                            <th>发布人</th>
+                                                            <th>发布时间</th>
+                                                            <th>操作</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr v-for="(item,index) in news_List">
+                                                            <td>
+                                                                <div class="text-truncate" style="width: 350px">
+                                                                    {{item.examNews.title}}
+                                                                </div>
+                                                            </td>
+                                                            <td>{{item.xUser.realName}}</td>
+                                                            <td>{{item.examNews.publishTime}}</td>
+                                                            <td>
+                                                                <div class="btn-group px-0 mx-0" role="group"
+                                                                     aria-label="Basic example">
+                                                                    <button type="button" @click="modifyExamInfo(item)"
+                                                                            class=" btn btn-sm btn-outline-deep-purple btn-rounded waves-effect">
+                                                                        修改
+                                                                    </button>
+                                                                    <button type="button" @click="deleteExamNews(item)"
+                                                                            class=" btn btn-sm btn-outline-deep-purple btn-rounded waves-effect">
+                                                                        删除
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+
+
+                                                    <hr>
+                                                    <div class="md-form input-group d-flex justify-content-center">
+                                                        <div class="input-group-prepend">
+                                                            <button class="pages-first btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" @click="newsPrevStart"><i
+                                                                    class="fas fa-angle-double-left"></i></button>
+                                                            <button class="pages-prev btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" @click="newsPrev"><i
+                                                                    class="fas fa-angle-left"></i></button>
+                                                        </div>
+                                                        <input type="text"
+                                                               class="form-control text-center col-4 pages-active"
+                                                               @focus="newsPageFocus" @blur="newsPageFocusOut"
+                                                               @keyup="newsPageKeyUp"
+                                                               v-model="pageInfo.text">
+                                                        <div class="input-group-append">
+                                                            <button class="pages-next btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" @click="newsNext"><i
+                                                                    class="fas fa-angle-right"></i></button>
+                                                            <button class="pages-last btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" @click="newsNextTop"><i
+                                                                    class="fas fa-angle-double-right"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <!-- Modal -->
+
+
+    <div class="modal fade top" id="exampleModalCenter" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-full-height modal-top" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form onsubmit="return publish_exam()" action="#">
+                        <div class="container-fluid">
+                            <div class="container">
+
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <div class="card mb-4 post-title-panel">
+                                            <div class="card-body">
+                                                <div class="md-form mt-1 mb-0">
+                                                    <input type="text" id="form1" class="form-control" required
+                                                           v-model="news_NowInfo.examNews.title">
+                                                    <label class="form-check-label" for="form1"
+                                                    >新闻标题</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <div class="md-form mb-0 mt-2">
+                                <textarea type="text" id="form2" class="md-textarea form-control" rows="8"
+                                          v-model="news_NowInfo.examNews.text"></textarea>
+                                                    <label class="form-check-label" for="form2">新闻内容</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="card card-cascade narrower">
+                                            <div class="view view-cascade gradient-card-header blue-gradient">
+                                                <h4 class="font-weight-500 mb-0">相关链接</h4>
+                                            </div>
+
+                                            <div class="card-body card-body-cascade">
+
+                                                <div class="text-truncate pl-0"
+                                                     v-for="(item,index) in file_links">
+                                                    <span class="text-truncate">
+                                                        <i class="fas fa-times pointer" @click="removeFile(index)"></i>
+                                                    </span>
+                                                    <span class="text-truncate">{{item.show_name}}： <i
+                                                            class="fas fa-link"></i>
+                                        {{item.file_name}}</span>
+
+                                                </div>
+
+                                                <div class="text-right">
+                                                    <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                            data-target="#addFileModal">
+                                                        添加链接
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary " @click="publish_news">发布新闻</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade top" id="editNewsInfo" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-full-height modal-top" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="card mb-4 post-title-panel">
+                                        <div class="card-body">
+                                            <div class="md-form mt-1 mb-0">
+                                                <input type="text" class="form-control" required
+                                                       v-model="news_NowInfo.examNews.title">
+                                                <label :class="['form-check-label', 'active']">新闻标题</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <div class="md-form mb-0 mt-2">
+                                <textarea type="text" class="md-textarea form-control" rows="8"
+                                          v-model="news_NowInfo.examNews.text"></textarea>
+                                                <label :class="['form-check-label', 'active']">新闻内容</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="card card-cascade narrower">、
+                                        <div class="view view-cascade gradient-card-header blue-gradient">
+                                            <h4 class="font-weight-500 mb-0">相关链接</h4>
+                                        </div>
+
+                                        <div class="card-body card-body-cascade">
+
+                                            <div class="text-truncate pl-0" v-for="(item,index) in news_NowInfo.files">
+                                                <span class="text-truncate">
+                                                    <i class="fas fa-times pointer" @click="removeFile(index)"></i>
+                                                </span>
+                                                <span class="text-truncate"><a
+                                                        :href="item.filePath">{{item.fileTitle}}</a>
+                                                </span>
+                                            </div>
+                                            <div class="text-right">
+                                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                        data-target="#addFileModal">
+                                                    添加链接
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary " @click="updateNews">保存修改</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--添加对应文件-->
+    <div class="modal fade" id="addFileModal" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">选择需要添加的文件链接</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <form class="md-form">
+
+                        <div class="md-form input-group input-group-sm mb-3">
+                            <div class="input-group-prepend">
+                                                <span class="input-group-text md-addon"
+                                                      id="inputGroupMaterial-sizing-sm">链接名：</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="Sizing example input"
+                                   aria-describedby="inputGroupMaterial-sizing-sm"
+                                   v-model="addFileInfo.show_name">
+                        </div>
+
+                        <div class="file-field">
+                            <a class="btn-floating peach-gradient mt-0 float-left">
+                                <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                <input type="file" :id="'file'+ addFileInfo.id_index">
+                            </a>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text"
+                                       placeholder="Upload your file">
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>-->
+                    <button type="button" class="btn btn-primary" @click="addFile()">完成</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}" src="/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" th:src="@{/js/Vue/vue.js}"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/js/popper.min.js}" src="/js/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/js/bootstrap.js}" src="/js/bootstrap.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/js/mdb.min.js}" src="/js/mdb.min.js"></script>
+
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table.min.js}"
+        src="/js/addons/bootstrap-table.min.js"></script>
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table-locale-all.js}"
+        src="/js/addons/bootstrap-table-locale-all.js"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/bootoast.js}"></script>
+
+
+<script type="text/javascript" th:src="@{/js/iexam/emmo_backTable_basicOperator.js}"></script>
+<script type="text/javascript" th:src="@{/js/Vue/IexamBack/backTemplates.js}"></script>
+<!-- Custom scripts -->
+<script th:inline="javascript">
+    let user = [[${session.BACKSYS_USER}]];
+</script>
+<script>
+
+    var vm = new Vue({
+        el: "#app",
+        data: {
+
+            exam_name: null,
+            news_selection: {
+                news_type: 1,
+                search_title: null,
+            },
+            news_NowInfo: {
+                examNews: {},
+                xUser: {},
+                files: []
+            },
+            news_List: [],
+            //文件链接
+            file_links: [],
+            addFileInfo: {
+                show_name: "",
+                id_index: 0
+            },
+            pageInfo: {
+                page: 1,
+                size: 10,
+                count: 0,
+                text: "",
+                totalPages: 0
+            }
+            //所有职称
+
+        },
+        methods: {
+            updateNews() {
+                $.ajax({
+                    url: "/examNews/updateNews?PAGE_FROM_TYPE=BACK",
+                    type: "post",
+                    async: false,
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        id:this.news_NowInfo.examNews.id,
+                        text:this.news_NowInfo.examNews.text,
+                        title:this.news_NowInfo.examNews.title
+                    }),
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == 1) {
+                            toast("修改完毕", 'success');
+                            $("#editNewsInfo").modal('hide');
+                        }
+                    },
+                    error: function () {
+                        toast("系统繁忙，请稍后重试", 'warning');
+
+                    }
+                });
+            },
+            beginAddNews() {
+                this.news_NowInfo.examNews = {};
+                this.news_NowInfo.xUser = {};
+                this.news_NowInfo.xUser = {};
+            },
+            modifyExamInfo(item) {
+                let _this = this;
+                this.news_NowInfo = item;
+                $.ajax({
+                    url: '/examNewsFiles/getNewsFiles?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        newsId: this.news_NowInfo.examNews.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        _this.news_NowInfo.files = data.data;
+                    }, error: function (data) {
+
+                    }
+
+                });
+                $("#editNewsInfo").modal('show');
+            },
+            deleteExamNews(item) {
+                let _this = this;
+                this.news_NowInfo = item;
+                $.ajax({
+                    url: "/examNews/deleteNews?PAGE_FROM_TYPE=BACK",
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    data: {
+                        id: this.news_NowInfo.examNews.id
+                    },
+                    success: function (data) {
+                        if (data.status == 1) {
+                            toast(data.info, "success");
+                            _this.getNewsList();
+                        }
+                    },
+                    error: function () {
+                        toast("系统繁忙，请稍后重试", 'warning');
+                    }
+                });
+            },
+            getNewsList() {
+                let _this = this;
+                let examNews = {
+                    type: this.news_selection.news_type,
+                    title: this.news_selection.search_title
+                };
+                $.ajax({
+                    url: "/examNews/getExamNewsList?PAGE_FROM_TYPE=BACK",
+                    type: "post",
+                    async: false,
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        page: this.pageInfo.page,
+                        size: this.pageInfo.size,
+                        examNews: examNews
+                    }),
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        _this.news_List = data.data;
+                        _this.pageInfo.count = data.count;
+                        _this.changePageData();
+                    },
+                    error: function () {
+                        toast("系统繁忙，请稍后重试", 'warning');
+                    }
+                });
+            },
+            changePageData() {
+                this.pageInfo.totalPages = Math.ceil(this.pageInfo.count / this.pageInfo.size);
+                if (this.pageInfo.totalPages==0){
+                    this.pageInfo.totalPages=1;
+                }
+                this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+            },
+            changeNewsType(type) {
+                console.log(type);//这里获取newslist
+                this.news_selection.news_type = type;
+                this.news_selection.search_title = null;
+                this.pageInfo.page=1;
+                this.getNewsList();
+            },
+            publish_news() {
+                $.ajax({
+                    url: "/examNews/addNews?PAGE_FROM_TYPE=BACK",
+                    type: "post",
+                    async: false,
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        type: this.news_selection.news_type,
+                        text: this.news_NowInfo.examNews.text,
+                        title: this.news_NowInfo.examNews.title,
+                        publishId: user.id
+                    }),
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == 1) {
+                            toast("添加成功", 'success');
+                        }
+                        let fileTitle = [];
+                        let formData = new FormData();
+                        if (vm.file_links.length == 0) {
+                            vm.getNewsList();
+                            $("#exampleModalCenter").modal('hide');
+                            return;
+                        }
+                        for (let i = 0; i < vm.file_links.length; i++) {
+                            formData.append('file', vm.file_links[i].fileInfo);
+                            fileTitle.push(vm.file_links[i].show_name)
+                        }
+                        formData.append("fileTitle", fileTitle);
+                        formData.append("newsId", data.data.id);
+                        $.ajax({
+                            url: '/examNewsFiles/uploadNewsFile?PAGE_FROM_TYPE=BACK',
+                            type: 'POST',
+                            cache: false,
+                            dataType: "json",
+                            data: formData,
+                            traditional: true,
+                            processData: false,
+                            contentType: false,
+                            success: function (data) {
+                                console.log(data);
+                                if (data.status == 1) {
+                                    toast(data.info, "success");
+                                    vm.getNewsList();
+                                    $("#exampleModalCenter").modal('hide');
+                                }
+                            }
+                        })
+                    },
+                    error: function () {
+                        toast("系统繁忙，请稍后重试", 'warning');
+
+                    }
+                });
+            },
+            removeFile(index) {
+                this.file_links.splice(index, 1);
+            },
+            addFile(e) {
+                let fileInfo = $(`#file${vm.addFileInfo.id_index}`)[0].files[0];
+                vm.addFileInfo.id_index++;
+                this.file_links.push({
+                    show_name: this.addFileInfo.show_name,
+                    file_name: fileInfo.name,
+                    fileInfo: fileInfo
+                })
+                $("#addFileModal").modal('hide');
+                this.addFileInfo.show_name = null;
+            },
+
+            newsPrevStart() {
+                if (this.pageInfo.page === 1)
+                    return;
+                this.pageInfo.page = 1;
+                this.getNewsList();
+            },
+            newsNextTop() {
+                if (this.pageInfo.page === this.pageInfo.totalPages)
+                    return;
+                this.pageInfo.page = this.pageInfo.totalPages;
+                this.getNewsList();
+            },
+            newsNext() {
+                if (this.pageInfo.page === this.pageInfo.totalPages)
+                    return;
+                this.pageInfo.page++;
+                this.getNewsList();
+            },
+            newsPrev() {
+                if (this.pageInfo.page === 1)
+                    return;
+                this.pageInfo.page--;
+                this.getNewsList();
+            },
+            newsPageFocus() {
+                this.pageInfo.text = "";
+            },
+            newsPageFocusOut() {
+                if (isNaN(parseInt(this.pageInfo.text))) {
+                    this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+                    return;
+                }
+                let page = parseInt(this.pageInfo.text);
+                if (page < 1 || page > this.pageInfo.totalPages) {
+                    this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+                    return;
+                }
+                this.pageInfo.page = page;
+                this.getNewsList();
+            },
+            newsPageKeyUp() {
+                let key = event.keyCode;
+                if (key == 13) {
+                    if (isNaN(parseInt(this.pageInfo.text))) {
+                        this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+                        return;
+                    }
+                    let page = parseInt(this.pageInfo.text);
+                    if (page < 1 || page > this.pageInfo.totalPages) {
+                        this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+                        return;
+                    }
+                    this.pageInfo.page = page;
+                    this.getNewsList();
+                }
+            }
+        },
+        created() {
+            this.getNewsList();
+        }
+    });
+
+</script>
+
+</body>
+
+</html>

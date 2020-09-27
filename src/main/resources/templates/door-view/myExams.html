@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" th:href="@{/door-static/css/bootstrap.min.css}">
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" th:href="@{/door-static/css/mdb.min.css}">
+    <link th:href="@{/css/iexam/bootoast.css}" rel="stylesheet">
+    <!-- Custom styles -->
+    <style>
+        .rgba-gradient {
+            background: -moz-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: -webkit-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: -webkit-gradient(linear, 45deg, from(rgba(42, 27, 161, 0.7)), to(rgba(29, 210, 177, 0.7)));
+            background: -o-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: linear-gradient(to 45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+        }
+
+        .bg {
+            /* The image used */
+            background-image: url("https://mdbootstrap.com/img/Photos/Horizontal/Nature/full page/img(11).jpg");
+
+            /* Half height */
+            height: 50%;
+
+            /* Center and scale the image nicely */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+    </style>
+</head>
+
+<body class="single-page cloudy-knoxville-gradient ">
+<div id="app">
+<header class="rgba-gradient">
+    <img th:src="@{/door-static/img/banner.png}" class="img-fluid" alt="placeholder"
+         style="height: 130px;width: 100%;">
+    <!--Navbar -->
+    <nav class="mb-1 navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item "><a href="/door/index?PAGE_FROM_TYPE=DOOR" class="white-text">主页</a></li>
+                    <li class="breadcrumb-item "><a href="#" class="white-text">我的考试</a></li>
+                    <li class="breadcrumb-item "><a href="#" class="white-text">已报名的考试</a></li>
+                </ol>
+            </nav>
+
+            <!--<form class="form-inline my-1 offset-2">-->
+            <!--<div class="md-form form-sm my-0">-->
+            <!--<input class="form-control form-control-sm mr-sm-2 mb-0" type="text" placeholder="Search"-->
+            <!--aria-label="Search">-->
+            <!--</div>-->
+            <!--<button class="btn btn-outline-white btn-sm my-0" type="submit">Search</button>-->
+            <!--</form>-->
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto nav-flex-icons">
+                    <!-- Dropdown -->
+
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle waves-effect" href="#" id="userDropdown"
+                           data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user"></i> <span class="clearfix d-none d-sm-inline-block"
+                                                              th:text="${session.FRONT_USER.name}"></span>
+                            <div class="d-none" id="userId" th:data="${session.FRONT_USER.id}"></div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="/door/userinfo?PAGE_FROM_TYPE=DOOR">个人信息</a>
+                            <a class="dropdown-item" href="#" @click.prevent="logout()"><i
+                                    class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;安全退出</a>
+                        </div>
+                    </li>
+
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container" style="background-color: white;margin-top: -4px;">
+    <main>
+        <div class="row d-flex">
+            <div class="col-3  mt-2">
+                <a href="#" class="card w-100 mb-3 hoverable" th:style="'cursor: pointer;background-image: url('+'/door-static/img/baomingdekaoshi.jpg'+');background-size: 100% 100%;height: 76px'">
+                    <div class="card-body">
+                        <!--<h5 class="card-title">报名考试</h5>-->
+                        <!--<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>-->
+                        <!--<a href="#!" class="btn btn-primary">Button</a>-->
+                    </div>
+                </a>
+                <a href="/door/myEndExams?PAGE_FROM_TYPE=DOOR" class="card w-100 mb-3 hoverable" th:style="'cursor: pointer;background-image: url('+'/door-static/img/yijieshudekaoshi.jpg'+');background-size: 100% 100%;height: 76px'">
+                    <div class="card-body ">
+
+                        <!--<h5 class="card-title">成绩查询</h5>-->
+                        <!--<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>-->
+                        <!--<a href="#!" class="btn btn-primary">Button</a>-->
+                    </div>
+                </a>
+            </div>
+            <div class="col-9">
+                <section>
+                    <div class="row pb-4">
+                        <div class="col-md-6" v-for="(item,index) in exams">
+                            <section>
+                                <div class="card card-cascade narrower" style="margin-top: 44px">
+                                    <div class="view view-cascade overlay">
+                                        <img class="card-img-top" style="height: 200px"
+                                             th:src="@{/img/title.png}" v-if="item.titlePhoto===''">
+                                        <img class="card-img-top" style="height: 200px"
+                                             :src="item.titlePhoto" v-if="item.titlePhoto!=''">
+                                    </div>
+                                    <div class="card-body card-body-cascade">
+                                        <h5 class="pink-text"><i class="fas fa-award"></i> {{item.titleName}}</h5>
+                                        <h4 class="card-title" v-text="item.name"></h4>
+                                        <p class="card-text">
+                                            报名时间：{{item.registrationStartTime}} ~ {{item.registrationFinishTime}}<br>
+                                            考试时间：{{item.examinationStartTime}} ~ {{item.examinationEndTime}}<br>
+                                            <span v-if="item.status<'6'">获取准考证时间：{{item.ticketPublicizeTime}}</span>
+                                            <span v-if="item.status>='6'">获取成绩时间：{{item.gradePublicizeTime}}</span><br>
+                                            考试地点：{{item.place}}<br>
+                                            当前状态：<span :class="{'text-success':item.status==='1'}">{{item.status | examStatus}}</span>
+                                        </p>
+                                        <a class="btn btn-primary waves-effect waves-light" @click.present="gotoExamRegister(item.id)">查看详情</a>
+                                        <a class="btn btn-default waves-effect waves-light" v-if="item.status==='5'" @click.present="getTicket(item.id)">获取准考证</a>
+                                        <a class="btn btn-danger waves-effect waves-light" v-if="item.status==='1'">退选</a>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        <div class="md-form input-group d-flex justify-content-center">
+                            <div class="input-group-prepend">
+                                <button class="pages-first btn btn-md btn-primary m-0 px-3" type="button"><i
+                                        class="fas fa-angle-double-left"></i></button>
+                                <button class="pages-prev btn btn-md btn-primary m-0 px-3" type="button"><i
+                                        class="fas fa-angle-left"></i></button>
+                            </div>
+                            <input type="text" class="form-control text-center col-4 pages-active"
+                                   :value="page.showtext">
+                            <div class="input-group-append">
+                                <button class="pages-next btn btn-md btn-primary m-0 px-3" type="button"><i
+                                        class="fas fa-angle-right"></i></button>
+                                <button class="pages-last btn btn-md btn-primary m-0 px-3" type="button"><i
+                                        class="fas fa-angle-double-right"></i></button>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+<footer>
+    <div class="footer-copyright py-3 text-center wow fadeIn" data-wow-delay="0.3s">
+        © 2019 Copyright: IEXAM
+    </div>
+</footer>
+</div>
+<script th:src="@{/door-static/js/jquery-3.4.1.min.js}"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/door-static/js/popper.min.js}"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/bootstrap.js}"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/mdb.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/iexam/bootoast.js}"></script>
+<script type="text/javascript" th:src="@{/door-static/js/vue.js}"></script>
+
+<script>
+
+    var user_id = $("#userId").attr("data");
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            exams:[],
+            page: {
+                showtext: null,
+                keyPage: 1,
+                active_paper: 1,
+                title_search: null,
+                page_size: 4,
+                all_page: 1,
+            },
+        },
+        methods: {
+            getTicket(value){
+                window.open( "/exam/getTicket?PAGE_FROM_TYPE=DOOR&userId="+user_id+"&examId="+value, "_blank");
+            },
+            gotoExamRegister(examId){
+                window.location.href="/exam/exam_register?PAGE_FROM_TYPE=DOOR&examId="+examId;
+            },
+            logout() {
+                $.ajax({
+                    url: "/examinees/logout?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        window.location.href = "/door/login?PAGE_FROM_TYPE=DOOR";
+                    },
+                    error: function () {
+                    }
+                });
+            },
+            showMyExams(){
+                var _this=this;
+                $.ajax({
+                    url: "/exam/getExamInfoListMyExams?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    contentType: "application/json",
+                    data:JSON.stringify({
+                        page: _this.page.active_paper,
+                        size: _this.page.page_size,
+                        userId:user_id
+                    }),
+                    success: function (data) {
+                        _this.exams = data.data;
+
+                        if (parseInt(data.count) % _this.page.page_size == 0) {
+                            _this.page.all_page = parseInt(data.count / _this.page.page_size);
+                        } else {
+                            _this.page.all_page = parseInt(data.count / _this.page.page_size) + 1;
+                        }
+                        if (_this.page.all_page==0){
+                            _this.page.all_page=1;
+                        }
+
+                        _this.page.showtext = "第" + _this.page.active_paper + "页/共" + _this.page.all_page + "页";
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        },
+        created(){
+            this.showMyExams();
+        },
+        filters: {
+            examStatus(value) {
+                if (value.length === 3) {
+                    return "报名结束"
+                }
+                if (value === "1") {
+                    return "报名中"
+                }
+                if (value === "4") {
+                    return "报名结束"
+                }
+                if (value === "5") {
+                    return "准考证已发布"
+                }
+                if (value === "6") {
+                    return "考试中"
+                }
+                if (value === "7") {
+                    return "考试已结束"
+                }
+                if (value === "8") {
+                    return "考试已结束"
+                }
+                if (value === "9") {
+                    return "考试已结束"
+                }
+            }
+        }
+    });
+
+    //点击至首页
+    $('.pages-first').click(function () {
+        vm.page.active_paper = 1;
+        vm.page.keyPage = vm.page.active_paper;
+        //change(vm.page.active_paper);
+        $(".pages-active").val("第" + vm.page.active_paper + "页/共" + vm.page.all_page + "页");
+        vm.showMyExams();
+    });
+
+    //点击至尾页
+    $('.pages-last').click(function () {
+        vm.page.active_paper = vm.page.all_page;
+        vm.page.keyPage = vm.page.active_paper;
+        //change(vm.page.active_paper);
+        $(".pages-active").val("第" + vm.page.active_paper + "页/共" + vm.page.all_page + "页");
+        vm.showMyExams();
+    });
+
+    //下一页
+    $(".pages-next").click(function () {
+        if (vm.page.active_paper == vm.page.all_page) {
+            console.log("当前页：" + vm.page.active_paper + "，无法继续点击");
+            return false; //如果大于总页数就禁用下一页
+        } else {
+            $(".pages-active").text(++vm.page.active_paper); //点击下一页的时候当前页数的值就加1
+            vm.page.keyPage = vm.page.active_paper;
+            //change(vm.page.active_paper);
+            $(".pages-active").val("第" + vm.page.active_paper + "页/共" + vm.page.all_page + "页");
+        }
+        vm.showMyExams();
+    });
+
+    //上一页
+    $(".pages-prev").click(function () {
+        if (vm.page.active_paper == 1) {
+            console.log("当前页：" + vm.page.active_paper + "，无法继续点击");
+            return false;
+        } else {
+            $(".pages-active").text(--vm.page.active_paper);
+            vm.page.keyPage = vm.page.active_paper;
+            //change(vm.page.active_paper);
+            $(".pages-active").val("第" + vm.page.active_paper + "页/共" + vm.page.all_page + "页");
+        }
+        vm.showMyExams();
+    });
+
+    $(".pages-active").focus(function (event) {
+        $(this).val(vm.page.active_paper).select();
+    });
+
+    $(".pages-active").focusout(function (event) {
+        /* Act on the event */
+        vm.page.keyPage = parseInt($(this).val());
+        if (vm.page.keyPage > vm.page.all_page | vm.page.keyPage < 0 | isNaN(vm.page.keyPage)) {
+            $(this).val("第" + vm.page.active_paper + "页/共" + vm.page.all_page + "页")
+        } else {
+
+            vm.page.active_paper = vm.page.keyPage;
+            //change(vm.page.active_paper);
+            $(this).val("第" + vm.page.active_paper + "页/共" + vm.page.all_page + "页")
+        }
+        vm.showMyExams();
+    });
+
+    $(".pages-active").keyup(function (event) {
+        let key = event.keyCode;
+        if (key == 13) {
+            vm.page.keyPage = parseInt($(this).val());
+            if (vm.page.keyPage > vm.page.all_page | vm.page.keyPage < 0 | isNaN(vm.page.keyPage)) {
+                $(this).val("第" + vm.page.active_paper + "页/共" + vm.page.all_page + "页")
+            } else {
+                vm.page.active_paper = vm.page.keyPage;
+                $(this).val("第" + vm.page.active_paper + "页/共" + vm.page.all_page + "页")
+                vm.showMyExams();
+            }
+        }
+    });
+</script>
+
+</body>
+
+</html>

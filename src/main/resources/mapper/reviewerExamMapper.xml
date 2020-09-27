@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.reviewerExamMapper">
+
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="reviewerExam.id">
+        insert into reviewer_exam (id, exam_id, reviewer_id, review_start_time,
+                                   review_end_time, create_time, modify_time, status)
+        values (#{reviewerExam.id}, #{reviewerExam.examId}, #{reviewerExam.reviewerId},
+                #{reviewerExam.reviewStartTime},
+                #{reviewerExam.reviewEndTime}, #{reviewerExam.createTime}, #{reviewerExam.modifyTime},
+                #{reviewerExam.status})
+    </insert>
+    <update id="update">
+        update reviewer_exam
+        <trim prefix="set" suffixOverrides=",">
+            <if test="reviewerExam.id != null">id = #{reviewerExam.id},</if>
+            <if test="reviewerExam.examId != null">exam_id = #{reviewerExam.examId},</if>
+            <if test="reviewerExam.reviewerId != null">reviewer_id = #{reviewerExam.reviewerId},</if>
+            <if test="reviewerExam.reviewStartTime != null">review_start_time = #{reviewerExam.reviewStartTime},</if>
+            <if test="reviewerExam.reviewEndTime != null">review_end_time = #{reviewerExam.reviewEndTime},</if>
+            <if test="reviewerExam.createTime != null">add_time = #{reviewerExam.createTime},</if>
+            <if test="reviewerExam.modifyTime != null">modify_time = #{reviewerExam.modifyTime},</if>
+            <if test="reviewerExam.status != null">status = #{reviewerExam.status},</if>
+
+        </trim>
+        where id = #{reviewerExam.id}
+    </update>
+    <delete id="deleteByExamId">
+        delete
+        from reviewer_exam
+        where exam_id = #{examId};
+    </delete>
+    <delete id="deleteById">
+        delete
+        from reviewer_exam
+        where id = #{id}
+    </delete>
+
+    <select id="getReviewerExamList" resultType="com.sot.iexam.DO.reviewerExam">
+        select id,
+        exam_id,
+        reviewer_id,
+        review_start_time,
+        review_end_time,
+        create_time,
+        modify_time,
+        status
+
+        from reviewer_exam
+        <include refid="ReviewerExamListWhereSQL"></include>
+    </select>
+    <select id="getReviewerExamListCount" resultType="java.lang.Integer">
+        select count(1)
+        from reviewer_exam
+        <include refid="ReviewerExamListWhereSQL"></include>
+    </select>
+    <select id="getReviewerManage" resultType="com.sot.iexam.DO.reviewerExam">
+        select id,
+               exam_id,
+               reviewer_id,
+               review_start_time,
+               review_end_time,
+               create_time,
+               modify_time,
+               status
+        from reviewer_exam
+        where exam_id = #{examId}
+          and reviewer_id = #{reviewerId}
+    </select>
+    <sql id="ReviewerExamListWhereSQL">
+        <trim prefix="where" prefixOverrides="and |or ">
+            <if test="reviewerExam.id != null">and id = #{reviewerExam.id}</if>
+            <if test="reviewerExam.examId != null">and exam_id = #{reviewerExam.examId}</if>
+            <if test="reviewerExam.reviewerId != null">and reviewer_id = #{reviewerExam.reviewerId}</if>
+            <if test="reviewerExam.reviewStartTime != null">and review_start_time = #{reviewerExam.reviewStartTime}</if>
+            <if test="reviewerExam.reviewEndTime != null">and review_end_time = #{reviewerExam.reviewEndTime}</if>
+            <if test="reviewerExam.createTime != null">and add_time = #{reviewerExam.createTime}</if>
+            <if test="reviewerExam.modifyTime != null">and modify_time = #{reviewerExam.modifyTime}</if>
+            <if test="reviewerExam.status != null">and status = #{reviewerExam.status}</if>
+
+        </trim>
+    </sql>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.newsFilesMapper">
+
+    <resultMap id="examFile" type="com.sot.iexam.DO.newsFiles">
+        <id column="id" property="id"></id>
+        <result column="file_path" property="filePath"></result>
+        <result column="news_id" property="newsId"></result>
+        <result column="file_title" property="fileTitle"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="modify_time" property="modifyTime"></result>
+    </resultMap>
+    <insert id="insert">
+        insert into news_files(file_path, news_id, file_title, create_time, modify_time)
+        values (#{newsFiles.filePath}, #{newsFiles.newsId},
+                #{newsFiles.fileTitle}, #{newsFiles.createTime}, #{newsFiles.modifyTime})
+    </insert>
+    <delete id="deleteByNewsId">
+        delete
+        from news_files
+        where news_id = #{newsId}
+    </delete>
+    <select id="getFileList" resultType="com.sot.iexam.DO.newsFiles">
+        select id, file_path, news_id, file_title, create_time, modify_time
+        from news_files
+        where news_id = #{newsId}
+    </select>
+    <select id="getCount" resultType="java.lang.Object">
+        select count(1)
+        from news_files;
+    </select>
+
+    <sql id="newsFileWhereSQL">
+        <trim prefix="where" prefixOverrides="and |or ">
+            <if test="newsFiles.examId != null">and exam_id=#{newsFiles.status}</if>
+            <if test="newsFiles.fileTitle != null">and file_title=#{newsFiles.fileTitle}</if>
+            <if test="newsFiles.createTime != null">and create_time=#{newsFiles.createTime}</if>
+            <if test="newsFiles.modifyTime != null">and modify_time=#{newsFiles.modifyTime}</if>
+        </trim>
+    </sql>
+</mapper>

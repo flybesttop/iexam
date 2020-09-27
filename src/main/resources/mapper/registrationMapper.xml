@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.registrationMapper">
+    <!--
+    namespace:名称空间;指定为接口的全类名
+    id：唯一标识
+    resultType：返回值类型（接收的bean的全类名比较合适，别名也行）
+    #{id}：从传递过来的参数中取出id值
+
+    public Employee getEmpById(Integer id);
+     -->
+    <resultMap id="registration" type="com.sot.iexam.DO.registration">
+        <id column="id" property="id"/>
+        <result column="exam_id" property="examId"/>
+        <result column="examinees_id" property="examineesId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <!--        <result column="examinees_list" property="examineesList"/>-->
+    </resultMap>
+
+    <update id="update">
+        update registration
+        <trim prefix="set" suffixOverrides=",">
+            <if test="registration.examId != null">exam_id = #{registration.examId},</if>
+            <if test="registration.examineesId != null">examinees_id = #{registration.examineesId},</if>
+            <if test="registration.status != null">status = #{registration.status},</if>
+            <if test="registration.createTime != null">create_time = #{registration.createTime},</if>
+            <if test="registration.modifyTime != null">modify_time = #{registration.modifyTime},</if>
+        </trim>
+        where id= #{registration.id}
+    </update>
+    <delete id="deleteByRegistrationId">
+        delete
+        from registration
+        where id = #{id}
+    </delete>
+
+
+
+    <select id="getRegistrationByExamId" resultType="com.sot.iexam.DO.registration">
+        select r.id, r.exam_id, r.examinees_id
+        from registration r
+        where exam_id = #{1}
+
+    </select>
+
+    <!--    <select id="getRegistrationByExamId2" resultMap="registrationInfo">-->
+    <!--        select r.id, r.exam_id, r.examinees_id, e.id, e.name, e.phone-->
+    <!--        from registration r,-->
+    <!--             examinees e-->
+    <!--        where r.examinees_id = e.id-->
+
+    <!--    </select>-->
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="registration.id">
+        insert into registration(exam_id, examinees_id, status, create_time, modify_time)
+        values (#{registration.examId}, #{registration.examineesId}, #{registration.status},
+                #{registration.createTime}, #{registration.modifyTime})
+    </insert>
+
+
+
+    <select id="getRegistrationByExamineesIdMyExams" resultType="com.sot.iexam.DO.exam">
+        select e.*
+        from exam e,
+             registration r
+        where r.examinees_id = #{examineesId}
+          and r.exam_id = e.id and (e.status=1 or e.status=4 or e.status=5 or LENGTH(trim(e.status))=3 or e.status=6 or e.status=7 or e.status=8 or e.status=9)
+    </select>
+
+
+    <select id="getRegistrationByExamineesId" resultType="com.sot.iexam.DO.exam">
+        select e.*
+        from exam e,
+             registration r
+        where r.examinees_id = #{examineesId}
+          and r.exam_id = e.id
+    </select>
+    <select id="getRegistrationById" resultType="com.sot.iexam.DO.registration">
+        select id, exam_id, examinees_id, status, create_time, modify_time
+        from registration
+        where id = #{registrationId}
+    </select>
+    <select id="getRegistrationList" resultType="com.sot.iexam.DO.examinees">
+        select id, exam_id, examinees_id, status, create_time, modify_time
+        from registration
+        <include refid="registrationWhereSQL"></include>
+    </select>
+
+
+
+    <select id="getCountRegistrationByExamineesIdMyExams" resultType="java.lang.Integer">
+        select count(1)
+        from exam e,
+             registration r
+        where r.examinees_id = #{examineesId}
+          and r.exam_id = e.id and (e.status=1 or e.status=4 or e.status=5 or LENGTH(trim(e.status))=3 or e.status=6 or e.status=7 or e.status=8 or e.status=9)
+    </select>
+
+
+
+    <select id="getCountByExamineesId" resultType="java.lang.Integer">
+        select count(1)
+        from registration
+        where examinees_id = #{examineesId}
+    </select>
+    <select id="getCountByExamId" resultType="java.lang.Integer">
+        select count(1)
+        from registration
+        where exam_id = #{examId}
+    </select>
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(1)
+        from registration
+        <include refid="registrationWhereSQL"></include>
+    </select>
+
+    <select id="checkExistence" resultType="java.lang.Integer">
+        select count(1)
+        from registration
+        where exam_id = #{registration.examId}
+          and examinees_id = #{registration.examineesId}
+    </select>
+
+    <sql id="registrationWhereSQL">
+        <trim prefix="where" prefixOverrides="and |or ">
+            <if test="registration.examId != null">and exam_id = #{registration.examId}</if>
+            <if test="registration.examineesId != null">and examinees_id = #{registration.examineesId}</if>
+            <if test="registration.status != null">and status = #{registration.status}</if>
+            <if test="registration.createTime != null">and create_time = #{registration.createTime}</if>
+            <if test="registration.modifyTime != null">and modify_time = #{registration.modifyTime}</if>
+        </trim>
+    </sql>
+</mapper>

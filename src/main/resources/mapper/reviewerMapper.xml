@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.reviewerMapper">
+    <update id="disableReviewer">
+        update reviewer_title
+        set status = 0
+        where reviewer_id = #{userId}
+    </update>
+    <update id="enableReviewer">
+        update reviewer_title
+        set status = 1
+        where reviewer_id = #{userId}
+    </update>
+    <!--
+    namespace:名称空间;指定为接口的全类名
+    id：唯一标识
+    resultType：返回值类型（接收的bean的全类名比较合适，别名也行）
+    #{id}：从传递过来的参数中取出id值
+
+    public Employee getEmpById(Integer id);
+     -->
+
+
+    <select id="getReviewersIdByTitleId" resultType="java.lang.Integer">
+        select reviewer_id
+        from reviewer_title
+        where title_id = #{titleId}
+          and status = 1
+        order by review_times asc
+    </select>
+    <select id="checkTime" resultType="java.lang.Integer">
+        select id
+        from reviewer_exam
+        where reviewer_id = #{reviewId}
+          and review_start_time &gt; #{startTime}
+          and review_end_time &lt; #{endTime}
+    </select>
+    <select id="getManagedReviewersByExamId" resultType="com.sot.iexam.DO.reviewerExam">
+        select id,reviewer_id
+
+        from reviewer_exam
+        where exam_id = #{examId}
+    </select>
+    <select id="getUnAvailableReviewers" resultType="java.lang.Integer">
+        select reviewer_id
+        from reviewer_exam
+        where (review_start_time between #{startTime} and #{endTime} and
+               review_end_time between #{startTime} and #{endTime} and status = 0)
+    </select>
+    <select id="getReviewerAssignment" resultType="java.lang.Integer">
+        select count(id)
+        from reviewer_title
+        where reviewer_id = #{userId}
+    </select>
+    <select id="getReviewerById" resultType="com.sot.iexam.DO.XUser">
+        select id, phone, real_name, username
+        from x_user
+        where id = #{reviewerId}
+    </select>
+</mapper>

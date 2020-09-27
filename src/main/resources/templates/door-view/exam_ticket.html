@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" th:href="@{/door-static/css/bootstrap.min.css}">
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" th:href="@{/door-static/css/mdb.min.css}">
+    <!-- Custom styles -->
+    <style>
+
+    </style>
+</head>
+
+<body class="single-page cloudy-knoxville-gradient ">
+
+
+<div class="container pt-2">
+    <div class="w-100 justify-content-end d-flex">
+        <button class="btn btn-md btn-danger mx-auto" type="button" onclick="getTicket()">下载为PDF</button>
+    </div>
+    <main>
+
+        <div id="ticketBody">
+            <!-- Section: Blog v.4 -->
+            <section class="mt-1 pb-3 wow fadeIn">
+                <!-- Grid row -->
+                <div class="row">
+                    <div class="mt-3 px-3 col-12 mb-0 pb-0">
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Grid column -->
+                    <div class="col-md-12">
+                        <!-- Featured image -->
+                        <div class="justify-content-between d-flex">
+                            <div class="mt-0 card p-3 col-12">
+                                <!-- Section: exams -->
+                                <section class="section card-body pb-0">
+                                    <div class="container col-12" style="min-height: 300px;">
+                                        <div class="col-12 h3 pb-3 text-center"><span th:text="${ticket.exam.name}"></span>准考证</div>
+                                        <table class="table table-bordered border">
+                                            <tbody>
+                                            <tr>
+                                                <th scope="row">准考证号</th>
+                                                <td th:text="${ticket.ticket.ticketNumber}"></td>
+                                                <td rowspan="5" class="p-0" style="width: 220px">
+                                                    <div class="p-0" style="height: 332px;width: 220px">
+                                                        <img height="332px" style="width: 100%" th:src="${ticket.examinees.photoPath}">
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">报考职称</th>
+                                                <td th:text="${ticket.exam.titleName}"></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">姓名</th>
+                                                <td th:text="${ticket.examinees.name}"></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">证件号码</th>
+                                                <td th:text="${ticket.examinees.idCard}"></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">考试地点</th>
+                                                <td colspan="2"><span th:text="${ticket.exam.place}"></span> <span th:text="${ticket.examRoom.no}"></span>号考场-<span th:text="${ticket.examRoom.roomName}"></span></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        <table class="table table-bordered text-center">
+                                            <thead>
+                                            <tr>
+                                                <th scope="col">考试开始时间</th>
+                                                <th scope="col">考试结束时间</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td th:text="${ticket.exam.examinationStartTime}"></td>
+                                                <td th:text="${ticket.exam.examinationEndTime}"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        <div class="col-12 border border-top border-dark m4-2 mb-4"></div>
+                                        <div>
+                                            <h5>请认真阅读《考场规则》</h5>
+                                            <div class="container col-12 pb-3">
+                                                <div class="row">
+                                                    <div class="col"><span class="px-3"></span>一、考生必须按规定时间参加考试，在考试前打预备铃(考试开始前15分钟)，凭准考证、身份证和学生证三证进入考场。迟到15分钟以上的不得入场
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col"><span class="px-3"></span>二、考生进入考场，只准携带考试必需的文具用品，如黑色字迹签字笔、2B铅笔、橡皮、卷笔刀、直尺，不准携带任何书籍、笔记、报纸、草稿纸、计算尺、隐形笔、计数器和录音器材等，禁止携带录放音机、电子记事本以及各种无线通信工具（如寻呼机、移动电话）等进入考场。
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col"><span class="px-3"></span>三、进入考场前监考老师应仔细核查考生的准考证、身份证和学生证等能证明身份的证件与考生本人是否相符，防止冒名代考。考试时，发现考场有异常情况或考生作弊时，应及时向主考报告，并作好考场记录。
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col"><span class="px-3"></span>四、考生进入考场，即按准考证号码或座位号入座，并将自己的准考证和身份证等证明身份的证件放在课桌左上角，以便监考人员查对。
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col"><span class="px-3"></span>五、考生在试卷分发后，须核对试卷的应试等级是否相符，如有不符，应立即向监考人员报告，要求更换。考生还须将本人的准考证号码及姓名清楚、正确地填写在答卷纸密封线内规定的位置上，切勿遗漏。
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col"><span class="px-3"></span>六、考试时，考生不得随意离开自己的座位，不准喧哗吵闹，不准吸烟，不得有交谈等作弊行为。如发现有舞弊行为，该考生的考试成绩作零分处理。
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col"><span class="px-3"></span>七、考生答题，必须用黑色字迹的签字笔书写，用红笔、铅笔答题，不予评分。如遇试题字迹不清，可举手询问，但对试题内容不得要求监考人员作任何解释或启示。用专用答题卡答题，只限于2B铅笔答题。考生必须按规定答题（涂点）。
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col"><span
+                                                            class="px-3"></span>八、考生在答题时间内，不得离开自己的座位，<span
+                                                            class="text-danger">考试全过程不得离开试场。</span></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col"><span class="px-3"></span>九、考生必须严格遵守考场规则，不准冒名代考，不准交头接耳，不准偷看他人答案，不准夹带、换卷，违者以考试舞弊论处，立即取消考试资格，作零分处理。
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col"><span class="px-3"></span>十、在考试进行期间，非本考场监考人员（主考、巡视员除外）一律不得进入考场，并注意保持考场的整齐、清洁。
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col"><span class="px-3"></span>十一、考试终了时间一到，考生应立即停止答卷，安坐原位，待监考人员按顺序收齐全部试卷、答题卡和答卷纸后，方可离场。
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+</div>
+
+<script th:src="@{/door-static/js/jquery-3.4.1.min.js}"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/door-static/js/popper.min.js}"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/bootstrap.js}"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/mdb.min.js}"></script>
+<script type="text/javascript" th:src="@{/door-static/js/vue.js}"></script>
+
+
+<script src="https://cdn.bootcss.com/html2canvas/0.5.0-beta4/html2canvas.js"></script>
+<script src="https://cdn.bootcss.com/jspdf/1.3.4/jspdf.debug.js"></script>
+
+
+<script>
+
+
+    function getTicket() {
+        var target = document.getElementById("ticketBody");
+        console.log(target);
+        target.style.background = "#FFFFFF";
+
+        html2canvas(target, {
+            onrendered:function(canvas) {
+                var contentWidth = canvas.width;
+                var contentHeight = canvas.height;
+
+                console.log(canvas);
+
+                //一页pdf显示html页面生成的canvas高度;
+                var pageHeight = contentWidth / 592.28 * 841.89;
+                //未生成pdf的html页面高度
+                var leftHeight = contentHeight;
+                //页面偏移
+                var position = 0;
+                //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+                var imgWidth = 595.28;
+                var imgHeight = 592.28/contentWidth * contentHeight;
+
+                var pageData = canvas.toDataURL('image/jpeg', 1.0);
+
+                var pdf = new jsPDF('', 'pt', 'a4');
+
+                //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
+                //当内容未超过pdf一页显示的范围，无需分页
+                if (leftHeight < pageHeight) {
+                    pdf.addImage(pageData, 'JPEG', 0, 0, imgWidth, imgHeight );
+                } else {
+                    while(leftHeight > 0) {
+                        pdf.addImage(pageData, 'JPEG', 0, position, imgWidth, imgHeight)
+                        leftHeight -= pageHeight;
+                        position -= 841.89;
+                        //避免添加空白页
+                        if(leftHeight > 0) {
+                            pdf.addPage();
+                        }
+                    }
+                }
+
+                pdf.save("准考证.pdf");
+            }
+        })
+    }
+
+</script>
+
+</body>
+
+</html>

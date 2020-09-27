@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.examineesMapper">
+    <!--
+    namespace:名称空间;指定为接口的全类名
+    id：唯一标识
+    resultType：返回值类型（接收的bean的全类名比较合适，别名也行）
+    #{id}：从传递过来的参数中取出id值
+
+    public Employee getEmpById(Integer id);
+     -->
+    <resultMap id="examinees" type="com.sot.iexam.DO.examinees">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <result column="pwd" property="pwd"/>
+        <result column="id_card" property="idCard"/>
+        <result column="gender" property="gender"/>
+        <result column="bk_phone" property="bkPhone"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="photo_path" property="photoPath"/>
+    </resultMap>
+
+    <insert id="insertUser">
+        insert into examinees(name, phone, pwd, id_card, gender, status)
+        values (#{examinees.name}, #{examinees.phone}, #{examinees.pwd}, #{examinees.idCard}, #{examinees.gender},
+                '1')
+    </insert>
+
+    <select id="checkExistence" resultType="java.lang.Integer">
+        select count(1)
+        from examinees
+        where phone = #{examinees.phone}
+          or id_card = #{examinees.idCard}
+    </select>
+
+    <insert id="insert" keyProperty="examinees.id" useGeneratedKeys="true">
+        insert into examinees(name, phone, pwd, id_card, gender, bk_phone, status, create_time, modify_time,
+                              photo_path)
+        values (#{examinees.name}, #{examinees.phone}, #{examinees.pwd}, #{examinees.idCard},
+                #{examinees.gender}, #{examinees.bkPhone}, #{examinees.status}, #{examinees.createTime},
+                #{examinees.modifyTime}, #{examinees.photoPath})
+    </insert>
+
+    <update id="update">
+        update examinees
+        <trim prefix="set" suffixOverrides=",">
+            <if test="examinees.name != null">name = #{examinees.name},</if>
+            <if test="examinees.phone != null">phone = #{examinees.phone},</if>
+            <if test="examinees.pwd != null">pwd = #{examinees.pwd},</if>
+            <if test="examinees.idCard != null">id_card = #{examinees.idCard},</if>
+            <if test="examinees.gender != null">gender = #{examinees.gender},</if>
+            <if test="examinees.bkPhone != null">bk_phone = #{examinees.bkPhone},</if>
+            <if test="examinees.status != null">status = #{examinees.status},</if>
+            <if test="examinees.createTime != null">create_time = #{examinees.createTime},</if>
+            <if test="examinees.modifyTime != null">modify_time = #{examinees.modifyTime},</if>
+            <if test="examinees.photoPath != null">photo_path = #{examinees.photoPath},</if>
+        </trim>
+
+        where id = #{examinees.id}
+    </update>
+
+
+    <select id="getExamineesListAll" resultType="com.sot.iexam.DO.examinees">
+        select *
+        from examinees
+        where status=1
+    </select>
+
+
+    <select id="getExamineesInfoById" resultType="com.sot.iexam.DO.examinees">
+        select id,
+               name,
+               phone,
+               pwd,
+               id_card,
+               gender,
+               bk_phone,
+               status,
+               create_time,
+               modify_time,
+               photo_path
+        from examinees
+        where id = #{examineesId}
+    </select>
+
+    <select id="findByAccountAndPassword" resultType="com.sot.iexam.DO.examinees">
+        select id,
+               name,
+               phone,
+               pwd,
+               id_card,
+               gender,
+               bk_phone,
+               status,
+               create_time,
+               modify_time,
+               photo_path
+        from examinees
+        where (phone = #{account} or id_card=#{account}) and pwd=#{password}
+    </select>
+
+    <resultMap id="examineesListVo" type="com.sot.iexam.VO.examineesListVo">
+
+        <association property="examinees" column="examinees" javaType="com.sot.iexam.DO.examRoom"
+                     resultMap="examinees">
+        </association>
+        <association property="examTicket" column="ticket" javaType="com.sot.iexam.DO.examTicket"
+                     resultMap="com.sot.iexam.DAO.mybatis.mapper.examTicketMapper.examTicket">
+        </association>
+    </resultMap>
+    <select id="getExamineesList" resultMap="examineesListVo">
+        select examinees.id, examinees.name, examinees.phone, examinees.pwd,
+        examinees.id_card, examinees.gender, examinees.bk_phone, examinees.status,
+        examinees.create_time, examinees.modify_time, examinees.photo_path
+        <if test="examinees.examId != null || examinees.examRoomId != null">,ticket.*</if>
+        from examinees examinees
+        <if test="examinees.examId != null || examinees.examRoomId != null">, examinees_ticket ticket</if>
+        <include refid="ExamineesWhereSQL"></include>
+
+    </select>
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(1)
+        from examinees examinees
+        <if test="examinees.examId != null || examinees.examRoomId != null">, examinees_ticket ticket</if>
+        <include refid="ExamineesWhereSQL"></include>
+    </select>
+
+    <sql id="ExamineesWhereSQL">
+        <trim prefix="WHERE" prefixOverrides="and |or ">
+            <if test="examinees.name != null">
+                and name like concat('%',#{examinees.name},'%')
+            </if>
+            <if test="examinees.phone != null">and phone = #{examinees.phone}</if>
+            <if test="examinees.pwd != null">and pwd = #{examinees.pwd}</if>
+            <if test="examinees.idCard != null">and id_card = #{examinees.idCard}</if>
+            <if test="examinees.gender != null">and gender = #{examinees.gender}</if>
+            <if test="examinees.bkPhone != null">and bk_phone = #{examinees.bkPhone}</if>
+            <if test="examinees.status != null">and status = #{examinees.status}</if>
+            <if test="examinees.createTime != null">and create_time = #{examinees.createTime}</if>
+            <if test="examinees.modifyTime != null">and modify_time = #{examinees.modifyTime}</if>
+            <if test="examinees.photoPath != null">and photo_path = #{examinees.photoPath}</if>
+            <if test="examinees.examId != null">and ticket.exam_id = #{examinees.examId}</if>
+            <if test="examinees.examRoomId != null">and 0 + substr(ticket.ticket_number, 13, 3) = #{examinees.examRoomId}
+            </if>
+            <if test="examinees.examId != null || examinees.examRoomId != null">and ticket.examinees_id = examinees.id
+            </if>
+        </trim>
+    </sql>
+</mapper>

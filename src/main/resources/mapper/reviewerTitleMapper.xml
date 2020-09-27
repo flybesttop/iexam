@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.reviewerTitleMapper">
+    <!--
+    namespace:名称空间;指定为接口的全类名
+    id：唯一标识
+    resultType：返回值类型（接收的bean的全类名比较合适，别名也行）
+    #{id}：从传递过来的参数中取出id值
+
+    public Employee getEmpById(Integer id);
+     -->
+    <resultMap id="reviewerTitle" type="com.sot.iexam.DO.reviewerTitle">
+        <id column="id" property="id"/>
+        <result column="reviewer_id" property="reviewerId"/>
+        <result column="review_times" property="reviewTimes"/>
+        <result column="title_id" property="titleId"/>
+        <result column="add_time" property="addTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+
+    <update id="updateStatus">
+        update reviewer_title
+        <trim prefix="set" suffixOverrides=",">
+            <if test="reviewerTitle.reviewerId!=null">reviewer_id =#{reviewerTitle.reviewerId},</if>
+            <if test="reviewerTitle.reviewTimes!=null">review_times =#{reviewerTitle.reviewTimes},</if>
+            <if test="reviewerTitle.titleId!=null">title_id =#{reviewerTitle.titleId},</if>
+            <if test="reviewerTitle.addTime!=null">add_time =#{reviewerTitle.addTime},</if>
+            <if test="reviewerTitle.modifyTime!=null">modify_time =#{reviewerTitle.modifyTime},</if>
+            <if test="reviewerTitle.status!=null">status =#{reviewerTitle.status}</if>
+        </trim>
+        where reviewer_id=#{reviewerTitle.reviewerId} and title_id=#{reviewerTitle.titleId}
+    </update>
+
+    <select id="checkExistence" resultType="com.sot.iexam.DO.reviewerTitle">
+        select *
+        from reviewer_title
+        where reviewer_id = #{reviewerTitle.reviewerId}
+          and title_id = #{reviewerTitle.titleId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="reviewerTitle.id">
+        insert into reviewer_title(reviewer_id, review_times, title_id, add_time, modify_time,status)
+        values (#{reviewerTitle.reviewerId}, #{reviewerTitle.reviewTimes}, #{reviewerTitle.titleId},
+                #{reviewerTitle.addTime}, #{reviewerTitle.modifyTime}, #{reviewerTitle.status})
+    </insert>
+
+</mapper>

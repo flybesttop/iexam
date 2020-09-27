@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+
+    <!--<link th:href="@{/css/iexam/scrollbar.css}" rel="stylesheet">-->
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/v4-shims.css}">
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link th:href="@{/css/mdb.min.css}" rel="stylesheet">
+
+    <!-- Your custom styles (optional) -->
+    <link th:href="@{/css/addonss/bootstrap-table.min.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/emmo_Apparence.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/bootoast.css}" rel="stylesheet">
+    <link th:href="@{/css/addonss/bootstrap-datetimepicker.min.css}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+
+    <style type="text/css">
+        td {
+            padding: 4px !important;
+        }
+
+        [type="checkbox"] + label {
+            padding: 10px;
+            height: 0;
+        }
+
+        label {
+            margin: 0;
+        }
+
+        .nav-link {
+            padding: .3rem 1rem
+        }
+
+        .navItem {
+            cursor: pointer;
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .font-normal {
+            font-weight: normal;
+            font-size: 1em;
+        }
+    </style>
+
+</head>
+
+<body>
+<div id="app" class="container-fluid">
+    <div id="operator_url" path="/xRole" dataBase="x_role"></div>
+
+    <div id="toolbar" class="justify-content-between">
+        <div class="btn-group">
+
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addRecord">
+                <i class="fas fa-plus fa-1x" aria-hidden="true"></i> 新增
+            </button>
+
+            <!--            <button type="button" class="btn btn-default" onclick="deleteChecked();">-->
+            <!--                <span class="fa fa-remove" aria-hidden="true"></span> 批量删除-->
+            <!--            </button>-->
+
+            <button type="button" class="btn btn-default" onclick="openSearch(this)">
+                打开搜索
+            </button>
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editColumns">
+                编辑列属性
+            </button>
+        </div>
+    </div>
+
+
+    <table id="mytable" class="table table-hover"></table>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirmAgain" tabindex="-1" role="dialog" aria-labelledby="confirmAgain"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                    <h5 class="modal-title">再次确认</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" data-type="confirm" for="confirm">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="editNodes" tabindex="-1" role="dialog" aria-labelledby="confirmAgain"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document" style="width: 800px;max-width: 800px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">权限管理</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" data-type="confirm" for="editNodesConfirm">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <edit_row></edit_row>
+    <add_record></add_record>
+    <edit_record></edit_record>
+    <edit_users></edit_users>
+</div>
+
+<template id="edit_row">
+    <div>
+        <div class="modal fade" id="editColumns" tabindex="-1" role="dialog"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document" style="width: 900px;max-width: 900px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">修改列属性(拖拽可排列顺序)</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+
+                            <thead>
+                            <tr>
+                                <th scope="col">列名</th>
+                                <th scope="col">别名</th>
+                                <th scope="col">列类型</th>
+                                <th>能否编辑</th>
+                                <th>是否显示</th>
+                            </tr>
+                            </thead>
+                            <tbody id="editColumnsTBody">
+                            <tr draggable="false" data-dragname="id" ondragstart="editColumnModeDragStart()"
+                                ondragover="editColumnModeDragover()" ondrop="editColumnModeDrop()" :data-id="item.id"
+                                v-for=" (item,index) in columninfo">
+
+                                <td>{{item.code}}</td>
+                                <td>
+                                    <div class="md-form mb-2 my-2" style="width: 100%"><input type="text" name="id"
+                                                                                              v-model="item.columnName"
+                                                                                              class="form-control"><label
+                                            class="active">{{item.code}}</label></div>
+                                </td>
+                                <td>
+                                    <button @click="choseType(index,'text')" for="editColumns" data-type="text"
+                                            data-name="id"
+                                            :class="['btn','btn-sm','waves-effect','waves-light',{'blue':item.value=='text'}]"
+                                            style="border-radius: 50px">text
+                                    </button>
+                                    <button @click="choseType(index,'file')" for="editColumns" data-type="file"
+                                            data-name="id"
+                                            :class="['btn','btn-sm','waves-effect','waves-light',{'blue':item.value=='file'}]"
+                                            style="border-radius: 50px">file
+                                    </button>
+                                    <button @click="choseType(index,'pic')" for="editColumns" data-type="pic"
+                                            data-name="id"
+                                            :class="['btn','btn-sm','waves-effect','waves-light',{'blue':item.value=='pic'}]"
+                                            style="border-radius: 50px">pic
+                                    </button>
+                                    <button @click="choseType(index,'date')" for="editColumns" data-type="date"
+                                            data-name="id"
+                                            :class="['btn','btn-sm','waves-effect','waves-light',{'blue':item.value=='date'}]"
+                                            style="border-radius: 50px">date
+                                    </button>
+                                </td>
+                                <td>
+                                    <input type="checkbox" checked name="id" data-name="canEdit" :id="'canEdit'+index"
+                                           v-model="item.canEdit"
+                                           v-if="item.canEdit">
+                                    <input type="checkbox" name="id" data-name="canEdit" :id="'canEdit'+index"
+                                           v-model="item.canEdit"
+                                           v-else="!item.canEdit">
+                                    <label :for="'canEdit'+index" class="active"></label>
+                                </td>
+                                <td>
+                                    <input type="checkbox" checked name="id" data-name="canSee" :id="'canSee'+index"
+                                           v-model="item.canSee"
+                                           v-if="item.canSee">
+                                    <input type="checkbox" name="id" data-name="canSee" :id="'canSee'+index"
+                                           v-model="item.canSee"
+                                           v-if="!item.canSee">
+                                    <label :for="'canSee'+index" class="active"></label>
+                                </td>
+                            </tr>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" @click="editRowConfirm">确认
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>
+<template id="add_record">
+    <div>
+        <div class="modal fade" id="addRecord" tabindex="-1" role="dialog" aria-labelledby="addRecord"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">添加信息</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class='form-row mb-1' v-for="item in columninfo">
+                            <div class='md-form mb-2 my-2' style='width: 100%' v-if="item.canEdit">
+                                <input type='text' :name='item.code' class='form-control' :id="'add'+item.code"
+                                       v-model="FormData[item.code]">
+                                <label :for="'add'+item.code" class=''>{{item.columnName}}</label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" @click="addRecord">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>
+<template id="edit_record">
+    <div>
+        <!-- Modal -->
+        <div class="modal fade" id="editRecord" tabindex="-1" role="dialog" aria-labelledby="editRecord"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">修改信息</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class='form-row mb-1' v-for="item in columninfo">
+                            <div class='md-form mb-2 my-2' style='width: 100%' v-if="item.canEdit">
+                                <input type='text' :name='item.code' class='form-control' :id="'edit'+item.code"
+                                       v-model="edit_data[item.code]">
+                                <label :for="'edit'+item.code" v-if="''!=edit_data[item.code]" class="active">{{item.columnName}}</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" @click="confirm">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="edit_users">
+    <div>
+        <div class="modal fade" id="editUsers" tabindex="-1" role="dialog" aria-labelledby="addRecord"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document" style="margin: 50px">
+                <div class="modal-content" style="width: 1400px;">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{RoleInfoInModal.name}}的角色列表</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="min-height: 500px">
+                        <div class="container-fluid"
+                             style="display: flex;justify-content: space-between;height: 500px">
+                            <div class="col-6">
+                                <div class="card" style="height: 500px">
+                                    <div class="card-header">
+                                        <div>
+                                            有【{{RoleInfoInModal.name}}】角色的用户列表
+                                        </div>
+                                        <div class="form-row mb-1">
+                                            <div class="md-form mb-2 my-2" style="width: 100%;"><input type="text"
+                                                                                                       id="se1"
+                                                                                                       class="form-control"
+                                                                                                       v-model="searchUserName"
+                                                                                                       @keyup.enter="se1(RoleInfoInModal.id)">
+                                                <label for="se1" style="top: 1rem !important;">搜索用户信息</label></div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+
+                                            <span v-for="(item,index) in WithRoleUserInfo"
+                                                  class="badge  badge-default font-normal m-1"
+                                                  style="cursor: pointer">{{item.realName}}
+                                                <span>
+
+<!--                                                <transition leave-active-class="animated fadeIn">-->
+                                                    <span style="position: absolute;z-index: 999;"
+                                                          v-if="item.confirmAgain == undefined || item.confirmAgain != true ">
+                                                        <i style="opacity: 0;" class="fas fa-times-circle ml-1"></i>
+                                                        <i @click="removeUserConfirm(index)"
+                                                           class="fas fa-times-circle ml-1"></i>
+                                                    </span>
+                                                    <!--                                                </transition>-->
+                                                    <!--                                                <transition leave-active-class="animated fadeIn">-->
+                                                    <span style="position: absolute;z-index: 999"
+                                                          v-if="item.confirmAgain == true ">
+                                                         <i @click="removeUser(item.id,index)"
+                                                            class="fas fa-check-circle ml-1"></i>
+                                                         <i @click="removeUserCancel(index)"
+                                                            class="fas fa-times-circle ml-1"></i>
+                                                    </span>
+                                                    <!--                                                </transition>-->
+
+                                                    </span>
+                                                <span style="position: relative;opacity: 0;">
+                                                         <i @click=""
+                                                            class="fas fa-check-circle ml-1"></i>
+                                                         <i @click=""
+                                                            class="fas fa-times-circle ml-1"></i>
+                                                    </span>
+                                                </span>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card" style="height: 500px">
+                                    <div class="card-header">
+                                        <div>无【{{RoleInfoInModal.name}}】角色的用户列表</div>
+                                        <div class="form-row mb-1">
+                                            <div class="md-form mb-2 my-2" style="width: 100%;"><input type="text"
+                                                                                                       id="se2"
+                                                                                                       class="form-control"
+                                                                                                       v-model="searchUserName2"
+                                                                                                       @keyup.enter="se2(RoleInfoInModal.id)">
+                                                <label for="se2" style="top: 1rem !important;">搜索用户信息</label></div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <span v-for="(item,index) in NoRoleUserInfo"
+                                              class="badge  badge-default font-normal m-1"
+                                              style="cursor: pointer">{{item.realName}}
+                                            <!--                                            <transition leave-active-class="animated fadeIn">-->
+                                                <span style="position: absolute;z-index: 999;"
+                                                      v-if="item.confirmAgain == undefined || item.confirmAgain != true ">
+                                                    <i style="opacity: 0;" class="fas fa-times-circle ml-1"></i>
+                                                    <i @click="addUserConfirm(index)"
+                                                       class="fas fa-plus-circle ml-1"></i>
+                                                </span>
+                                            <!--                                            </transition>-->
+                                            <!--                                            <transition leave-active-class="animated fadeIn">-->
+                                                <span style="position: absolute;z-index: 999"
+                                                      v-if="item.confirmAgain == true ">
+                                                     <i @click="addUser(item.id,index)"
+                                                        class="fas fa-check-circle ml-1"></i>
+                                                     <i @click="addUserCancel(index)"
+                                                        class="fas fa-times-circle ml-1"></i>
+                                                </span>
+                                            <!--                                            </transition>-->
+                                            <span style="position: relative;opacity: 0;">
+                                                         <i class="fas fa-check-circle ml-1"></i>
+                                                         <i class="fas fa-times-circle ml-1"></i>
+                                                    </span>
+
+                                        </span>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container-fluid" v-if="RoleInfoInModal.remark == '1001'">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        阅卷老师 aaa 的阅卷科目
+                                    </div>
+                                    <div class="card-no-border">
+                                        阅卷科目：
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>
+<!-- JQuery -->
+<script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}" src="/js/jquery-3.3.1.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/js/Vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/js/popper.min.js}" src="/js/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/js/bootstrap.js}" src="/js/bootstrap.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/js/mdb.min.js}" src="/js/mdb.min.js"></script>
+
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table.min.js}"
+        src="/js/addons/bootstrap-table.min.js"></script>
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table-locale-all.js}"
+        src="/js/addons/bootstrap-table-locale-all.js"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/bootoast.js}"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/emmo_backTable_basicOperator.js}"></script>
+<!--<script type="text/javascript" th:src="@{/js/addons/datepicker/bootstrap-datetimepicker.min.js}"></script>-->
+<!--<script type="text/javascript" th:src="@{/js/addons/datepicker/locales/bootstrap-datetimepicker.zh-CN.js}"></script>-->
+
+<script type="text/javascript" th:src="@{/js/Vue/IexamBack/backTemplates.js}"></script>
+
+<script type="text/javascript">
+    dic();
+    var _table;
+    var searchOpen = false;
+    var searchItemInLine = 3;
+    var deleteComfirmMessage_batch = "是否确定删除选中的这些信息？";
+    var deleteComfirmMessage_only = "是否确定删除这条信息？";
+    var notSupportEdit = "本列暂时不支持修改";
+    var __url = $("#operator_url").attr("path");
+
+    let edit_users = {
+        template: "#edit_users",
+        data() {
+            return {
+                timer: null,
+                timer2: null,
+                RoleInfoInModal: "角色a",
+                WithRoleUserInfo: [],
+                NoRoleUserInfo: [],
+                searchUserName: '',
+                searchUserName2: '',
+            }
+        },
+        methods: {
+            removeUserConfirm(index) {
+                this.$set(this.WithRoleUserInfo[index], 'confirmAgain', true);
+            },
+            removeUserCancel(index) {
+                this.$set(this.WithRoleUserInfo[index], 'confirmAgain', false);
+            },
+            addUserConfirm(index) {
+                this.$set(this.NoRoleUserInfo[index], 'confirmAgain', true);
+            },
+            addUserCancel(index) {
+                this.$set(this.NoRoleUserInfo[index], 'confirmAgain', false);
+            },
+            removeUser(id, index) {
+
+                let _this = this;
+                $.ajax({
+                    url: '/xRole/removeUser?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        userId: id,
+                        roleId: this.RoleInfoInModal.id,
+                        code: this.RoleInfoInModal.remark
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        if (data.status == 1) {
+                            bootoast({
+                                message: data.info,
+                                type: 'success',
+                                position: 'top-right',
+                                timeout: 2
+                            });
+                            _this.$set(_this.WithRoleUserInfo[index], 'confirmAgain', false);
+                            let temp = _this.WithRoleUserInfo[index];
+                            _this.WithRoleUserInfo.splice(index, 1);
+                            _this.NoRoleUserInfo.push(temp);
+
+                        }
+
+
+                    }, error: function (data) {
+
+                    }
+                });
+
+            },
+            addUser(id, index) {
+                let _this = this;
+                $.ajax({
+                    url: '/xRole/addUser?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        userId: id,
+                        roleId: this.RoleInfoInModal.id,
+                        code: this.RoleInfoInModal.remark
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        if (data.status == 1) {
+                            bootoast({
+                                message: data.info,
+                                type: 'success',
+                                position: 'top-right',
+                                timeout: 2
+                            });
+                            _this.$set(_this.NoRoleUserInfo[index], 'confirmAgain', false);
+                            let temp = _this.NoRoleUserInfo[index];
+                            _this.NoRoleUserInfo.splice(index, 1);
+                            _this.WithRoleUserInfo.push(temp);
+
+                        }
+
+                    }, error: function (data) {
+
+                    }
+                });
+
+            }, se1(id) {
+                let _this = this;
+                clearInterval(this.timer);
+                $.ajax({
+                    url: '/xUser/findByRoleId?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        roleId: id,
+                        realName: this.searchUserName,
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        _this.WithRoleUserInfo = data;
+                    }, error: function (data) {
+
+                    }
+                });
+            }, se2(id) {
+                let _this = this;
+                clearInterval(this.timer2);
+                $.ajax({
+                    url: '/xUser/findWithoutRoleId?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        roleId: id,
+                        realName: this.searchUserName2,
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        _this.NoRoleUserInfo = data;
+                    }, error: function (data) {
+
+                    }
+                });
+            }
+        },
+        watch: {
+            searchUserName: {
+                handler(value, oldValue) {
+                    clearInterval(this.timer);
+                    this.timer = setInterval(() => {
+                        console.log("发送查询请求" + value);
+                        clearInterval(this.timer);
+                        let roleId = this.RoleInfoInModal.id;
+                        let _this = this;
+                        $.ajax({
+                            url: '/xUser/findByRoleId?PAGE_FROM_TYPE=BACK',
+                            type: "post",
+                            dataType: "json",
+                            data: {
+                                roleId: roleId,
+                                realName: value,
+                            },
+                            cache: false,
+                            async: false,
+                            success: function (data) {
+                                _this.WithRoleUserInfo = data;
+                            }, error: function (data) {
+
+                            }
+                        });
+                    }, 2000);
+                },
+            },
+            searchUserName2: {
+                handler(value, oldValue) {
+                    clearInterval(this.timer2);
+                    this.timer2 = setInterval(() => {
+                        console.log("发送查询请求" + value);
+                        clearInterval(this.timer2);
+                        let roleId = this.RoleInfoInModal.id;
+                        let _this = this;
+                        $.ajax({
+                            url: '/xUser/findWithoutRoleId?PAGE_FROM_TYPE=BACK',
+                            type: "post",
+                            dataType: "json",
+                            data: {
+                                roleId: roleId,
+                                realName: value,
+                            },
+                            cache: false,
+                            async: false,
+                            success: function (data) {
+                                _this.NoRoleUserInfo = data;
+                            }, error: function (data) {
+
+                            }
+                        });
+                    }, 2000);
+                },
+            }
+        },
+        created() {
+            let _this = this;
+            bus.$on('roleInfo', (data) => {
+                _this.RoleInfoInModal = data;
+                $.ajax({
+                    url: '/xUser/findByRoleId?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        roleId: data.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        _this.WithRoleUserInfo = data;
+                    }, error: function (data) {
+
+                    }
+                });
+                $.ajax({
+                    url: '/xUser/findWithoutRoleId?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        roleId: data.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        _this.NoRoleUserInfo = data;
+                    }, error: function (data) {
+
+                    }
+                });
+            })
+        }
+    }
+
+    let vm = new Vue({
+        el: "#app",
+        data: {
+            edit_data: {}
+        },
+        components: {
+            edit_row, add_record, edit_record, edit_users
+        },
+        methods: {},
+        mounted() {
+
+        },
+
+    })
+
+    let vue_operations = Vue.extend({
+        template: `<div><button @click.stop='RoleEditNodes(id)'  class='btn btn-sm waves-effect waves-light green'>节点管理</button>
+            <button @click.stop='editUsers(id)'  class='btn btn-sm waves-effect waves-light light-green'>编辑用户</button>
+            <button @click.stop='rowEdit(id)'  class='btn btn-sm waves-effect waves-light blue'>编辑</button>
+            <button @click.stop='rowDelete(id)'  class='btn btn-sm waves-effect waves-light orange' v-if="code == '-1'">删除</button>
+            </div>`,
+        props: ['id', 'code'],
+        data() {
+            return {
+                edit_row_info: {}
+            }
+        },
+        methods: {
+            RoleEditNodes(id) {
+                RoleEditNodes(id);
+            },
+            rowEdit(id) {
+                console.log(id);
+                bus.$emit('edit_row_info', (_table.bootstrapTable('getRowByUniqueId', id)));
+                $("#editRecord").modal('show');
+            },
+            rowDelete(id) {
+                rowDelete(id);
+            },
+            editUsers(id) {
+                bus.$emit('roleInfo', (_table.bootstrapTable('getRowByUniqueId', id)));
+                $("#editUsers").modal('show');
+            }
+        }
+
+    })
+
+    InitMainTable();
+
+    //初始化bootstrap-table的内容
+    function InitMainTable() {
+        var columns = getColumns();
+        //记录页面bootstrap-table全局变量$table，方便应用
+        _table = $('#mytable').bootstrapTable({
+            url: __url + "/findForTable",                      //请求后台的URL（*）
+            locale: "zh-CN",
+            method: 'GET',                      //请求方式（*）
+            toolbar: '#toolbar',              //工具按钮用哪个容器
+            striped: true,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true,                   //是否显示分页（*）
+            sortable: true,                     //是否启用排序
+            sortOrder: "asc",                   //排序方式
+            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
+            pageSize: 10,                     //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+            search: false,                      //是否显示表格搜索
+            strictSearch: true,
+            //showColumns: true,                  //是否显示所有的列（选择显示的列）
+            // showRefresh: true,                  //是否显示刷新按钮
+            minimumCountColumns: 2,             //最少允许的列数
+            clickToSelect: true,                //是否启用点击选中行
+            //height: 500,                      //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "id",                     //每一行的唯一标识，一般为主键列
+            showToggle: false,                   //是否显示详细视图和列表视图的切换按钮
+            cardView: false,                    //是否显示详细视图
+            detailView: false,                  //是否显示父子表
+            //得到查询的参数
+            queryParams: function (params) {
+                var temp = {
+                    limitSize: params.limit,                         //页面大小
+                    limitPage: (params.offset / params.limit),   //页码
+                    orderBy: humbToLine(params.sort) === "undefined" ? params.sort : humbToLine(params.sort),      //排序列名
+                    direction: params.orderMain, //排位命令（desc，asc）
+                };
+                if (searchOpen) {
+                    var form = $("form[name=search_form]");
+                    var JsonObj = serializeArrayToJson(form.serializeArray());
+                    for (var i in JsonObj) {
+                        if (temp[i] == undefined)
+                            temp[i] = JsonObj[i];
+                    }
+                }
+
+                return temp;
+            },
+            columns: columns,
+            onLoadSuccess: function () {
+                //reRenderThead();
+                $(".operator").each(function () {
+                    let id = ($(this).attr("id"));
+                    let data = $(this).attr("data-code");
+                    new vue_operations({
+                        propsData: {
+                            id: id.substring("RECORD_".length),
+                            code: data
+                        }
+                    }).$mount(`#${id}`)
+                })
+            },
+            onLoadError: function () {
+            },
+            onDblClickRow: function (row, _element) {
+
+            },
+        });
+
+    };
+
+    addSearchDiv();
+
+    // //连接字段格式化
+    // function linkFormatter(value, row, index) {
+    //     return "<a href='" + value + "' title='单击打开连接' target='_blank'>" + value + "</a>";
+    // }
+    //
+    // //Email字段格式化
+    // function emailFormatter(value, row, index) {
+    //     return "<a href='mailto:" + value + "' title='单击打开连接'>" + value + "</a>";
+    // }
+    //
+    // //性别字段格式化
+    // function sexFormatter(value) {
+    //     if (value == "女") {
+    //         color = 'Red';
+    //     } else if (value == "男") {
+    //         color = 'Green';
+    //     } else {
+    //         color = 'Yellow';
+    //     }
+    //
+    //     return '<div  style="color: ' + color + '">' + value + '</div>';
+    // }
+    //
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var result = `<div class="operator" id="RECORD_${id}" data-code="${row.remark}"></div>`;
+        return result;
+
+    }
+
+    function checkboxFormatter(value, row, index) {
+        return "<label for='row" + index + "'></label>";
+    }
+
+    function textFormatter(value, row, index) {
+        if (value == undefined || "") {
+            return "";
+        } else {
+            if (value.length > 10) {
+                return value.substring(0, 10) + "...";
+            } else {
+                return value;
+            }
+
+        }
+    }
+
+
+    $("input[name=btSelectAll]").attr("id", "selectAll");
+    $("input[name=btSelectAll]").after("  <label for='selectAll'></label>")
+
+    function RoleEditNodes(id) {
+
+        var _modal = $("#editNodes").modal("show");
+        var _modal_body = _modal.find(".modal-body");
+        var roleId = id
+        _modal_body.empty();
+        var nodes = getXNodes();
+
+        var roleNodes = getXRoleNode(roleId);
+        if (nodes.length != 0) {
+            var temp = sortNodesData(nodes);
+            for (var i = 0, len = temp.length; i < len; i++) {
+                var arr = temp[i].arr;
+                for (var j = 0, len1 = arr.length; j < len1; j++) {
+                    var pid = arr[j].pid;
+                    var div = $("div[data-id=" + pid + "]")[0];
+                    var id = arr[j].id;
+                    div = $(div || _modal_body);
+                    if (arr[j].isMenu == 1) {
+                        div.append(
+                            "<nav class='navbar  mb-1' style='width: 100%'>" +
+                            "<input type='checkbox' name='treeSelect'  id='nav-checkbox-" + id + "' data-p='" + pid + "'>" +
+                            "<label for='nav-checkbox-" + id + "'>" +
+                            "<div class='navItem'" +
+                            " onclick='NavCliker(this)' data-toggle='collapse' data-target='#nav-" + id + "'" +
+                            " aria-controls='nav-" + id + "' aria-expanded='false' >" +
+                            "<a class='navbar-brand' href='javascript:void(0)' style='width: 100%'>" + arr[j].name + "</a>" +
+                            "<button class='navbar-toggler second-button'>" +
+                            "<div class='animated-icon'>" +
+                            "    <span></span>" +
+                            "    <span></span>" +
+                            "    <span></span>" +
+                            "    <span></span></div>" +
+                            "</button>" +
+                            "</div>" +
+                            "<div class='collapse navbar-collapse' id='nav-" + id + "' data-id='" + id + "'>" +
+                            "</div></label>" +
+                            "</nav>");
+                    } else {
+                        var length = div.find("ul").length;
+                        if (length == 0) {
+                            div.append("<ul class='navbar-nav mr-auto ' style='padding: .1rem .5rem;'>" +
+                                "<input type='checkbox' name='treeSelect'  id='nav-checkbox-" + id + "' data-p='" + pid + "'>" +
+                                "<label for='nav-checkbox-" + id + "'>" +
+                                "    <li class='nav-item'>" +
+                                "        <a style='' class='nav-link' href='javascript:void(0)'>" + arr[j].name + "</a>" +
+                                "    </li></label>" +
+                                "</ul>")
+                        } else {
+                            div.find("ul").append(
+                                "<input type='checkbox' name='treeSelect'  id='nav-checkbox-" + id + "' data-p='" + pid + "'>" +
+                                "<label for='nav-checkbox-" + id + "'>" +
+                                "    <li class='nav-item'>" +
+                                "        <a style='' class='nav-link' href='javascript:void(0)'>" + arr[j].name + "</a>" +
+                                "    </li></label>");
+                        }
+                    }
+                }
+            }
+        } else {
+
+        }
+        $("div[data-type=nodesNavEditor]").off();
+        $("div[data-type=nodesNavEditor]").on({
+            click: function () {
+                $(this).find('.animated-icon').toggleClass('open');
+            }
+        });
+
+        bindTreeEditButton(_modal, roleId);
+        bindTreeCheckbox();
+        reRenderNavCheckbox(roleNodes)
+    }
+
+    function reRenderNavCheckbox(roleNodes) {
+        for (var i = 0; i < roleNodes.length; i++) {
+            {
+                $("#nav-checkbox-" + roleNodes[i].nodeId).click();
+            }
+        }
+    }
+
+    function bindTreeEditButton(_modal, roleId) {
+        var _button = _modal.find("button[for=editNodesConfirm]");
+        _button.off();
+        _button.on({
+            click: function () {
+                var data = getTeeCheckData(roleId);
+                if (data.length == 0) {
+                    console.log(roleId);
+                    $.ajax({
+                        url: '/xRoleNode/deleteByRoleId?PAGE_FROM_TYPE=BACK',
+                        type: "post",
+                        dataType: "json",
+                        data: {
+                            roleId: roleId
+                        },
+                        cache: false,
+                        async: false,
+                        success: function (data) {
+                            if (data.status == 1) {
+                                toast(data.info, "success");
+                                _modal.modal("hide");
+                                _button.off();
+                            }
+                        },
+                        error: function (data) {
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        url: '/xRoleNode/batchModify?PAGE_FROM_TYPE=BACK',
+                        type: "post",
+                        dataType: "json",
+                        contentType: "application/json",
+                        data: JSON.stringify(data),
+                        cache: false,
+                        async: false,
+                        success: function (data) {
+                            if (data.status == 1) {
+                                toast(data.info, "success");
+                                _modal.modal("hide");
+                                _button.off();
+                            }
+                        },
+                        error: function (data) {
+                        }
+                    });
+                }
+            }
+        })
+    }
+
+    function bindTreeCheckbox() {
+        var checkbox = $("input[type=checkbox][name=treeSelect]");
+        checkbox.off();
+        checkbox.on({
+            click: function () {
+                var _this = this;
+                var _this_checked = $(_this).prop("checked");
+                var _id = $(_this).attr("id").substring(13);
+                changeTreeCheckBoxApperance($(_this), $("input[type=checkbox][name=treeSelect][data-p=" + _id + "]"));
+                var pid = $(_this).attr('data-p');
+                if (_this_checked) { // 选中添加
+                    while (pid != 0) {
+                        var _checkbox = $("#nav-checkbox-" + pid);
+                        if (!_checkbox.prop("checked")) {
+                            _checkbox.prop("checked", true);
+                        }
+                        var child = $("input[type=checkbox][name=treeSelect][data-p=" + pid + "]");
+                        changeTreeCheckBoxApperance(_checkbox, child);
+                        pid = _checkbox.attr("data-p");
+                    }
+                } else { //取消选中
+                    var id = $(_this).attr("id").substring(13);
+                    var queue = new Queue();
+                    queue.push(id);
+                    while (queue.size() != 0) {
+                        var tempid = queue.pop();
+                        var tempcheckboxes = $("input[type=checkbox][name=treeSelect][data-p=" + tempid + "]");
+                        for (var i = 0; i < tempcheckboxes.length; i++) {
+                            if ($(tempcheckboxes[i]).prop("checked")) {
+                                queue.push($(tempcheckboxes[i]).attr("id").substring(13));
+                                $(tempcheckboxes[i]).prop("checked", false);
+                            }
+                        }
+                        var _parent = $("#nav-checkbox-" + pid);
+                        var child = $("input[type=checkbox][name=treeSelect][data-p=" + pid + "]");
+                        changeTreeCheckBoxApperance(_parent, child);
+                    }
+                }
+            }
+        })
+    }
+
+    function changeTreeCheckBoxApperance(_parent, child) {
+        var count = 0
+        for (var i = 0; i < child.length; i++) {
+            if (!$(child[i]).prop("checked")) {
+                count++;
+            }
+        }
+        if (count != 0) {
+            _parent.attr("data-type", "notAllSelected");
+        } else {
+            _parent.attr("data-type", "");
+        }
+    }
+
+    function getTeeCheckData(roleId) {
+        var queue = new Queue();
+        var data = [];
+        queue.push(0);
+        while (queue.size() != 0) {
+            var p = queue.pop();
+            var checkbox = $("input[type=checkbox][name=treeSelect][data-p=" + p + "]");
+            for (var i = 0; i < checkbox.length; i++) {
+                if ($(checkbox[i]).prop("checked")) {
+                    var nodeId = $(checkbox[i]).attr("id").substring(13);
+                    queue.push(nodeId);
+                    data.push({
+                        nodeId: nodeId,
+                        roleId: roleId
+                    })
+                }
+
+            }
+        }
+        return data;
+    }
+
+    function NavCliker(_this) {
+        var id = $(_this).attr("data-target");
+        var nav = $(id);
+        nav.off();
+        nav.on('show.bs.collapse', function () {
+            $(_this).addClass("disableClick")
+        });
+        nav.on('shown.bs.collapse', function () {
+            $(_this).removeClass("disableClick")
+        });
+        nav.on('hide.bs.collapse', function () {
+            $(_this).addClass("disableClick")
+        });
+        nav.on('hidden.bs.collapse', function () {
+            $(_this).removeClass("disableClick")
+        });
+        $(_this).find('.animated-icon').toggleClass('open');
+    }
+
+
+</script>
+
+
+</body>
+
+</html>

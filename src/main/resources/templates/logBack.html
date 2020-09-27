@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-model="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+
+    <!--<link th:href="@{/css/iexam/scrollbar.css}" rel="stylesheet">-->
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/v4-shims.css}">
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link th:href="@{/css/mdb.min.css}" rel="stylesheet">
+
+    <!-- Your custom styles (optional) -->
+    <link th:href="@{/css/addonss/bootstrap-table.min.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/emmo_Apparence.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/bootoast.css}" rel="stylesheet">
+    <link th:href="@{/css/addonss/bootstrap-datetimepicker.min.css}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+
+    <style type="text/css">
+        ul.stepper li.success a .circle {
+            background-color: #00c851 !important;
+        }
+
+    </style>
+
+</head>
+
+<body class="container-fluid">
+
+<div id="app">
+
+    <div class="card card-cascade narrower">
+
+        <!--Card image-->
+        <div class="view view-cascade gradient-card-header blue-gradient narrower py-2 mx-4 mb-3 d-flex justify-content-between align-items-center"
+             style="overflow: visible">
+
+            <a href="#" class="white-text mx-3">考务中心日志</a>
+
+        </div>
+
+
+        <div class="px-4">
+
+            <div class="table-wrapper w-100">
+                <!--Table-->
+                <table class="table table-hover mb-0">
+
+                    <thead>
+                    <tr>
+
+
+                        <th class="th-lg">
+                            <a href="">操作人
+                            </a>
+                        </th>
+
+                        <th class="th-lg">
+                            <a href="">操作时间
+                            </a>
+                        </th>
+
+                        <th class="th-lg">
+                            <a href="">对应包-方法
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a>操作说明
+                            </a>
+                        </th>
+                    </tr>
+                    </thead>
+                    <!--Table head-->
+
+                    <!--Table body-->
+                    <tbody>
+                    <tr v-for="(item,index) in controversialGradeModule.controversialGradeList">
+
+                        <td>{{item.operateUserName}}</td>
+                        <td>{{item.time}}</td>
+                        <td>{{item.packageName}}-{{item.function}}</td>
+                        <td>
+                            <div class="text-truncate" style="width: 300px">
+                                {{item.comment}}
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <!--Table body-->
+                </table>
+
+                <div class="md-form input-group d-flex justify-content-center">
+                    <div class="input-group-prepend">
+                        <button class="pages-first btn btn-md btn-primary m-0 px-3" type="button" id="gradePrevStart"
+                                @click="gradePrevStart"><i
+                                class="fas fa-angle-double-left"></i></button>
+                        <button class="pages-prev btn btn-md btn-primary m-0 px-3" type="button" id="gradePrev"
+                                @click="gradePrev"><i
+                                class="fas fa-angle-left"></i></button>
+                    </div>
+                    <input type="text" class="form-control text-center col-4 pages-active" id="gradePage"
+                           @onfocus="gradePageFocus" @onblur="gradePageFocusOut" @onkeyup="gradePageKeyUp"
+                           :value="controversialGradeModule.page.showtext">
+                    <div class="input-group-append">
+                        <button class="pages-next btn btn-md btn-primary m-0 px-3" type="button" id="gradeNext"
+                                @click="gradeNext"><i
+                                class="fas fa-angle-right"></i></button>
+                        <button class="pages-last btn btn-md btn-primary m-0 px-3" type="button" id="gradeNextTop"
+                                @click="gradeNextTop"><i
+                                class="fas fa-angle-double-right"></i></button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- JQuery -->
+<script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}" src="/js/jquery-3.3.1.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/js/Vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/js/popper.min.js}" src="/js/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/js/bootstrap.js}" src="/js/bootstrap.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/js/mdb.min.js}" src="/js/mdb.min.js"></script>
+
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table.min.js}"
+        src="/js/addons/bootstrap-table.min.js"></script>
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table-locale-all.js}"
+        src="/js/addons/bootstrap-table-locale-all.js"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/bootoast.js}"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/emmo_backTable_basicOperator.js}"></script>
+<!--<script type="text/javascript" th:src="@{/js/addons/datepicker/bootstrap-datetimepicker.min.js}"></script>-->
+<!--<script type="text/javascript" th:src="@{/js/addons/datepicker/locales/bootstrap-datetimepicker.zh-CN.js}"></script>-->
+
+<script type="text/javascript" th:src="@{/js/Vue/IexamBack/backTemplates.js}"></script>
+
+<script type="text/javascript">
+
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            controversialGradeModule: {
+                controversialGradeList: [],
+                page: {
+                    showtext: null,
+                    keyPage: 1,
+                    active_paper: 1,
+                    grade_search: null,
+                    page_size: 20,
+                    all_page: 1
+                }
+            }
+        },
+        methods: {
+            loadControversialGrade() {
+                let _this = this;
+                $.ajax({
+                    url: '/log/getLogList?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        "page":this.controversialGradeModule.page.active_paper,
+                        "size":this.controversialGradeModule.page.page_size,
+                        "type":1
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (examList) {
+                        console.log(examList);
+                        _this.controversialGradeModule.controversialGradeList = examList.data.data;
+                        console.log(examList.data.count);
+                        if (parseInt(examList.data.count) % _this.controversialGradeModule.page.page_size == 0) {
+                            _this.controversialGradeModule.page.all_page = parseInt(examList.data.count / _this.controversialGradeModule.page.page_size);
+                        } else {
+                            _this.controversialGradeModule.page.all_page = parseInt(examList.data.count / _this.controversialGradeModule.page.page_size) + 1;
+                        }
+                        if (_this.controversialGradeModule.page.all_page==0){
+                            _this.controversialGradeModule.page.all_page=1;
+                        }
+                        _this.controversialGradeModule.page.showtext = "第" + _this.controversialGradeModule.page.active_paper + "页/共" + _this.controversialGradeModule.page.all_page + "页";
+                    }, error: function (data) {
+
+                    }
+
+                });
+            },
+
+
+
+            gradePrevStart() {
+                this.controversialGradeModule.page.active_paper = 1;
+                this.controversialGradeModule.page.keyPage = this.controversialGradeModule.page.active_paper;
+                //change(this.page.active_paper);
+                $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                this.loadControversialGrade();
+            },
+            gradeNextTop() {
+                this.controversialGradeModule.page.active_paper = this.controversialGradeModule.page.all_page;
+                this.controversialGradeModule.page.keyPage = this.controversialGradeModule.page.active_paper;
+                //change(this.page.active_paper);
+                $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                this.loadControversialGrade();
+            },
+            gradeNext() {
+                if (this.controversialGradeModule.page.active_paper == this.controversialGradeModule.page.all_page) {
+                    console.log("当前页：" + this.controversialGradeModule.page.active_paper + "，无法继续点击");
+                    return false; //如果大于总页数就禁用下一页
+                } else {
+                    $("#gradePage").text(++this.controversialGradeModule.page.active_paper); //点击下一页的时候当前页数的值就加1
+                    this.controversialGradeModule.page.keyPage = this.controversialGradeModule.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                }
+                this.loadControversialGrade();
+            },
+            gradePrev() {
+                if (this.controversialGradeModule.page.active_paper == 1) {
+                    console.log("当前页：" + this.controversialGradeModule.page.active_paper + "，无法继续点击");
+                    return false;
+                } else {
+                    $("#gradePage").text(--this.controversialGradeModule.page.active_paper);
+                    this.controversialGradeModule.page.keyPage = this.controversialGradeModule.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                }
+                this.loadControversialGrade();
+            },
+            gradePageFocus() {
+                $("#gradePage").val(this.controversialGradeModule.page.active_paper).select();
+            },
+            gradePageFocusOut() {
+                this.controversialGradeModule.page.keyPage = parseInt($("#gradePage").val());
+                if (this.controversialGradeModule.page.keyPage > this.controversialGradeModule.page.all_page | this.controversialGradeModule.page.keyPage < 0 | isNaN(this.controversialGradeModule.page.keyPage)) {
+                    $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                } else {
+                    this.controversialGradeModule.page.active_paper = this.controversialGradeModule.page.keyPage;
+
+                    $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                }
+                this.loadControversialGrade();
+            },
+            gradePageKeyUp() {
+                let key = event.keyCode;
+                if (key == 13) {
+                    this.controversialGradeModule.page.keyPage = parseInt($("#gradePage").val());
+                    if (this.controversialGradeModule.page.keyPage > this.controversialGradeModule.page.all_page | this.controversialGradeModule.page.keyPage < 0 | isNaN(this.controversialGradeModule.page.keyPage)) {
+                        $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                    } else {
+                        this.controversialGradeModule.page.active_paper = this.controversialGradeModule.page.keyPage;
+                        $("#gradePage").val("第" + this.controversialGradeModule.page.active_paper + "页/共" + this.controversialGradeModule.page.all_page + "页");
+                        this.loadControversialGrade();
+                    }
+                }
+            },
+
+
+        },
+        created() {
+            this.loadControversialGrade();
+        }
+    });
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+    <!--<link th:href="@{/css/iexam/scrollbar.css}" rel="stylesheet">-->
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/v4-shims.css}">
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link th:href="@{/css/mdb.min.css}" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link th:href="@{/css/iexam/emmo_Apparence.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/bootoast.css}" rel="stylesheet">
+    <link th:href="@{/css/addonss/bootstrap-datetimepicker.min.css}" rel="stylesheet">
+    <style type="text/css">
+        .margin-5px {
+            margin: 5px;
+        }
+
+        .logo-size {
+            width: 80%;
+        }
+
+        /*@media (max-width: 1440px) {*/
+        /*.fixed-sn main{*/
+        /*padding-left: 10rem;*/
+        /*margin-left: 6%;*/
+        /*}*/
+        /*}*/
+
+        .fixed-sn main {
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+
+        @media (min-width: 1440px) {
+            .fixed-sn main {
+                padding-left: 10rem;
+                margin-left: 5%;
+            }
+        }
+
+    </style>
+</head>
+
+<body class="fixed-sn white-skin" style="overflow: hidden;">
+
+<header>
+    <!-- Sidebar navigation -->
+    <div id="slide-out" class="side-nav sn-bg-4 fixed">
+        <ul class="custom-scrollbar">
+            <li class="logo-sn waves-effect py-3">
+                <div class="text-center">
+                    <a href="#" class="pl-0"><img th:src="@{/img/logo.png}" class="logo-size"></a>
+                </div>
+            </li>
+            <div class="collapsible collapsible-accordion" data-type="nav">
+
+            </div>
+        </ul>
+        <div class="sidenav-bg mask-strong"></div>
+    </div>
+    <!-- Sidebar navigation -->
+    <!-- Navbar -->
+    <nav class="navbar fixed-top navbar-expand-lg scrolling-navbar double-nav">
+
+        <!-- SideNav slide-out button -->
+        <div class="float-left">
+            <a data-activates="slide-out" class="button-collapse"><i class="fas fa-bars"></i></a>
+        </div>
+
+        <ul class="nav nav-tabs ml-md-4" id="TabMenu" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                   aria-controls="home"
+                   aria-selected="true">主页</a>
+            </li>
+        </ul>
+
+        <ul class="nav navbar-nav nav-flex-icons ml-auto">
+
+            <!-- Dropdown -->
+
+            <li class="nav-item dropdown " id="userModel">
+
+                <a class="nav-link dropdown-toggle waves-effect" id="userDropdown" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-user"></i><span class="d-none d-sm-inline-block" id="backUserInfo"
+                                                     th:data-userId="${session.BACKSYS_USER.id}"
+                                                     th:text="${session.BACKSYS_USER.realName}"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="#">个人信息</a>
+                    <a class="dropdown-item" href="/xUser/logout?PAGE_FROM_TYPE=BACK"><i
+                            class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;安全退出</a>
+
+                </div>
+
+            </li>
+        </ul>
+    </nav>
+
+</header>
+<div id="app">
+    <main class="mr-0" style="padding-top: 3rem">
+        <div class="container-fluid pr-0 pl-0">
+            <div class="row">
+                <div class="col-12">
+                    <div class="tab-content pr-0 pl-0" id="TabContent">
+                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                            <section class="pb-3 fadeIn px-3">
+                                <div class="row">
+                                    <div class="col-md-12">
+
+                                        <div class="mt-0 card p-3 col-12">
+                                            <nav class="navbar navbar-expand-lg navbar-dark info-color">
+
+                                                <!-- Collapse button -->
+                                                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                                                        data-target="#basicExampleNav"
+                                                        aria-controls="basicExampleNav" aria-expanded="false"
+                                                        aria-label="Toggle navigation">
+                                                    <span class="navbar-toggler-icon"></span>
+                                                </button>
+
+                                                <!-- Collapsible content -->
+                                                <div class="collapse navbar-collapse" id="basicExampleNav">
+
+                                                    <!-- Links -->
+                                                    <ul class="navbar-nav mr-auto">
+                                                        <li :class="['nav-item',{'active':news_selection.news_type===1}]">
+                                                            <a class="nav-link" href="#"
+                                                               @click.present="changeNewsType(1)">考试新闻</a>
+                                                        </li>
+                                                        <li :class="['nav-item',{'active':news_selection.news_type===2}]">
+                                                            <a class="nav-link" href="#"
+                                                               @click.present="changeNewsType(2)">招考政策</a>
+                                                        </li>
+                                                        <li :class="['nav-item',{'active':news_selection.news_type===3}]">
+                                                            <a class="nav-link" href="#"
+                                                               @click.present="changeNewsType(3)">信息公告</a>
+                                                        </li>
+                                                    </ul>
+                                                    <!-- Links -->
+
+                                                    <form class="form-inline">
+                                                        <div class="md-form my-0">
+                                                            <input class="form-control mr-sm-0" type="text"
+                                                                   v-model="news_selection.search_title"
+                                                                   placeholder="搜索"
+                                                                   aria-label="搜索">
+                                                            <button class="btn btn-outline-white btn-md my-2 my-sm-0 ml-0"
+                                                                    type="button" @click="getNewsList">搜索
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <!-- Collapsible content -->
+                                            </nav>
+                                            <!-- Section: exams -->
+                                            <section class="section card-body">
+                                                <div class="container col-12">
+                                                    <div class="row">
+                                                        <div class="mt-3 p-3 col-12">
+                                                            <!-- Small news -->
+                                                            <div v-for="(item,index) in news_List">
+                                                                <div class="single-news mb-3">
+                                                                    <!-- Title -->
+                                                                    <div class="d-flex justify-content-between"
+                                                                         @click="showNewsDetail(item.examNews.id)">
+                                                                        <div class="text-truncate pl-0">
+                                                                            <a v-text="item.examNews.title"></a>
+                                                                        </div>
+                                                                        <div>
+                                                                            <span class="mr-1">{{item.examNews.publishTime | formatTime}}</span>
+                                                                            <a><i class="fas fa-angle-double-right"></i></a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="md-form input-group d-flex justify-content-center">
+                                                        <div class="input-group-prepend">
+                                                            <button class="pages-first btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" @click="newsPrevStart"><i
+                                                                    class="fas fa-angle-double-left"></i></button>
+                                                            <button class="pages-prev btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" @click="newsPrev"><i
+                                                                    class="fas fa-angle-left"></i></button>
+                                                        </div>
+                                                        <input type="text"
+                                                               class="form-control text-center col-4 pages-active"
+                                                               @focus="newsPageFocus" @blur="newsPageFocusOut"
+                                                               @keyup="newsPageKeyUp"
+                                                               v-model="pageInfo.text">
+                                                        <div class="input-group-append">
+                                                            <button class="pages-next btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" @click="newsNext"><i
+                                                                    class="fas fa-angle-right"></i></button>
+                                                            <button class="pages-last btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" @click="newsNextTop"><i
+                                                                    class="fas fa-angle-double-right"></i></button>
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+                                            </section>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </main>
+    <div class="modal fade right" id="NewsInfo" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-full-height modal-right" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">新闻信息</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="container card">
+                            <!-- Section: Blog v.3 -->
+                            <section class="my-5 text-center text-lg-left wow fadeIn ml-4" data-wow-delay="0.3s">
+
+                                <!-- Section heading -->
+                                <h3 class="text-center">{{news_NowInfo.examNews.title}}</h3>
+                                {{news_NowInfo.examNews.publishTime}}
+                                <hr>
+
+                                <!-- Section description -->
+                                <p class="text-lg-left ml-3">{{news_NowInfo.examNews.text}}</p>
+                                <br><br><br><br><br><br>
+                                <p class="text-right mr-3">{{news_NowInfo.examNews.publishName}}</p>
+                                <p class="text-right mr-3">{{news_NowInfo.examNews.publishTime}}</p>
+
+                                <hr>
+                                <h3 class="my-3 text-lg-left "><i class="fas fa-link"></i> 相关链接：</h3>
+                                <ol>
+                                    <li v-for="item in file_links">
+                                        <a class="black-text" :href="item.filePath"><i class="far fa-edit"></i> {{item.fileTitle}}</a>
+                                    </li>
+                                </ol>
+
+
+                                <hr>
+
+                                <span class="black-text float-left"><i class="fas fa-angle-double-left"></i>上一篇&nbsp;&nbsp;</span>
+                                <a class="blue-text float-left" v-if="news_NowInfo.prevNews.id===0">以达到顶部</a>
+                                <a class="blue-text float-left text-truncate" style="width: 300px" v-if="news_NowInfo.prevNews.id!=0" @click.present="showNewsDetail(news_NowInfo.prevNews.id)">{{news_NowInfo.prevNews.title}}</a>
+
+                                <span class="black-text float-right">&nbsp;&nbsp;下一篇<i class="fas fa-angle-double-right"></i></span>
+                                <a class="blue-text float-right" v-if="news_NowInfo.nextNews.id===0">以达到底部</a>
+                                <a class="blue-text float-right text-truncate" style="width: 300px" v-if="news_NowInfo.nextNews.id!=0" @click.present="showNewsDetail(news_NowInfo.nextNews.id)">{{news_NowInfo.nextNews.title}}</a>
+
+                            </section>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+
+<script type="text/javascript" th:src="@{/js/Vue/vue.js}"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/js/bootstrap.js}"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/js/mdb.min.js}"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/emmo_Apparence.js}"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/bootoast.js}"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/emmo_navLoader.js}"></script>
+
+<script type="text/javascript">
+
+    $(".button-collapse").sideNav();
+
+    var container = document.querySelector('.custom-scrollbar');
+    var ps = new PerfectScrollbar(container, {
+        wheelSpeed: 2,
+        wheelPropagation: true,
+        minScrollbarLength: 20
+    });
+
+    var vm = new Vue({
+        el: "#app",
+        data: {
+
+
+            exam_name: null,
+            news_selection: {
+                news_type: 1,
+                search_title: null,
+            },
+            news_NowInfo: {
+                examNews: {},
+                xUser: {},
+                files: [],
+                prevNews:{
+                    id:0,
+                    title:"没有上一条了",
+                },
+                nextNews:{
+                    id:0,
+                    title:"没有下一条了"
+                },
+            },
+            news_List: [],
+            //文件链接
+            file_links: [],
+            addFileInfo: {
+                show_name: "",
+                id_index: 0
+            },
+            pageInfo: {
+                page: 1,
+                size: 10,
+                count: 0,
+                text: "",
+                totalPages: 0
+            }
+
+        },
+        methods: {
+            showNewsDetail(value) {
+                $("#NewsInfo").modal();
+                var _this=this;
+                $.ajax({
+                    url: "/examNews/getExamNewsInfoByIdPrevAndNext?PAGE_FROM_TYPE=BACK",
+                    type: "post",
+                    async: false,
+                    data: {
+                        newsId: value,
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+
+                        _this.news_NowInfo.examNews=data.nowExamNews;
+
+                        _this.file_links=data.nowExamNews.newsFilesList;
+
+                        if (data.nextExamNews!=null){
+                            _this.news_NowInfo.nextNews=data.nextExamNews;
+                        }
+
+                        if (data.prevExamNews!=null){
+                            _this.news_NowInfo.prevNews=data.prevExamNews;
+                        }
+
+                            
+                    },
+                    error: function () {
+                        toast("系统繁忙，请稍后重试", 'warning');
+                    }
+                });
+
+            },
+            getNewsList() {
+                let _this = this;
+                let examNews = {
+                    type: this.news_selection.news_type,
+                    title: this.news_selection.search_title,
+                };
+                $.ajax({
+                    url: "/examNews/getExamNewsList?PAGE_FROM_TYPE=BACK",
+                    type: "post",
+                    async: false,
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        page: this.pageInfo.page,
+                        size: this.pageInfo.size,
+                        examNews: examNews
+                    }),
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        _this.news_List = data.data;
+                        _this.pageInfo.count = data.count;
+                        _this.changePageData();
+                    },
+                    error: function () {
+                        toast("系统繁忙，请稍后重试", 'warning');
+                    }
+                });
+            },
+
+            newsPrevStart() {
+                if (this.pageInfo.page === 1)
+                    return;
+                this.pageInfo.page = 1;
+                this.getNewsList();
+            },
+            newsNextTop() {
+                if (this.pageInfo.page === this.pageInfo.totalPages)
+                    return;
+                this.pageInfo.page = this.pageInfo.totalPages;
+                this.getNewsList();
+            },
+            newsNext() {
+                if (this.pageInfo.page === this.pageInfo.totalPages)
+                    return;
+                this.pageInfo.page++;
+                this.getNewsList();
+            },
+            newsPrev() {
+                if (this.pageInfo.page === 1)
+                    return;
+                this.pageInfo.page--;
+                this.getNewsList();
+            },
+            newsPageFocus() {
+                this.pageInfo.text = "";
+            },
+            newsPageFocusOut() {
+                if (isNaN(parseInt(this.pageInfo.text))) {
+                    this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+                    return;
+                }
+                let page = parseInt(this.pageInfo.text);
+                if (page < 1 || page > this.pageInfo.totalPages) {
+                    this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+                    return;
+                }
+                this.pageInfo.page = page;
+                this.getNewsList();
+            },
+
+            newsPageKeyUp() {
+                let key = event.keyCode;
+                if (key == 13) {
+                    if (isNaN(parseInt(this.pageInfo.text))) {
+                        this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+                        return;
+                    }
+                    let page = parseInt(this.pageInfo.text);
+                    if (page < 1 || page > this.pageInfo.totalPages) {
+                        this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+                        return;
+                    }
+                    this.pageInfo.page = page;
+                    this.getNewsList();
+                }
+            },
+            changePageData() {
+                this.pageInfo.totalPages = Math.ceil(this.pageInfo.count / this.pageInfo.size);
+                if (this.pageInfo.totalPages==0){
+                    this.pageInfo.totalPages=1;
+                }
+                this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+            },
+            changeNewsType(type) {
+                console.log(type);//这里获取newslist
+                this.news_selection.news_type = type;
+                this.getNewsList();
+            },
+
+        },
+        created() {
+            this.getNewsList();
+        },
+        filters: {
+            formatTime(value) {
+                var date = value.substr(0, 10);
+                return date;
+            }
+        }
+    });
+
+
+    Vue.config.devtools = true;
+
+    function NavCliker(_this) {
+        var id = $(_this).attr("data-target");
+        var nav = $(id);
+        nav.off();
+        nav.on('show.bs.collapse', function () {
+            $(_this).addClass("disableClick")
+        });
+        nav.on('shown.bs.collapse', function () {
+            $(_this).removeClass("disableClick")
+        });
+        nav.on('hide.bs.collapse', function () {
+            $(_this).addClass("disableClick")
+        });
+        nav.on('hidden.bs.collapse', function () {
+            $(_this).removeClass("disableClick")
+        });
+        $(_this).find('.animated-icon').toggleClass('open');
+    }
+
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.classRoomMapper">
+    <resultMap id="classRoom" type="com.sot.iexam.DO.classRoom">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="capacity" property="capacity"/>
+        <result column="status" property="status"/>
+        <result column="teacher_num" property="teacherNum"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <update id="update">
+        update classroom
+        <trim prefix="set" suffixOverrides=",">
+            <if test="classroom.name != null">name = #{classroom.name},</if>
+            <if test="classroom.capacity != null">capacity = #{classroom.capacity},</if>
+            <if test="classroom.comment != null">comment = #{classroom.comment},</if>
+            <if test="classroom.status != null">status = #{classroom.status},</if>
+            <if test="classroom.createTime != null">create_time = #{classroom.createTime},</if>
+            <if test="classroom.modifyTime != null">modify_time = #{classroom.modifyTime},</if>
+        </trim>
+        where id = #{classRoom.id}
+    </update>
+    <!--
+    namespace:名称空间;指定为接口的全类名
+    id：唯一标识
+    resultType：返回值类型（接收的bean的全类名比较合适，别名也行）
+    #{id}：从传递过来的参数中取出id值
+
+    public Employee getEmpById(Integer id);
+     -->
+
+    <select id="getAllClassRoomCanUse" resultType="com.sot.iexam.DO.classRoom">
+        select id, name, capacity, status
+        from classroom
+        where id not in (
+            select class_room_id
+            from exam_room
+            where from_time &gt; #{startTime}
+              and end_time &lt; #{endTime}
+        )
+    </select>
+
+    <select id="getAllClassFreeRoomCanUse" resultType="com.sot.iexam.DO.classRoom">
+        select id, name, capacity, status
+        from classroom
+        where id not in (
+            select class_room_id
+            from exam_room
+            where from_time &gt; #{startTime}
+              and end_time &lt; #{endTime}
+        ) and name like concat('%',#{search},'%')
+    </select>
+
+    <select id="getAllClassFreeRoomCanUseNum" resultType="java.lang.Integer">
+        select count(*)
+        from classroom
+        where id not in (
+            select class_room_id
+            from exam_room
+            where from_time &gt; #{startTime}
+              and end_time &lt; #{endTime}
+        ) and name like concat('%',#{search},'%')
+    </select>
+
+
+
+    <select id="getAllManagedInfo" resultType="com.sot.iexam.DO.classRoom">
+        select id, name, capacity, status
+        from classroom
+        where id in (
+        <foreach collection="classRoomIds" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
+    </select>
+
+
+</mapper>

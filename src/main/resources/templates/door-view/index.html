@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" th:href="@{/door-static/css/bootstrap.min.css}">
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" th:href="@{/door-static/css/mdb.min.css}">
+    <!-- Custom styles -->
+    <style>
+        .rgba-gradient {
+            background: -moz-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: -webkit-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: -webkit-gradient(linear, 45deg, from(rgba(42, 27, 161, 0.7)), to(rgba(29, 210, 177, 0.7)));
+            background: -o-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: linear-gradient(to 45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+        }
+
+        .bg {
+            /* The image used */
+            background-image: url("https://mdbootstrap.com/img/Photos/Horizontal/Nature/full page/img(11).jpg");
+
+            /* Half height */
+            height: 50%;
+
+            /* Center and scale the image nicely */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+    </style>
+</head>
+
+<body class="single-page cloudy-knoxville-gradient ">
+<div id="app">
+    <header class="rgba-gradient">
+        <img th:src="@{/door-static/img/banner.png}" class="img-fluid" alt="placeholder"
+             style="height: 130px;width: 100%;">
+        <!--Navbar -->
+        <nav class="mb-1 navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item "><a href="#" class="white-text">主页</a></li>
+                        <!--<li class="breadcrumb-item "><a href="#" class="white-text">Library</a></li>-->
+                        <!--<li class="breadcrumb-item "><a href="#" class="white-text">Library</a></li>-->
+                    </ol>
+                </nav>
+
+                <!--<form class="form-inline my-1 offset-2">-->
+                <!--<div class="md-form form-sm my-0">-->
+                <!--<input class="form-control form-control-sm mr-sm-2 mb-0" type="text" placeholder="Search"-->
+                <!--aria-label="Search">-->
+                <!--</div>-->
+                <!--<button class="btn btn-outline-white btn-sm my-0" type="submit">Search</button>-->
+                <!--</form>-->
+
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto nav-flex-icons">
+                        <!-- Dropdown -->
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle waves-effect" href="#" id="userDropdown"
+                               data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-user"></i> <span class="clearfix d-none d-sm-inline-block" th:text="${session.FRONT_USER.name}"></span><div class="d-none" id="userId" th:text="${session.FRONT_USER.id}"></div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="/door/userinfo">个人信息</a>
+                                <a class="dropdown-item" href="#" @click.prevent="logout()"><i
+                                        class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;安全退出</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container" style="background-color: white;margin-top: -6px;">
+        <main>
+
+            <div>
+                <!-- Section: Blog v.4 -->
+                <section class="mt-2 pb-3 wow fadeIn">
+                    <!-- Grid row -->
+                    <div class="row">
+                        <!-- Grid column -->
+                        <div class="col-md-12">
+                            <!-- Featured image -->
+
+                            <div class="justify-content-between d-flex">
+                                <div class="mt-3 card p-3 col-9">
+                                    <!-- Section: exams -->
+                                    <section class="section card-body">
+                                        <div class="justify-content-between d-flex">
+                                            <h4 class="dark-grey-text font-weight-bold">
+                                                考试新闻
+                                            </h4>
+                                            <a href="/examNews/informations?type=1"
+                                               class="font-weight-normal mt-1 text-decoration-none font-small black-text">查看更多<i
+                                                    class="ml-1 fas fa-angle-double-right"></i></a>
+                                        </div>
+                                        <div v-for="(item,index) in news_List">
+                                            <hr>
+                                            <!-- Small news -->
+                                            <div class="single-news mb-3">
+                                                <div class="d-flex justify-content-between" @click="gotoNewsDetail(item.id)">
+                                                    <div class="text-truncate pl-0" style="width: 600px">
+                                                        <a>{{item.title}}</a>
+                                                    </div>
+                                                    <div>
+                                                        <span class="mr-1">{{item.publishTime | formatTime}}</span>
+                                                        <a><i class="fas fa-angle-double-right"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                </div>
+                                <div class="col-3 mt-3">
+                                    <a href="/door/allExams?PAGE_FROM_TYPE=DOOR" class="card w-100 mb-3 hoverable"
+                                       th:style="'cursor: pointer;background-image: url('+'/door-static/img/kaoshibaoming.jpg'+');background-size: 100% 100%;height: 76px'">
+                                        <div class="card-body">
+                                            <!--<h5 class="card-title">报名考试</h5>-->
+                                            <!--<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>-->
+                                            <!--<a href="#!" class="btn btn-primary">Button</a>-->
+                                        </div>
+                                    </a>
+                                    <a href="/door/myEndExams?PAGE_FROM_TYPE=DOOR" class="card w-100 mb-3 hoverable"
+                                       th:style="'cursor: pointer;background-image: url('+'/door-static/img/chengjichaxun.jpg'+');background-size: 100% 100%;height: 76px'">
+                                        <div class="card-body ">
+
+                                            <!--<h5 class="card-title">成绩查询</h5>-->
+                                            <!--<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>-->
+                                            <!--<a href="#!" class="btn btn-primary">Button</a>-->
+                                        </div>
+                                    </a>
+
+                                    <a href="/door/myExams?PAGE_FROM_TYPE=DOOR" class="card w-100 mb-3 hoverable"
+                                       th:style="'cursor: pointer;background-image: url('+'/door-static/img/wodekaoshi.jpg'+');background-size: 100% 100%;height: 76px'">
+                                        <div class="card-body ">
+
+                                            <!--<h5 class="card-title">我的考试</h5>-->
+                                            <!--<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>-->
+                                            <!--<a href="#!" class="btn btn-primary">Button</a>-->
+                                        </div>
+                                    </a>
+
+                                    <div href="myExams.html" class="card w-100 mb-3">
+                                        <div class="card-body ">
+                                            <h5 class="card-title">咨询电话</h5>
+                                            <p class="card-text">011-11111111</p>
+                                            <!--<a href="#!" class="btn btn-primary">Button</a>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="justify-content-between d-flex">
+                                <div class="mt-2 card p-3 col-8">
+                                    <!-- Section: exams -->
+                                    <section class="section card-body">
+                                        <div class="justify-content-between d-flex">
+                                            <h4 class="dark-grey-text font-weight-bold">
+                                                招考政策
+                                            </h4>
+                                            <a href="/examNews/informations?type=2" class="font-weight-normal mt-1 text-decoration-none font-small black-text">查看更多<i
+                                                    class="ml-1 fas fa-angle-double-right"></i></a>
+                                        </div>
+                                        <div v-for="(item,index) in recruitment_List">
+                                        <hr>
+                                        <!-- Small news -->
+                                        <div class="single-news mb-3">
+                                            <div class="d-flex justify-content-between" @click="gotoNewsDetail(item.id)">
+                                                <div class="text-truncate pl-0" style="width: 450px">
+                                                    <a>{{item.title}}</a>
+                                                </div>
+                                                <div>
+                                                    <span class="mr-1">{{item.publishTime | formatTime}}</span>
+                                                    <a><i class="fas fa-angle-double-right"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        </div>
+                                    </section>
+                                </div>
+
+                                <div class="mt-2 ml-1 card p-3 col-4">
+
+                                    <section class="section card-body">
+                                        <div class="justify-content-between d-flex">
+                                            <h4 class="dark-grey-text font-weight-bold">
+                                                信息公告
+                                            </h4>
+                                            <a href="/examNews/informations?type=3"
+                                               class="font-weight-normal mt-1 text-decoration-none font-small black-text">查看更多<i
+                                                    class="ml-1 fas fa-angle-double-right"></i></a>
+                                        </div>
+                                        <div v-for="(item,index) in information_List">
+                                            <hr>
+                                            <!-- Small news -->
+                                            <div class="single-news mb-3">
+                                                <div class="d-flex justify-content-between" @click="gotoNewsDetail(item.id)">
+                                                    <div class="text-truncate pl-0" style="width: 150px">
+                                                        <a>{{item.title}}</a>
+                                                    </div>
+                                                    <div>
+                                                        <span class="mr-1">{{item.publishTime | formatTime}}</span>
+                                                        <a><i class="fas fa-angle-double-right"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+        </main>
+    </div>
+    <footer>
+        <div class="footer-copyright py-3 text-center wow fadeIn" data-wow-delay="0.3s">
+            © 2019 Copyright: IEXAM
+        </div>
+    </footer>
+</div>
+<!-- SCRIPTS -->
+<!-- JQuery -->
+<script th:src="@{/door-static/js/jquery-3.4.1.min.js}"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/door-static/js/popper.min.js}"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/bootstrap.js}"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/mdb.min.js}"></script>
+<script type="text/javascript" th:src="@{/door-static/js/vue.js}"></script>
+<!-- Custom scripts -->
+<script>
+
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            user: {
+                id: 1,
+                username: "张三"
+            },
+
+            //考试新闻
+            news_List: [],
+            //招考政策
+            recruitment_List:[],
+            //系统消息
+            information_List:[],
+
+
+
+        },
+        methods: {
+            gotoNewsDetail(value){
+                window.location.href="/examNews/gotoNewsDetail?PAGE_FROM_TYPE=DOOR&newsId="+value;
+            },
+            logout() {
+                $.ajax({
+                    url: "/examinees/logout?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        window.location.href="/door/login?PAGE_FROM_TYPE=DOOR";
+                    },
+                    error: function () {
+                    }
+                });
+            },
+            loadIndexNews(){
+                var _this=this;
+                $.ajax({
+                    url: "/examNews/getExamNewsInfoToDoorIndex?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        _this.news_List=data.news_List;
+                        _this.recruitment_List=data.recruitment_List;
+                        _this.information_List=data.information_List;
+
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        },
+        created(){
+            this.loadIndexNews();
+        },
+        filters: {
+            formatTime(value) {
+                var date = value.substr(0, 10);
+                return date;
+            }
+        }
+    })
+
+</script>
+
+</body>
+
+</html>

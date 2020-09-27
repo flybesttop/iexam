@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.logMapper">
+
+    <resultMap id="log" type="com.sot.iexam.DO.log">
+        <id column="id" property="id"></id>
+        <result column="operate_user" property="operateUser"></result>
+        <result column="operate_type" property="operateType"></result>
+        <result column="data" property="data"></result>
+        <result column="function" property="function"></result>
+        <result column="time" property="time"></result>
+        <result column="package_name" property="packageName"></result>
+        <result column="comment" property="comment"></result>
+    </resultMap>
+
+
+
+
+    <select id="getLogListByTypeCount" resultType="java.lang.Integer">
+        select count(1)
+        from log
+        where operate_type = #{type}
+    </select>
+
+    <select id="getLogListByType" resultType="com.sot.iexam.DO.log">
+        select *
+        from log
+        where operate_type = #{type}
+    </select>
+
+    <sql id="examFileWhereSQL">
+        <trim prefix="where" prefixOverrides="and |or ">
+            <if test="log.operateUser != null">and operator_user=#{log.operateUser}</if>
+            <if test="log.operateType != null">and operator_type=#{log.operateType}</if>
+            <if test="log.data != null">and data like concat('%',#{log.createTime,'%'})</if>
+            <if test="log.function != null">and functon like concat('%',#{log.function,'%'})</if>
+            <if test="log.packageName != null">and package_name like concat('%',#{log.packageName},'%')</if>
+            <if test="log.comment != null">and comment like concat('%',#{log.comment},'%')</if>
+            <if test="log.fromTime != null">and time between #{log.fromTime} and #{log.endTime}</if>
+        </trim>
+    </sql>
+    <insert id="insert">
+        insert into log (operate_user, operate_type, data, function, time, package_name, comment)
+        values (#{log.operateUser}, #{log.operateType}, #{log.data}, #{log.function}, #{log.time}, #{log.packageName},
+                #{log.comment});
+    </insert>
+</mapper>

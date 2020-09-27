@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: test
+  mvc:
+    view:
+      prefix: classpath:/templates/
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/iexam?charset=utf8mb4&useSSL=false&serverTimezone=GMT%2B8
+    username: root
+    password: 123456
+
+  #  jpa:
+  #    show-sql: true
+  aop:
+    auto: true
+server:
+  servlet:
+    session:
+      timeout: "90m"
+
+mybatis:
+  mapper-locations: classpath:/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+pagehelper:
+  helperDialect: mysql
+  supportMethodsArguments: true
+  params: count=countSql
+  default-count: false

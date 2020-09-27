@@ -1,0 +1,2859 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+
+    <!--<link th:href="@{/css/iexam/scrollbar.css}" rel="stylesheet">-->
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/v4-shims.css}">
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link th:href="@{/css/mdb.min.css}" rel="stylesheet">
+
+    <!-- Your custom styles (optional) -->
+    <link th:href="@{/css/addonss/bootstrap-table.min.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/emmo_Apparence.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/bootoast.css}" rel="stylesheet">
+    <link th:href="@{/css/addonss/bootstrap-datetimepicker.min.css}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+
+    <style type="text/css">
+        ul.stepper li.success a .circle {
+            background-color: #00c851 !important;
+        }
+
+    </style>
+
+</head>
+
+<body class="container-fluid">
+
+<!-- Table with panel -->
+<div id="app">
+
+    <div class="card card-cascade narrower">
+
+        <!--Card image-->
+        <div class="view view-cascade gradient-card-header blue-gradient narrower py-2 mx-4 mb-3 d-flex justify-content-between align-items-center"
+             style="overflow: visible">
+
+            <a href="" class="white-text mx-3">已发布的考试</a>
+
+            <form class="form-inline md-form mb-4">
+                <input class="form-control mr-sm-2" style="color: white" type="text" placeholder="搜索" aria-label="搜索"
+                       v-model="examListInfo.exam_search">
+                <button class="btn btn-rounded btn-outline-white btn-sm my-0" @click.prevent="ListSearch">搜索</button>
+            </form>
+
+            <div class="d-flex justify-content-between align-items-center col-5">
+                <div class="d-flex justify-content-left align-items-center col-6">
+                    <button type="button" class="btn btn-outline-white btn-sm px-2 col-4">
+                        发布人&nbsp;&nbsp;:
+                    </button>
+                    <select class="browser-default custom-select ml-0" @change="browseChange"
+                            v-model="examListInfo.show_who">
+                        <option value="0" selected>所有</option>
+                        <option value="1">我发布的</option>
+                    </select>
+                </div>
+
+                <div class="d-flex justify-content-left align-items-center col-6">
+                    <button type="button" class="btn btn-outline-white btn-sm px-2 col-4">
+                        状态&nbsp;&nbsp;:
+                    </button>
+                    <select class="browser-default custom-select ml-0" @change="changeStatus"
+                            v-model="examListInfo.examStatus">
+                        <option value="-2" selected>所有</option>
+                        <option value="-1" selected>已删除</option>
+                        <option value="0">未开始报名</option>
+                        <option value="1">正在报名</option>
+                        <option value="000">考场安排中</option>
+                        <option value="001">监考安排中</option>
+                        <option value="011">阅卷安排中</option>
+                        <option value="111">安排完成</option>
+                        <option value="4">考试安排结束</option>
+                        <option value="5">准考证发布</option>
+                        <option value="6">考试进行中</option>
+                        <option value="7">考试结束</option>
+                        <option value="8">阅卷中</option>
+                        <option value="9">阅卷结束</option>
+                        <option value="10">成绩公布</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <!--<div>-->
+            <!--<button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">-->
+            <!--<i class="fas fa-pencil-alt mt-0"></i>-->
+            <!--</button>-->
+            <!--<button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">-->
+            <!--<i class="far fa-trash-alt mt-0"></i>-->
+            <!--</button>-->
+            <!--<button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">-->
+            <!--<i class="fas fa-info-circle mt-0"></i>-->
+            <!--</button>-->
+            <!--</div>-->
+
+        </div>
+        <!--/Card image-->
+
+
+        <div class="px-4">
+
+            <div class="table-wrapper w-100">
+                <!--Table-->
+                <table class="table table-hover mb-0">
+
+                    <thead>
+                    <tr>
+                        <th class="th-lg">
+                            <a>考试名称
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a href="">职称
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a href="">发布人
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a href="">发布时间
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a href="">报名人数
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a href="">当前状态
+                            </a>
+                        </th>
+                        <th class="th-lg">
+                            <a href="">操作
+                            </a>
+                        </th>
+                    </tr>
+                    </thead>
+                    <!--Table head-->
+
+                    <!--Table body-->
+                    <tbody>
+                    <tr v-for="(item,index) in examListInfo.examList">
+                        <td>{{item.name}}</td>
+                        <td>{{item.titleName}}</td>
+                        <td>{{item.publishManName}}</td>
+                        <td>{{item.publishTime}}</td>
+                        <td>{{item.num}}/{{item.capacity}}</td>
+                        <td><span
+                                :class="{'text-success':item.status==='1','text-default':item.status.length==='5','text-warning':item.status.length==3,'text-default':item.status==='4'}">{{item.status | examStatus}}</span>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-info btn-sm m-0 waves-effect"
+                                    data-toggle="modal" data-target="#iexam_info_model" @click="openExamDetail(item)">
+                                考试详情
+                            </button>
+
+                            <button v-if="item.status.length == 3" type="button"
+                                    class="btn btn-outline-primary btn-sm m-0 waves-effect"
+                                    data-toggle="modal" data-target="#iexam_arrange_model"
+                                    @click="BeginArrangeExam(item)">考试安排
+                            </button>
+
+                            <button v-if="item.status === '10'" type="button"
+                                    class="btn btn-outline-primary btn-sm m-0 waves-effect"
+                                    data-toggle="modal" data-target="#show_grade_modal"
+                                    @click="show_grade(item)">查看成绩
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <!--Table body-->
+                </table>
+
+                <div class="md-form input-group d-flex justify-content-center">
+                    <div class="input-group-prepend">
+                        <button class="pages-first btn btn-md btn-primary m-0 px-3" type="button" id="exam_info_top"><i
+                                class="fas fa-angle-double-left"></i></button>
+                        <button class="pages-prev btn btn-md btn-primary m-0 px-3" type="button" id="exam_info_prev"><i
+                                class="fas fa-angle-left"></i></button>
+                    </div>
+
+                    <input type="text" class="form-control text-center col-4 pages-active" id="exam_info_input"
+                           :value="examListInfo.showtext">
+
+                    <div class="input-group-append">
+                        <button class="pages-next btn btn-md btn-primary m-0 px-3" type="button" id="exam_info_next"><i
+                                class="fas fa-angle-right"></i></button>
+                        <button class="pages-last btn btn-md btn-primary m-0 px-3" type="button" id="exam_info_end"><i
+                                class="fas fa-angle-double-right"></i></button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--考试安排model-->
+    <div class="modal fade top " id="iexam_arrange_model" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-full-height modal-top" role="document">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title w-100" id="myModalLabel" v-if="editExamShow">{{NowEditExamInfo.name}}</h4>
+                    <div class="d-flex w-50">
+                        <button type="button" class="btn btn-primary" @click="generateAllAutomatically">自动生成</button>
+                        <button type="button" class="btn btn-default" @click="resetAll">重置所有安排</button>
+                    </div>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" v-if="editExamShow">
+                    <!-- Horizontal Steppers -->
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <!-- Stepers Wrapper -->
+                            <ul class="stepper stepper-horizontal">
+
+                                <!-- First Step -->
+                                <li :class="step1">
+                                    <a href="#!">
+                                        <span class="circle">1</span>
+                                        <span class="label">安排考场</span>
+                                    </a>
+                                </li>
+                                <!-- Second Step -->
+                                <li :class="step2">
+                                    <a href="#!">
+                                        <span class="circle">2</span>
+                                        <span class="label">安排监考</span>
+                                    </a>
+                                </li>
+                                <!-- Third Step -->
+                                <li :class="step3">
+                                    <a href="#!">
+                                        <span class="circle">3</span>
+                                        <span class="label">安排阅卷</span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <!-- /.Stepers Wrapper -->
+
+                            <!--安排考场-->
+                            <div :class="step1div">
+                                <div class="row">
+                                    <div class="container-fluid d-flex justify-content-between">
+                                        <div class="col-6">
+                                            <div class="card mb-2">
+                                                <div class="card-header">
+                                                    操作及信息
+                                                </div>
+                                                <div class="card-body ">
+                                                    <p class="card-text">考试时间：{{NowEditExamInfo.examinationStartTime}} -
+                                                        {{NowEditExamInfo.examinationEndTime}}</p>
+                                                    <p class="card-text">
+                                                        获取准考证时间：{{NowEditExamInfo.ticketPublicizeTime}}</p>
+                                                    <p class="card-text">报考人数/容量：<span
+                                                            :class="[{'text-danger':NowEditExamInfo.num>allCapacity}]">{{NowEditExamInfo.num}}/{{allCapacity}}</span>
+                                                    </p>
+
+                                                    <div class="d-flex justify-content-between w-100">
+                                                        <button href="#!" class="btn btn-primary"
+                                                                @click="generateClassRoomAutomatically">自动生成
+                                                        </button>
+                                                        <button href="#!" class="btn btn-primary"
+                                                                @click="resetExamRoom">重置
+                                                        </button>
+                                                        <button type="button" class="btn btn-default"
+                                                                @click="nextStep('1')">下一步
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    被应用的教室
+                                                </div>
+                                                <div class="card-body">
+                                                    <table class="table">
+                                                        <thead>
+                                                        <tr>
+                                                            <th scope="col">教室名称</th>
+                                                            <th scope="col">教室容量</th>
+                                                            <th scope="col">考场名</th>
+                                                            <th scope="col">监考人数</th>
+                                                            <th scope="col" class="w-25">操作</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+
+                                                        <tr v-for="(item,index) in arrangeExamRoom.chosenClassRoom">
+                                                            <td>{{item.roomName}}</td>
+                                                            <td>{{item.capacity}}</td>
+                                                            <td>{{item.no}}号考场</td>
+                                                            <td>
+                                                                <select class="browser-default custom-select"
+                                                                        v-model="item.invigilatorNum"
+                                                                        @change="updateExamRoomInfo(item.id,item.invigilatorNum)">
+                                                                    <option :value="index" v-for="index in '123456'">
+                                                                        {{index}}
+                                                                    </option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <button type="button"
+                                                                        class="btn btn-primary btn-sm m-0 waves-effect"
+                                                                        @click="removeExamRoom(index)">移除考场
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    考试时间闲置的教室
+                                                </div>
+                                                <div class="card-body">
+                                                    <table class="table">
+                                                        <thead>
+                                                        <tr>
+                                                            <th scope="col">教室名称</th>
+                                                            <th scope="col">教室容量</th>
+
+                                                            <th scope="col" class="w-25">操作</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr v-for="(item,index) in arrangeExamRoom.freeClassRooms">
+                                                            <td>{{item.name}}</td>
+                                                            <td>{{item.capacity}}</td>
+
+                                                            <td>
+                                                                <button type="button"
+                                                                        class="btn btn-primary btn-sm m-0 waves-effect"
+                                                                        @click="useFreeExamRoom(index)">应用考场
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+
+                                                        </tbody>
+                                                    </table>
+
+                                                    <div class="md-form input-group d-flex justify-content-center">
+                                                        <div class="input-group-prepend">
+                                                            <button class="pages-first btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" id="roomPrevStart"
+                                                                    @click="roomPrevStart"><i
+                                                                    class="fas fa-angle-double-left"></i></button>
+                                                            <button class="pages-prev btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" id="roomPrev" @click="roomPrev"><i
+                                                                    class="fas fa-angle-left"></i></button>
+                                                        </div>
+                                                        <input type="text"
+                                                               class="form-control text-center col-4 pages-active"
+                                                               id="roomPage" @onfocus="roomPageFocus"
+                                                               @onblur="roomPageFocusOut" @onkeyup="roomPageKeyUp"
+                                                               :value="arrangeExamRoom.page.showtext">
+                                                        <div class="input-group-append">
+                                                            <button class="pages-next btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" id="roomNext" @click="roomNext"><i
+                                                                    class="fas fa-angle-right"></i></button>
+                                                            <button class="pages-last btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" id="roomNextTop" @click="roomNextTop">
+                                                                <i
+                                                                        class="fas fa-angle-double-right"></i></button>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--安排监考-->
+                            <div :class="step2div">
+                                <div class="row">
+                                    <div class="container-fluid d-flex justify-content-between">
+                                        <div class="col-8">
+                                            <div class="card mb-2">
+                                                <div class="card-header">
+                                                    操作及信息
+                                                </div>
+                                                <div class="card-body ">
+                                                    <p class="card-text">考试时间：{{NowEditExamInfo.examinationStartTime}} -
+                                                        {{NowEditExamInfo.examinationEndTime}}</p>
+                                                    <p class="card-text">
+                                                        获取准考证时间：{{NowEditExamInfo.ticketPublicizeTime}}</p>
+                                                    <p class="card-text">报考人数/容量：<span
+                                                            :class="[{'text-danger':NowEditExamInfo.num>allCapacity}]">{{NowEditExamInfo.num}}/{{allCapacity}}</span>
+                                                    </p>
+
+
+                                                    <div class="d-flex justify-content-between w-100">
+                                                        <button href="#!" class="btn btn-sm btn-primary"
+                                                                @click="generateInvigilatorAutomatically">自动生成
+                                                        </button>
+                                                        <button href="#!" class="btn btn-sm btn-primary"
+                                                                @click="resetInvigilatorExam">重置
+                                                        </button>
+                                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                                            <button type="button" class="btn btn-sm btn-default"
+                                                                    @click="prevStep('2')">上一步
+                                                            </button>
+                                                            <button type="button" class="btn btn-sm btn-default"
+                                                                    @click="nextStep('2')">下一步
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    被应用的教室
+                                                </div>
+                                                <div class="card-body">
+                                                    <table class="table">
+                                                        <thead>
+                                                        <tr>
+                                                            <th scope="col">教室名称</th>
+                                                            <th scope="col">考场号</th>
+                                                            <th scope="col">教室容量</th>
+                                                            <th scope="col">监考人数</th>
+                                                            <th scope="col" width="40%">监考人员</th>
+                                                            <th scope="col">操作</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+
+                                                        <tr v-for="(item,index) in arrangeInvigilator.examRoom">
+                                                            <td>{{item.roomName}}</td>
+                                                            <td>{{item.no}}号考场</td>
+                                                            <td>{{item.capacity}}</td>
+                                                            <td>{{item.invigilatorNum}}</td>
+                                                            <td>
+                                                                <li v-for="(item1,index) in item.invigilatorList"
+                                                                    class="float-left ml-2" style="list-style: none;">
+                                                                <span class="badge badge-info" style="font-size: 90%;">{{item1.realName}}<a
+                                                                        class="fas fa-times ml-2"
+                                                                        @click="removeInvigilator(item.invigilatorList,index,item1)"></a></span>
+                                                                </li>
+                                                            </td>
+                                                            <td>
+                                                                <button type="button"
+                                                                        @click="arrangeInvigilatorFun(item)"
+                                                                        class="btn btn-warning btn-sm m-0 waves-effect">
+                                                                    安排监考
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div class="card">
+                                                <div class="card-header d-flex justify-content-between">
+                                                    <span>{{arrangeInvigilator.examRoom[invigilatorEditIndex].roomName}} 考场安排监考人员</span>
+                                                </div>
+                                                <div class="card-body">
+                                                    <table class="table">
+                                                        <thead>
+                                                        <tr>
+                                                            <th scope="col">监考人名</th>
+                                                            <!--<th scope="col">状态</th>-->
+                                                            <th scope="col">操作</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr v-for="(item,index) in arrangeInvigilator.invigilators">
+                                                            <td>{{item.realName}}</td>
+                                                            <!--<td>-->
+                                                            <!--<span v-show="item.status==1" class="text-success">空闲</span>-->
+                                                            <!--<span v-show="item.status==0" class="text-danger">忙碌</span>-->
+                                                            <!--</td>-->
+                                                            <td>
+                                                                <button type="button" @click="useInvigilator(item.id)"
+                                                                        class="btn btn-primary btn-sm m-0 waves-effect">
+                                                                    应用监考
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+
+                                                        </tbody>
+                                                    </table>
+
+                                                    <div class="md-form input-group d-flex justify-content-center">
+                                                        <div class="input-group-prepend">
+                                                            <button class="pages-first btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" id="invigilatorsPrevStart"
+                                                                    @click="invigilatorsPrevStart"><i
+                                                                    class="fas fa-angle-double-left"></i></button>
+                                                            <button class="pages-prev btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" id="invigilatorsPrev"
+                                                                    @click="invigilatorsPrev"><i
+                                                                    class="fas fa-angle-left"></i></button>
+                                                        </div>
+                                                        <input type="text"
+                                                               class="form-control text-center col-4 pages-active"
+                                                               id="invigilatorsPage" @onfocus="invigilatorsPageFocus"
+                                                               @onblur="invigilatorsPageFocusOut"
+                                                               @onkeyup="invigilatorsPageKeyUp"
+                                                               :value="arrangeInvigilator.page.showtext">
+                                                        <div class="input-group-append">
+                                                            <button class="pages-next btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" id="invigilatorsNext"
+                                                                    @click="invigilatorsNext"><i
+                                                                    class="fas fa-angle-right"></i></button>
+                                                            <button class="pages-last btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" id="invigilatorsNextTop"
+                                                                    @click="invigilatorsNextTop"><i
+                                                                    class="fas fa-angle-double-right"></i></button>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!--安排阅卷-->
+                            <div :class="step3div">
+                                <div class="row">
+                                    <div class="container-fluid d-flex justify-content-between">
+                                        <div class="col-8">
+                                            <div class="card mb-2">
+                                                <div class="card-header">
+                                                    操作及信息
+                                                </div>
+                                                <!--dsad-->
+                                                <div class="card-body ">
+                                                    <p class="card-text">考试时间：{{NowEditExamInfo.examinationStartTime}} -
+                                                        {{NowEditExamInfo.examinationEndTime}}</p>
+                                                    <p class="card-text">
+                                                        获取准考证时间：{{NowEditExamInfo.ticketPublicizeTime}}</p>
+                                                    <p class="card-text">报考人数/容量：<span
+                                                            :class="[{'text-danger':NowEditExamInfo.num>allCapacity}]">{{NowEditExamInfo.num}}/{{allCapacity}}</span>
+                                                    </p>
+
+                                                    <!--                                                    <p class="card-text">报考人数/阅卷容量：<span-->
+                                                    <!--                                                            :class="[{'text-warning':registrationNum>allReviewerCapacity},'mr-5']">{{registrationNum}}/{{allReviewerCapacity}}</span><span-->
+                                                    <!--                                                            style="color:#D0D0D0">注：阅卷容量尽量大于报考人数</span></p>-->
+
+                                                    <div class="d-flex justify-content-between w-100">
+                                                        <button href="#!" class="btn btn-sm btn-primary"
+                                                                @click="generateReviewerAutomatically">自动生成
+                                                        </button>
+                                                        <button href="#!" class="btn btn-sm btn-primary"
+                                                                @click="resetReviewer">重置
+                                                        </button>
+                                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                                            <button type="button" class="btn btn-default"
+                                                                    @click="prevStep('3')">上一步
+                                                            </button>
+                                                            <button type="button" class="btn btn-success"
+                                                                    @click="successStep">完成
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-header d-flex justify-content-between">
+                                                    <span>阅卷老师</span>
+                                                    <button type="button"
+                                                            :class="['ml-auto','mt-0','mb-0','btn','btn-warning','btn-sm',{'d-none':editReviewer}]"
+                                                            @click="showAddReviewer">添加阅卷老师
+                                                    </button>
+                                                </div>
+                                                <div class="card-body">
+                                                    <table class="table">
+                                                        <thead>
+                                                        <tr>
+                                                            <th scope="col">阅卷老师名</th>
+                                                            <th scope="col">阅卷容量</th>
+                                                            <th scope="col" width="40%">阅卷考场</th>
+
+                                                            <th scope="col" width="30%">操作</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr v-for="(item,index) in arrangeReviewer.reviewers">
+                                                            <td>{{item.reviewer.realName}}</td>
+                                                            <td>
+                                                                <span :class="[{'text-warning':item.reviewerCapacity>item.exam.reviewWorkload}]">{{item.reviewerCapacity || 0}}/{{item.exam.reviewWorkload}}</span>
+                                                            </td>
+                                                            <td>
+                                                                <li v-for="item1 in item.examRoomList"
+                                                                    class="float-left ml-2" style="list-style: none;">
+                                                                <span class="badge badge-info" style="font-size: 90%;">{{item1.roomName}}-{{item1.capacity}}<a
+                                                                        class="fas fa-times ml-2"
+                                                                        @click="removeReviewerExamRooms(item,item1)"></a></span>
+                                                                </li>
+                                                            </td>
+                                                            <td>
+                                                                <div class="btn-group" role="group"
+                                                                     aria-label="Basic example">
+                                                                    <button type="button" class="btn btn-primary btn-sm"
+                                                                            @click="showExamRoom(item)">添加考场
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-warning btn-sm"
+                                                                            @click="removeReviewer(item)">移除阅卷
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="card" v-show="editReviewer">
+                                                <div class="card-header">
+                                                    可以进行阅卷的阅卷老师
+                                                </div>
+                                                <div class="card-body">
+                                                    <table class="table">
+                                                        <thead>
+                                                        <tr>
+                                                            <th scope="col">阅卷老师名</th>
+                                                            <th scope="col">过往工作量</th>
+
+                                                            <th scope="col" width="35%">操作</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr v-for="(item,index) in arrangeReviewer.freeReviewers">
+                                                            <td>{{item.realName}}</td>
+                                                            <td>{{item.reviewerPastWork}}</td>
+                                                            <td>
+                                                                <button type="button"
+                                                                        class="btn btn-primary btn-sm m-0 waves-effect"
+                                                                        @click="useFreeReviewer(item)">应用阅卷
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+
+                                                    <div class="md-form input-group d-flex justify-content-center">
+                                                        <div class="input-group-prepend">
+                                                            <button class="pages-first btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" id="reviewersPrevStart"
+                                                                    @click="reviewersPrevStart"><i
+                                                                    class="fas fa-angle-double-left"></i></button>
+                                                            <button class="pages-prev btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" id="reviewersPrev"
+                                                                    @click="reviewersPrev"><i
+                                                                    class="fas fa-angle-left"></i></button>
+                                                        </div>
+                                                        <input type="text"
+                                                               class="form-control text-center col-4 pages-active"
+                                                               id="reviewersPage" @onfocus="reviewersPageFocus"
+                                                               @onblur="reviewersPageFocusOut"
+                                                               @onkeyup="reviewersPageKeyUp"
+                                                               :value="arrangeReviewer.page.showtext">
+                                                        <div class="input-group-append">
+                                                            <button class="pages-next btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" id="reviewersNext"
+                                                                    @click="reviewersNext"><i
+                                                                    class="fas fa-angle-right"></i></button>
+                                                            <button class="pages-last btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" id="reviewersNextTop"
+                                                                    @click="reviewersNextTop"><i
+                                                                    class="fas fa-angle-double-right"></i></button>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="card" v-if="editReviewerExamRoom">
+                                                <div class="card-header" v-if="reviewerEditItem == null">
+                                                    请选择阅卷考场
+                                                </div>
+                                                <div class="card-header" v-if="reviewerEditItem != null">
+                                                    为 {{reviewerEditItem.reviewer.realName}} 老师 选择阅卷考场
+                                                </div>
+                                                <div class="card-body">
+                                                    <table class="table">
+                                                        <thead>
+                                                        <tr>
+
+                                                            <th scope="col">考场名</th>
+                                                            <th scope="col">考场号</th>
+                                                            <th scope="col">考场容量</th>
+
+                                                            <th scope="col" width="35%">操作</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr v-for="(item,index) in arrangeReviewer.reviewerExamRooms">
+                                                            <td>{{item.roomName}}</td>
+                                                            <td>{{item.no}}</td>
+                                                            <td>{{item.capacity}}</td>
+                                                            <td>
+                                                                <button type="button"
+                                                                        class="btn btn-primary btn-sm m-0 waves-effect"
+                                                                        @click="useReviewerExamRooms(arrangeReviewer.reviewerExamRooms,item)">
+                                                                    选择该考场
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+
+                                                    <nav aria-label="Page navigation example">
+                                                        <ul class="pagination pagination-circle pg-blue justify-content-center">
+                                                            <li class="page-item disabled"><a
+                                                                    class="page-link">First</a>
+                                                            </li>
+                                                            <li class="page-item disabled">
+                                                                <a class="page-link" aria-label="Previous">
+                                                                    <span aria-hidden="true">&laquo;</span>
+                                                                    <span class="sr-only">Previous</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="page-item active"><a class="page-link">1</a></li>
+                                                            <li class="page-item"><a class="page-link">2</a></li>
+                                                            <li class="page-item"><a class="page-link">3</a></li>
+                                                            <li class="page-item"><a class="page-link">4</a></li>
+                                                            <li class="page-item"><a class="page-link">5</a></li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" aria-label="Next">
+                                                                    <span aria-hidden="true">&raquo;</span>
+                                                                    <span class="sr-only">Next</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="page-item"><a class="page-link">Last</a></li>
+                                                        </ul>
+                                                    </nav>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <!-- /.Horizontal Steppers -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--考试详情-->
+    <div class="modal fade top " id="iexam_info_model" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+
+        <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+        <div class="modal-dialog modal-full-height modal-top" role="document">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title w-100" id="myModalLabel2">考试当前状态：{{NowEditExamInfo.status | examStatus}}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="container" style="background-color: white;margin-top: -6px;">
+                        <main>
+                            <div>
+                                <!-- Section: Blog v.4 -->
+                                <section class="mt-2 pb-3 wow fadeIn">
+                                    <!-- Grid row -->
+                                    <div class="row">
+                                        <!-- Grid column -->
+                                        <div class="col-md-12">
+                                            <!-- Featured image -->
+                                            <div class="justify-content-between d-flex">
+                                                <div class="mt-3 card p-3 col-12">
+                                                    <!-- Section: exams -->
+                                                    <section class="section card-body">
+                                                        <div class="container col-12">
+                                                            <div class="row mb-1">
+                                                                <div class="d-none" id="examId"
+                                                                     v-text="NowEditExamInfo.id"></div>
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    考试名：
+                                                                </div>
+                                                                <div class="col-7 attrubute_Content"
+                                                                     v-text="NowEditExamInfo.name"></div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="d-none" id="titleName"
+                                                                     v-text="NowEditExamInfo.id"></div>
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    职称：
+                                                                </div>
+                                                                <div class="col-7 attrubute_Content"
+                                                                     v-text="NowEditExamInfo.titleName"></div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    报名时间：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content">
+                                                                    <span v-text="NowEditExamInfo.registrationStartTime"></span>
+                                                                    ~ <span
+                                                                        v-text="NowEditExamInfo.registrationFinishTime"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    考试安排截至时间：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content"
+                                                                     v-text="NowEditExamInfo.ticketGenerateTime"></div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    获取准考证时间：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content"
+                                                                     v-text="NowEditExamInfo.ticketPublicizeTime"></div>
+                                                            </div>
+
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    考试时间：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content">
+                                                                    <span v-text="NowEditExamInfo.examinationStartTime"></span>
+                                                                    ~ <span
+                                                                        v-text="NowEditExamInfo.examinationEndTime"></span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    阅卷时间：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content">
+                                                                    <span v-text="NowEditExamInfo.reviewStartTime"></span>
+                                                                    ~ <span
+                                                                        v-text="NowEditExamInfo.reviewEndTime"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    成绩获取时间：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content"
+                                                                     v-text="NowEditExamInfo.gradePublicizeTime"></div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    考试地点：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content"
+                                                                     v-text="NowEditExamInfo.place"></div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    报名费用：
+                                                                </div>
+
+                                                                <div class="col-7  attrubute_Content"><span
+                                                                        v-text="NowEditExamInfo.examFee"></span>￥
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    报名人数：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content">
+                                                                    <span v-text="NowEditExamInfo.num"></span>/
+                                                                    <span v-text="NowEditExamInfo.capacity"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    考试分数：
+                                                                </div>
+                                                                <div class="col-7  attrubute_Content">
+                                                                    满分：<span v-text="NowEditExamInfo.maxGrade"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    通过分数：<span
+                                                                        v-text="NowEditExamInfo.passGrade"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-1">
+                                                                <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                                    考试说明：
+                                                                </div>
+
+                                                                <p class="col-7 attrubute_Content"
+                                                                   v-text="NowEditExamInfo.comment"></p>
+                                                            </div>
+                                                            <hr>
+                                                            <div class="row">
+                                                                <div class="col-10 offset-1">
+                                                                    <div class="font-weight-bolder attribute_Name">
+                                                                        注意事项：
+                                                                    </div>
+                                                                    <p v-text="NowEditExamInfo.precautions"></p>
+                                                                </div>
+                                                            </div>
+                                                            <hr>
+                                                            <div class="row">
+
+                                                                <div class="col-10 offset-1">
+                                                                    <h5 class="my-3 text-lg-left "><i
+                                                                            class="fas fa-link"></i> 相关链接：</h5>
+                                                                    <ol>
+                                                                        <li v-for="(item,index) in file_links">
+                                                                            <p><a :href="item.titlePath"><i
+                                                                                    class="far fa-file-alt"></i> <span
+                                                                                    v-text="item.fileTitle"></span></a>
+                                                                            </p>
+                                                                        </li>
+                                                                    </ol>
+
+                                                                </div>
+
+                                                            </div>
+                                                            <hr>
+                                                            <div class="row"
+                                                                 v-if="NowEditExamInfo.status>4||NowEditExamInfo.status==='10'">
+
+                                                                <div class="col-10 offset-1">
+                                                                    <h5 class="my-3 text-lg-left "><i
+                                                                            class="fas fa-link"></i> 考试安排详情：</h5>
+                                                                    <table class="table text-center">
+                                                                        <thead class="lighten-2">
+                                                                        <tr>
+                                                                            <th scope="col">考场</th>
+                                                                            <th scope="col">考场容量</th>
+                                                                            <th scope="col">相关监考</th>
+                                                                            <th scope="col">对应阅卷</th>
+                                                                            <th scope="col">操作</th>
+                                                                        </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                        <tr v-for="(item,index) in arrangeMessage">
+                                                                            <td>
+                                                                                <span v-text="item.examRoom.no"></span>号考场
+                                                                                - <span
+                                                                                    v-text="item.examRoom.roomName"></span>
+                                                                            </td>
+                                                                            <td v-text="item.examRoom.capacity"></td>
+                                                                            <td>
+                                                                                <ul style="list-style: none">
+                                                                                    <li v-for="item1 in item.invigilatorList">
+                                                                                        {{item1.realName}}
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </td>
+
+                                                                            <td>{{item.reviewer.realName}}</td>
+
+                                                                            <td class="px-0 mx-0">
+                                                                                <div class="btn-group px-0 mx-0"
+                                                                                     role="group"
+                                                                                     aria-label="Basic example">
+                                                                                    <button type="button"
+                                                                                            class=" btn btn-sm btn-outline-deep-purple btn-rounded waves-effect"
+                                                                                            @click="getAllStdTicket(item.examRoom.id)">
+                                                                                        获取考生信息
+                                                                                    </button>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </section>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </main>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade top " id="show_grade_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-full-height modal-top" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title w-100" v-text="NowEditExamInfo.name"></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body d-flex justify-content-between">
+                    <div id="grade_charts" style="width: 400px;height:400px;"></div>
+                    <div class="w-100">
+                        <div class="md-form input-group mb-3">
+                            <div class="input-group-prepend mr-5">
+                                <span style="font-size: 24px;" class="input-group-text md-addon mr-2">考生成绩</span>
+                            </div>
+                            <input type="text" class="form-control pl-0 rounded-0" id="kaoshengchaxun"
+                                   placeholder="准考证号">
+                            <button type="button" class="btn btn-primary mb-0 mr-3">查找</button>
+                        </div>
+
+
+                        <table class="table text-center">
+                            <thead class="lighten-2">
+                            <tr>
+                                <th scope="col">考生准考证号</th>
+                                <th scope="col">考生成绩</th>
+                                <th scope="col">所在考场</th>
+                                <th scope="col">是否通过</th>
+                                <!--<th scope="col" class="w-25">操作</th>-->
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(item,index) in nowChooseExamGrades.grades">
+                                <td v-text="item.ticket.ticketNumber"></td>
+                                <td v-text="item.ticket.grade"></td>
+                                <td>
+                                    <span v-text="item.examRoom.no"></span>号考场 - <span
+                                        v-text="item.examRoom.roomName"></span>
+                                </td>
+                                <td>
+                                    <span v-if="item.ticket.grade>=NowEditExamInfo.passGrade"
+                                          class="text-success">成绩合格</span>
+                                    <span v-if="item.ticket.grade<NowEditExamInfo.passGrade"
+                                          class="text-danger">成绩不合格</span>
+
+                                </td>
+
+                            </tr>
+
+                            </tbody>
+                        </table>
+
+
+                        <div class="md-form input-group d-flex justify-content-center">
+                            <div class="input-group-prepend">
+                                <button class="pages-first btn btn-md btn-primary m-0 px-3" type="button"
+                                        id="ticketPrevStart"
+                                        @click="ticketPrevStart"><i
+                                        class="fas fa-angle-double-left"></i></button>
+                                <button class="pages-prev btn btn-md btn-primary m-0 px-3" type="button" id="ticketPrev"
+                                        @click="ticketPrev"><i
+                                        class="fas fa-angle-left"></i></button>
+                            </div>
+                            <input type="text" class="form-control text-center col-4 pages-active" id="ticketPage"
+                                   @onfocus="ticketPageFocus" @onblur="ticketPageFocusOut" @onkeyup="ticketPageKeyUp"
+                                   :value="nowChooseExamGrades.page.showtext">
+                            <div class="input-group-append">
+                                <button class="pages-next btn btn-md btn-primary m-0 px-3" type="button" id="ticketNext"
+                                        @click="ticketNext"><i
+                                        class="fas fa-angle-right"></i></button>
+                                <button class="pages-last btn btn-md btn-primary m-0 px-3" type="button"
+                                        id="ticketNextTop"
+                                        @click="ticketNextTop"><i
+                                        class="fas fa-angle-double-right"></i></button>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="userId" th:data="${session.BACKSYS_USER.id}"></div>
+</div>
+
+<!-- JQuery -->
+<script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}" src="/js/jquery-3.3.1.min.js"></script>
+
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/js/Vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/js/popper.min.js}" src="/js/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/js/bootstrap.js}" src="/js/bootstrap.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/js/mdb.min.js}" src="/js/mdb.min.js"></script>
+
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table.min.js}"
+        src="/js/addons/bootstrap-table.min.js"></script>
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table-locale-all.js}"
+        src="/js/addons/bootstrap-table-locale-all.js"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/bootoast.js}"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/emmo_backTable_basicOperator.js}"></script>
+<!--<script type="text/javascript" th:src="@{/js/addons/datepicker/bootstrap-datetimepicker.min.js}"></script>-->
+<!--<script type="text/javascript" th:src="@{/js/addons/datepicker/locales/bootstrap-datetimepicker.zh-CN.js}"></script>-->
+
+<script type="text/javascript" th:src="@{/js/Vue/IexamBack/backTemplates.js}"></script>
+
+<script type="text/javascript" th:src="@{/js/echarts.min.js}"></script>
+
+
+<script type="text/javascript">
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            file_links: [],
+            //样式修改
+            step1: {active: true, warning: false, success: false},
+            step2: {active: false, warning: false, success: false},
+            step3: {active: false, warning: false, success: false},
+            step1div: {'container-fluid': true, 'd-none': false},
+            step2div: {'container-fluid': true, 'd-none': true},
+            step3div: {'container-fluid': true, 'd-none': true},
+
+            //总览相关数据
+            examListInfo: {
+                examStatus: -2,
+                examList: [],
+                examListCount: 0,
+                show_who: 0,
+                show_publish_man_id: 0,
+                showtext: null,
+                key_page: 1,
+                active_paper: 1,
+                exam_search: null,
+                page_size: 10,
+                all_page: 1
+            },
+
+
+            editExamShow: false,
+            NowEditExamInfo: {
+                id: 0
+            },
+
+            //阅卷相关
+            editReviewerExamRoom: false,
+            editReviewer: true,
+
+
+            //相关数据
+            msg: '欢迎学习Vue',
+
+            allCapacity: 0,
+            allReviewerCapacity: 0,
+            //安排考场信息
+            arrangeExamRoom: {
+                chosenClassRoom: [],
+                freeClassRooms: [],
+                page: {
+                    showtext: null,
+                    keyPage: 1,
+                    active_paper: 1,
+                    room_search: null,
+                    page_size: 10,
+                    all_page: 1
+                }
+
+            },
+            //安排监考信息
+            arrangeInvigilator: {
+                examRoom: [{
+                    name: "A101",
+                    capacity: 50,
+                    invigilatorNum: 0,
+                    invigilatorList: []
+                }],
+                invigilators: [{
+                    name: "张三",
+                    status: "1"
+                }],
+                nowEditExamRoom: null,
+                page: {
+                    showtext: null,
+                    keyPage: 1,
+                    active_paper: 1,
+                    invigilator_search: null,
+                    page_size: 8,
+                    all_page: 1
+                }
+            },
+
+            arrangeReviewer: {
+                reviewers: [],
+                freeReviewers: [{
+                    name: "一二三四",
+                    reviewerExamRooms: [],
+                    reviewerCapacity: 0,
+                    reviewerDefualtCapacity: 100,
+                    reviewerPastWork: 1
+                }],
+                reviewerExamRooms: [{
+                    id: "1",
+                    name: "A101",
+                    examRoomName: "1号考场",
+                    capacity: 50
+                }],
+                page: {
+                    showtext: null,
+                    keyPage: 1,
+                    active_paper: 1,
+                    review_search: null,
+                    page_size: 8,
+                    all_page: 1
+                }
+
+            },
+
+            invigilatorEditIndex: 0,
+            reviewerEditItem: null,
+            arrangeMessage: [{
+                examRoom: {
+                    no: null,
+                    roomName: null,
+                },
+                gradeList: [],
+                invigilatorList: [
+                    {
+                        realName: null
+                    }
+                ],
+                reviewer: {
+                    realName: null
+                }
+            }],
+            nowChooseExamGrades: {
+                exam: null,
+                passNum: 0,
+                noPassNum: 0,
+                grades: [],
+                page: {
+                    showtext: null,
+                    keyPage: 1,
+                    active_paper: 1,
+                    ticket_search: null,
+                    page_size: 8,
+                    all_page: 1
+                }
+
+            },
+
+        },
+        methods: {
+            getAllStdTicket(value) {
+                window.open("/exam/getAllStdTicket?examRoomId=" + value, "_blank")
+            },
+            show_grade(item) {
+
+                this.NowEditExamInfo = item;
+                this.getStdGrades();
+                var myChart = echarts.init(document.getElementById('grade_charts'));
+                option = {
+                    title: {
+                        text: '考生成绩',       //大标题
+                        subtext: '合格：' + this.nowChooseExamGrades.passNum + '人，不合格：' + this.nowChooseExamGrades.noPassNum + '人',                //类似于副标题
+                        x: 'center'                 //标题位置   居中
+                    },
+                    tooltip: {
+                        trigger: 'item',           //数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用。
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"   //{a}（系列名称），{b}（数据项名称），{c}（数值）, {d}（百分比）用于鼠标悬浮时对应的显示格式和内容
+                    },
+                    legend: {                           //图例组件。
+                        orient: 'vertical',             //图例列表的布局朝向
+                        left: 'left',
+                        data: ['成绩合格', '成绩不合格']
+                    },
+                    color: ['#749f83', '#c23531'],
+                    series: [              //系列列表。每个系列通过 type 决定自己的图表类型
+                        {
+                            name: '人数占比',
+                            type: 'pie',
+                            radius: '55%',
+                            center: ['50%', '60%'],
+                            data: [
+                                {value: this.nowChooseExamGrades.passNum, name: '成绩合格'},
+                                {value: this.nowChooseExamGrades.noPassNum, name: '成绩不合格'}
+                            ],
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+
+
+            },
+
+            getStdGrades() {
+                var _this = this;
+
+                $.ajax({
+                    url: '/grade/getGradeListToSearch?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        page: this.nowChooseExamGrades.page.active_paper,
+                        size: this.nowChooseExamGrades.page.page_size,
+
+                        grade: {
+                            examId: this.NowEditExamInfo.id,
+                            ticketNumber: this.nowChooseExamGrades.page.ticket_search
+                        }
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (examList) {
+                        console.log(examList);
+                        _this.nowChooseExamGrades.grades = examList.data;
+                        _this.nowChooseExamGrades.passNum = examList.passNum;
+                        _this.nowChooseExamGrades.noPassNum = examList.noPassNum;
+                        if (parseInt(examList.count) % _this.nowChooseExamGrades.page.page_size == 0) {
+                            _this.nowChooseExamGrades.page.all_page = parseInt(examList.count / _this.nowChooseExamGrades.page.page_size);
+                        } else {
+                            _this.nowChooseExamGrades.page.all_page = parseInt(examList.count / _this.nowChooseExamGrades.page.page_size) + 1;
+                        }
+
+                        if (_this.nowChooseExamGrades.page.all_page == 0) {
+                            _this.nowChooseExamGrades.page.all_page = 1;
+                        }
+                        _this.nowChooseExamGrades.page.showtext = "第" + _this.nowChooseExamGrades.page.active_paper + "页/共" + _this.nowChooseExamGrades.page.all_page + "页";
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+
+            ticketPrevStart() {
+                this.nowChooseExamGrades.page.active_paper = 1;
+                this.nowChooseExamGrades.page.keyPage = this.nowChooseExamGrades.page.active_paper;
+                //change(this.page.active_paper);
+                $("#ticketPage").val("第" + this.nowChooseExamGrades.page.active_paper + "页/共" + this.nowChooseExamGrades.page.all_page + "页");
+                this.getStdGrades();
+            },
+            ticketNextTop() {
+                this.nowChooseExamGrades.page.active_paper = this.nowChooseExamGrades.page.all_page;
+                this.nowChooseExamGrades.page.keyPage = this.nowChooseExamGrades.page.active_paper;
+                //change(this.page.active_paper);
+                $("#ticketPage").val("第" + this.nowChooseExamGrades.page.active_paper + "页/共" + this.nowChooseExamGrades.page.all_page + "页");
+                this.getStdGrades();
+            },
+            ticketNext() {
+                if (this.nowChooseExamGrades.page.active_paper == this.nowChooseExamGrades.page.all_page) {
+                    console.log("当前页：" + this.nowChooseExamGrades.page.active_paper + "，无法继续点击");
+                    return false; //如果大于总页数就禁用下一页
+                } else {
+                    $("#ticketPage").text(++this.nowChooseExamGrades.page.active_paper); //点击下一页的时候当前页数的值就加1
+                    this.nowChooseExamGrades.page.keyPage = this.nowChooseExamGrades.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#ticketPage").val("第" + this.nowChooseExamGrades.page.active_paper + "页/共" + this.nowChooseExamGrades.page.all_page + "页");
+                }
+                this.getStdGrades();
+            },
+            ticketPrev() {
+                if (this.nowChooseExamGrades.page.active_paper == 1) {
+                    console.log("当前页：" + this.nowChooseExamGrades.page.active_paper + "，无法继续点击");
+                    return false;
+                } else {
+                    $("#ticketPage").text(--this.nowChooseExamGrades.page.active_paper);
+                    this.nowChooseExamGrades.page.keyPage = this.nowChooseExamGrades.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#ticketPage").val("第" + this.nowChooseExamGrades.page.active_paper + "页/共" + this.nowChooseExamGrades.page.all_page + "页");
+                }
+                this.getStdGrades();
+            },
+            ticketPageFocus() {
+                $("#ticketPage").val(this.nowChooseExamGrades.page.active_paper).select();
+            },
+            ticketPageFocusOut() {
+                this.nowChooseExamGrades.page.keyPage = parseInt($("#ticketPage").val());
+                if (this.nowChooseExamGrades.page.keyPage > this.nowChooseExamGrades.page.all_page | this.nowChooseExamGrades.page.keyPage < 0 | isNaN(this.nowChooseExamGrades.page.keyPage)) {
+                    $("#ticketPage").val("第" + this.nowChooseExamGrades.page.active_paper + "页/共" + this.nowChooseExamGrades.page.all_page + "页")
+                } else {
+                    this.nowChooseExamGrades.page.active_paper = this.nowChooseExamGrades.page.keyPage;
+
+                    $("#ticketPage").val("第" + this.nowChooseExamGrades.page.active_paper + "页/共" + this.nowChooseExamGrades.page.all_page + "页")
+                }
+                this.getStdGrades();
+            },
+            ticketPageKeyUp() {
+                let key = event.keyCode;
+                if (key == 13) {
+                    this.nowChooseExamGrades.page.keyPage = parseInt($("#ticketPage").val());
+                    if (this.nowChooseExamGrades.page.keyPage > this.nowChooseExamGrades.page.all_page | this.nowChooseExamGrades.page.keyPage < 0 | isNaN(this.nowChooseExamGrades.page.keyPage)) {
+                        $("#ticketPage").val("第" + this.nowChooseExamGrades.page.active_paper + "页/共" + this.nowChooseExamGrades.page.all_page + "页")
+                    } else {
+                        this.nowChooseExamGrades.page.active_paper = this.nowChooseExamGrades.page.keyPage;
+                        $("#ticketPage").val("第" + this.nowChooseExamGrades.page.active_paper + "页/共" + this.nowChooseExamGrades.page.all_page + "页")
+                        this.getStdGrades();
+                    }
+                }
+            },
+
+
+            changeStatus() {
+                this.examListInfo.active_paper = 1;
+                this.showExamInfoOfPage();
+
+            },
+            browseChange() {
+                if (this.examListInfo.show_who === 0) {
+                    this.examListInfo.show_publish_man_id = 0;
+                } else {
+                    this.examListInfo.show_publish_man_id = $("div#userId").attr("data");
+                }
+
+                this.showExamInfoOfPage();
+            },
+            /**
+             * 全自动考试安排
+             */
+            generateAllAutomatically() {
+                let _this = this;
+                $.ajax({
+                    url: '/exam/generateAllExamInfoAutomatically?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        examId: this.NowEditExamInfo.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+
+
+                        if (data.status === 1) {
+                            toast(data.info, "success");
+                            _this.loadFreeRoomData();
+                            _this.loadManagedRoomData();
+                            _this.loadInvigilatorsData();
+                            _this.loadManagedRoomAndInvigilatorsData();
+                            _this.refreshUi3();
+                            _this.NowEditExamInfo.status = data.data.status;
+                            _this.changeProcessStatus(data.data.status);
+
+                        } else if (data.status === 0)
+                            toast(data.errorMsg, "danger");
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+
+            /**
+             * 考场安排开始
+             * 注： 如果考场人数安排已经大于报名人数，不能再继续添加 这里还没做的
+             */
+            //考试安排点击事件
+            changeProcessStatus(status) {
+                console.log(status);
+                this.step1.success = false;
+                this.step2.success = false;
+                this.step3.success = false;
+                if (status.charAt(2) === '1') {
+                    this.step1.success = true;
+                }
+
+                if (status.charAt(0) === '1') {
+                    this.step2.success = true;
+                }
+
+                if (status.charAt(1) === '1') {
+                    this.step3.success = true;
+                }
+            },
+            openExamDetail(value) {
+                var _this = this;
+                this.NowEditExamInfo = value;
+                $.ajax({
+                    url: '/examFiles/getFilesList?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        page: 1,
+                        size: 1000,
+                        examNews: {
+                            examId: this.NowEditExamInfo.id
+                        }
+                    }),
+                    success: function (examList) {
+                        console.log(examList);
+                        _this.file_links = examList.data;
+                    }, error: function (data) {
+                    }
+                });
+
+
+                $.ajax({
+                    url: '/examRelatedPeople/getExamArrangeInfo?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {examId: this.NowEditExamInfo.id},
+                    success: function (examList) {
+                        console.log(examList);
+                        _this.arrangeMessage = examList.data;
+                    }, error: function (data) {
+                    }
+                });
+
+            },
+            BeginArrangeExam(value) {
+
+                if (value.status.length !== 3) {
+                    toast("考试无法安排", "danger");
+                    return;
+                }
+                this.changeProcessStatus(value.status);
+
+                this.step1div["d-none"] = false;
+                this.step2div["d-none"] = true;
+                this.step3div["d-none"] = true;
+
+
+                //this.arrangeInvigilator.examRoom = [];
+                this.invigilatorEditIndex = 0;
+
+
+                this.NowEditExamInfo = value;
+                this.editExamShow = true;
+                this.loadFreeRoomData();
+                this.loadManagedRoomData();
+            },
+            //第一步的重置点击事件
+            resetExamRoom() {
+                let _this = this;
+                $.ajax({
+                    url: '/room/resetExamRoom?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        examId: this.NowEditExamInfo.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+
+                        if (data.status === 1) {
+                            toast(data.info, "success");
+                            _this.loadFreeRoomData();
+                            _this.loadManagedRoomData();
+
+                            _this.allCapacity = 0;
+                            _this.NowEditExamInfo.status = data.data;
+                            _this.changeProcessStatus(data.data);
+                        } else if (data.status === 0)
+                            toast(data.errorMsg, "danger");
+
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            //第一步的自动生成点击事件
+            generateClassRoomAutomatically() {
+                let _this = this;
+                $.ajax({
+                    url: '/room/generateClassRoomAutomatically?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        examId: this.NowEditExamInfo.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+
+                        if (data.status === 1) {
+                            toast(data.info, "success");
+                            _this.loadFreeRoomData();
+                            _this.loadManagedRoomData();
+                            _this.NowEditExamInfo.status = data.data.status;
+                            _this.changeProcessStatus(data.data.status);
+                        } else if (data.status === 0)
+                            toast(data.errorMsg, "danger");
+
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            //第一步的移除考场点击事件
+            removeExamRoom(index) {
+                let id = this.arrangeExamRoom.chosenClassRoom[index].id;
+                let _this = this;
+                $.ajax({
+                    url: '/room/cancelArrangement?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        examRoomId: id,
+                        examId: this.NowEditExamInfo.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        if (data.status == 1) {
+                            _this.arrangeExamRoom.freeClassRooms.push({
+                                id: _this.arrangeExamRoom.chosenClassRoom[index].id,
+                                name: _this.arrangeExamRoom.chosenClassRoom[index].roomName,
+                                capacity: _this.arrangeExamRoom.chosenClassRoom[index].capacity
+                            });
+                            _this.allCapacity -= _this.arrangeExamRoom.chosenClassRoom[index].capacity;
+                            _this.arrangeExamRoom.chosenClassRoom.splice(index, 1);
+                            _this.NowEditExamInfo.status = "000";
+                            _this.changeProcessStatus("000");
+                            toast("考场取消成功", "success");
+                        }
+
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            //第一步的应用考场点击事件
+            useFreeExamRoom(index) {
+                if (this.allCapacity >= this.NowEditExamInfo.num) {
+                    toast("安排的教室已经完全够用了", "danger");
+                    return
+                }
+                let id = this.arrangeExamRoom.freeClassRooms[index].id;
+                let name = this.arrangeExamRoom.freeClassRooms[index].name;
+                let capacity = this.arrangeExamRoom.freeClassRooms[index].capacity;
+                let _this = this;
+                $.ajax({
+                    url: '/room/addArrangement?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        examId: this.NowEditExamInfo.id,
+                        fromTime: this.NowEditExamInfo.examinationStartTime,
+                        endTime: this.NowEditExamInfo.examinationEndTime,
+                        invigilatorNum: 2,
+                        no: this.arrangeExamRoom.chosenClassRoom.length + 1,
+                        classRoomId: id,
+                        roomName: name,
+                        capacity: capacity
+
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        if (data.status == 1) {
+                            _this.arrangeExamRoom.chosenClassRoom.push(
+                                data.data
+                            );
+                            _this.allCapacity += _this.arrangeExamRoom.freeClassRooms[index].capacity;
+                            _this.arrangeExamRoom.freeClassRooms.splice(index, 1);
+                            _this.NowEditExamInfo.status = "000";
+                            _this.changeProcessStatus("000");
+                            toast("考场安排成功", "success");
+                        }
+
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            updateExamRoomInfo(id, value) {
+                $.ajax({
+                    url: '/room/updateExamRoom?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        id: id,
+                        invigilatorNum: value
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        if (data.status == 1) {
+                            toast("监考人数修改成功", "success");
+                        }
+
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            loadAllCapacity() {
+                let num = 0;
+                for (let i = 0; i < this.arrangeExamRoom.chosenClassRoom.length; i++) {
+                    num += this.arrangeExamRoom.chosenClassRoom[i].capacity;
+                }
+                this.allCapacity = num;
+            },
+            loadFreeRoomData() {
+                let _this = this;
+                $.ajax({
+                    url: '/room/getAllClassRoomCanUse?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        startTime: this.NowEditExamInfo.examinationStartTime,
+                        endTime: this.NowEditExamInfo.examinationEndTime,
+                        page: this.arrangeExamRoom.page.active_paper,
+                        size: this.arrangeExamRoom.page.page_size,
+                        room_search: this.arrangeExamRoom.page.room_search
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        let count = data.count;
+                        _this.arrangeExamRoom.freeClassRooms = data.data;
+
+                        if (parseInt(count) % _this.arrangeExamRoom.page.page_size == 0) {
+                            _this.arrangeExamRoom.page.all_page = parseInt(count / _this.arrangeExamRoom.page.page_size);
+                        } else {
+                            _this.arrangeExamRoom.page.all_page = parseInt(count / _this.arrangeExamRoom.page.page_size) + 1;
+                        }
+                        if (_this.arrangeExamRoom.page.all_page == 0) {
+                            _this.arrangeExamRoom.page.all_page = 1;
+                        }
+
+                        _this.arrangeExamRoom.page.showtext = "第" + _this.arrangeExamRoom.page.active_paper + "页/共" + _this.arrangeExamRoom.page.all_page + "页";
+
+
+                    }, error: function (data) {
+                    }
+                });
+            },
+            loadManagedRoomData() {
+                let _this = this;
+                $.ajax({
+                    url: '/room/getExamRoomInfoByExamId?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        examId: this.NowEditExamInfo.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        _this.arrangeExamRoom.chosenClassRoom = data;
+                        _this.loadAllCapacity();
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            /**
+             *考场安排结束
+             */
+
+            /**
+             * 监考安排开始
+             */
+            loadManagedRoomAndInvigilatorsData() {
+                let _this = this;
+                $.ajax({
+                    url: '/examRelatedPeople/getArrangedInvigilator?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        page: 1,
+                        size: 10,
+                        invigilatorExamRoom: {
+                            examId: this.NowEditExamInfo.id
+                        }
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        data = data.data;
+
+                        for (let j = 0; j < _this.arrangeInvigilator.examRoom.length; j++) {
+                            _this.arrangeInvigilator.examRoom[j]['invigilatorList'] = [];
+                        }
+                        for (let i = 0; i < data.length; i++) {
+                            for (let j = 0; j < _this.arrangeInvigilator.examRoom.length; j++) {
+                                if (_this.arrangeInvigilator.examRoom[j].id == data[i].examRoomId) {
+
+                                    _this.arrangeInvigilator.examRoom[j]['invigilatorList'] = data[i].xUsers;
+                                    //  _this.$set(_this.arrangeInvigilator.examRoom[j], 'invigilatorList', data[i].xUsers);
+                                }
+                            }
+                        }
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+
+            loadInvigilatorsData() {
+                let _this = this;
+                $.ajax({
+                    url: '/examRelatedPeople/getAllInvigilator?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        examId: this.NowEditExamInfo.id,
+                        page: this.arrangeInvigilator.page.active_paper,
+                        size: this.arrangeInvigilator.page.page_size
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+
+                        let count = data.count;
+                        _this.arrangeInvigilator.invigilators = data.data;
+
+
+                        if (parseInt(count) % _this.arrangeInvigilator.page.page_size == 0) {
+                            _this.arrangeInvigilator.page.all_page = parseInt(count / _this.arrangeInvigilator.page.page_size);
+                        } else {
+                            _this.arrangeInvigilator.page.all_page = parseInt(count / _this.arrangeInvigilator.page.page_size) + 1;
+                        }
+
+                        if (_this.arrangeInvigilator.page.all_page == 0) {
+                            _this.arrangeInvigilator.page.all_page = 1;
+                        }
+
+                        _this.arrangeInvigilator.page.showtext = "第" + _this.arrangeInvigilator.page.active_paper + "页/共" + _this.arrangeInvigilator.page.all_page + "页";
+
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            //第二步自动安排
+            generateInvigilatorAutomatically() {
+                let _this = this;
+                $.ajax({
+                    url: '/examRelatedPeople/generateInvigilatorAutomatically?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        examId: this.NowEditExamInfo.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+
+                        if (data.status === 1) {
+                            toast(data.info, "success");
+                            _this.loadInvigilatorsData();
+                            _this.loadManagedRoomAndInvigilatorsData();
+                            _this.NowEditExamInfo.status = data.data.status;
+                            _this.changeProcessStatus(data.data.status);
+                        } else if (data.status === 0)
+                            toast(data.errorMsg, "danger");
+
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            //第二步重置
+            resetInvigilatorExam() {
+                let _this = this;
+                $.ajax({
+                    url: '/examRelatedPeople/resetInvigilatorExam?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        examId: this.NowEditExamInfo.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        if (data.status === 1) {
+                            toast(data.info, "success");
+                            for (let i = 0; i < _this.arrangeInvigilator.examRoom.length; i++) {
+                                _this.$set(_this.arrangeInvigilator.examRoom[i], 'invigilatorList', []);
+                            }
+
+                            _this.NowEditExamInfo.status = data.data;
+                            _this.changeProcessStatus(data.data);
+                            _this.loadInvigilatorsData()
+
+                        } else if (data.status === 0)
+                            toast(data.errorMsg, "danger");
+
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            removeInvigilator(container, index, invigilator) {
+                let _this = this;
+
+                $.ajax({
+                    url: '/examRelatedPeople/cancelInvigilatorExam?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        invigilatorId: invigilator.id,
+                        examId: this.NowEditExamInfo.id
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        console.log(data);
+                        if (data.status === 1) {
+                            toast(data.info, "success")
+                            for (let i = 0; i < _this.arrangeInvigilator.invigilators.length; i++) {
+                                if (_this.arrangeInvigilator.invigilators[i].id == invigilator.id) {
+                                    _this.arrangeInvigilator.invigilators.splice(i, 1);
+                                }
+                            }
+                            _this.NowEditExamInfo.status = data.data.exam.status;
+                            _this.arrangeInvigilator.invigilators.push(invigilator);
+                            _this.changeProcessStatus(_this.NowEditExamInfo.status);
+                            container.splice(index, 1);
+                        } else if (data.status === 0)
+                            toast(data.errorMsg, "danger");
+
+                    }, error: function (data) {
+
+                    }
+                });
+
+
+            },
+            arrangeInvigilatorFun(item) {
+                this.arrangeInvigilator.nowEditExamRoom = item;
+                //this.invigilatorEditIndex = index;
+            },
+            useInvigilator(invigilatorId) {
+                let examRoom = (this.arrangeInvigilator.nowEditExamRoom);
+                if (examRoom == null) {
+                    toast("请先选中教室", "danger");
+                    return;
+                }
+                if (examRoom.invigilatorList === undefined) {
+                    this.$set(examRoom, 'invigilatorList', [])
+                }
+                if (examRoom.invigilatorList.length + 1 > examRoom.invigilatorNum) {
+                    toast("当前监考人数已达到限制", "danger");
+                    return;
+                }
+                let _this = this;
+                $.ajax({
+                    url: '/examRelatedPeople/addInvigilatorExam?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        invigilatorId: invigilatorId,
+                        fromTime: examRoom.fromTime,
+                        endTime: examRoom.endTime,
+                        examRoomId: examRoom.id,
+                        examId: this.NowEditExamInfo.id
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        if (data.status === 1) {
+                            toast(data.info, "success")
+                            examRoom.invigilatorList.push(data.data.xUser)
+                            for (let i = 0; i < _this.arrangeInvigilator.invigilators.length; i++) {
+                                if (_this.arrangeInvigilator.invigilators[i].id == invigilatorId) {
+                                    _this.arrangeInvigilator.invigilators.splice(i, 1);
+                                }
+                            }
+                            _this.NowEditExamInfo.status = data.data.exam.status;
+                            _this.changeProcessStatus(_this.NowEditExamInfo.status);
+                        } else if (data.status === 0)
+                            toast(data.errorMsg, "danger");
+
+                    }, error: function (data) {
+
+                    }
+                });
+
+
+            },
+            /**
+             * 监考安排结束
+             */
+
+            /**
+             * 阅卷安排开始
+             */
+            removeReviewerExamRooms(container, item) {
+                let _this = this;
+                let reviewerExamId = container.reviewerExam.id;
+                let examRoomId = item.id;
+                $.ajax({
+                    url: '/examRelatedPeople/cancelReviewerExamRoom?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        reviewerExamId: reviewerExamId,
+                        examRoomId: examRoomId,
+                        examId: this.NowEditExamInfo.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        console.log(data);
+                        if (data.status == 1) {
+                            toast(data.info, "success")
+                            _this.NowEditExamInfo.status = data.data.exam.status;
+                            _this.changeProcessStatus(_this.NowEditExamInfo.status);
+                        }
+
+                    }, error: function (data) {
+
+                    }
+
+                });
+                // for (let i = 0; i < container.length; i++) {
+                //     if(container[i].id == item.id){
+                //         container.splice(i,1);
+                //     }
+                // }
+                this.refreshUi3();
+
+            },
+            useReviewerExamRooms(container, item) {
+                if (this.reviewerEditItem == null) {
+                    toast("请先选择安排的阅卷老师", "danger");
+                    return;
+                }
+                let _this = this;
+                let reviewerExamId = this.reviewerEditItem.reviewerExam.id;
+                let examRoomId = item.id;
+                $.ajax({
+                    url: '/examRelatedPeople/addReviewerExamRoom?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        reviewerExamId: reviewerExamId,
+                        examRoomId: examRoomId
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+
+                        if (data.status === 1) {
+                            toast(data.info, "success");
+                            _this.refreshUi3();
+                        } else if (data.status === 0)
+                            toast(data.errorMsg, "danger");
+
+                    }, error: function (data) {
+
+                    }
+                });
+                // this.arrangeReviewer.reviewers[this.reviewerEditIndex].reviewerExamRooms.push(
+                //     {
+                //         id: this.arrangeReviewer.reviewerExamRooms[index].id,
+                //         name: this.arrangeReviewer.reviewerExamRooms[index].name,
+                //         examRoomName: this.arrangeReviewer.reviewerExamRooms[index].examRoomName,
+                //         capacity: this.arrangeReviewer.reviewerExamRooms[index].capacity
+                //     }
+                // );
+                // this.arrangeReviewer.reviewers[this.reviewerEditIndex].reviewerCapacity += this.arrangeReviewer.reviewerExamRooms[index].capacity;
+                // this.arrangeReviewer.reviewerExamRooms.splice(index, 1);
+
+            },
+            showExamRoom(item) {
+
+                this.reviewerEditItem = item;
+                this.editReviewer = false;
+                this.editReviewerExamRoom = true;
+            },
+            showAddReviewer() {
+                this.editReviewer = true;
+                this.editReviewerExamRoom = false;
+            },
+            removeReviewer(item) {
+                let _this = this;
+                if (this.reviewerEditItem != null) {
+                    if (this.reviewerEditItem.reviewerExam.id == item.reviewerExam.id) {
+                        this.reviewerEditItem = null;
+
+                    }
+                }
+                $.ajax({
+                    url: '/examRelatedPeople/cancelReviewerExam?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {reviewerExamId: item.reviewerExam.id, examId: this.NowEditExamInfo.id},
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        console.log(data);
+                        if (data.status == 1) {
+                            toast(data.info, "success");
+                            _this.NowEditExamInfo.status = data.data.exam.status;
+                            _this.changeProcessStatus(_this.NowEditExamInfo.status);
+                            _this.refreshUi3();
+                        }
+                    }, error: function (data) {
+
+                    }
+
+                });
+            },
+            useFreeReviewer(item) {
+                let _this = this;
+                $.ajax({
+                    url: '/examRelatedPeople/addReviewerExam?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        examId: this.NowEditExamInfo.id,
+                        reviewerId: item.id,
+                        reviewStartTime: this.NowEditExamInfo.reviewStartTime,
+                        reviewEndTime: this.NowEditExamInfo.reviewEndTime,
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        if (data.status == 1) {
+                            toast(data.info, "success");
+                            _this.refreshUi3();
+                            _this.NowEditExamInfo.status = data.data.exam.status;
+                            _this.changeProcessStatus(_this.NowEditExamInfo.status);
+                        }
+                    }, error: function (data) {
+
+                    }
+
+                });
+
+            },
+            refreshUi3() {
+                this.step3GetExamRoom();
+                this.loadReviewersData();
+                this.loadManagedReviewerInfo();
+                this.updateReviewCapacity();
+            },
+            //第三步自动安排
+            generateReviewerAutomatically() {
+                let _this = this;
+                $.ajax({
+                    url: '/examRelatedPeople/generateReviewerAutomatically?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        examId: this.NowEditExamInfo.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+
+                        if (data.status === 1) {
+                            toast(data.info, "success");
+                            _this.NowEditExamInfo.status = data.data.status;
+                            _this.changeProcessStatus(data.data.status);
+                            _this.refreshUi3();
+                        } else if (data.status === 0)
+                            toast(data.errorMsg, "danger");
+
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            //第三步重置
+            resetReviewer() {
+                let _this = this;
+                $.ajax({
+                    url: '/examRelatedPeople/resetReviewer?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        examId: this.NowEditExamInfo.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        if (data.status === 1) {
+                            toast(data.info, "success");
+                            _this.refreshUi3();
+                            _this.reviewerEditItem = null;
+                            _this.NowEditExamInfo.status = data.data;
+                            _this.changeProcessStatus(data.data);
+                        } else if (data.status === 0)
+                            toast(data.errorMsg, "danger");
+
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            loadReviewersData() {
+                let _this = this;
+                $.ajax({
+                    url: '/examRelatedPeople/loadReviewersData?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        examId: this.NowEditExamInfo.id,
+                        page: this.arrangeReviewer.page.active_paper,
+                        size: this.arrangeReviewer.page.page_size
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+
+                        let count = data.count;
+                        _this.arrangeReviewer.freeReviewers = data.data;
+
+                        if (parseInt(count) % _this.arrangeReviewer.page.page_size == 0) {
+                            _this.arrangeReviewer.page.all_page = parseInt(count / _this.arrangeReviewer.page.page_size);
+                        } else {
+                            _this.arrangeReviewer.page.all_page = parseInt(count / _this.arrangeReviewer.page.page_size) + 1;
+                        }
+
+                        if (_this.arrangeReviewer.page.all_page == 0) {
+                            _this.arrangeReviewer.page.all_page = 1;
+                        }
+
+                        _this.arrangeReviewer.page.showtext = "第" + _this.arrangeReviewer.page.active_paper + "页/共" + _this.arrangeReviewer.page.all_page + "页";
+
+
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            step3GetExamRoom() {
+                let _this = this;
+                $.ajax({
+                    url: '/room/getExamRoomInfoByExamId?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        examId: this.NowEditExamInfo.id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        _this.$set(_this.arrangeReviewer, 'reviewerExamRooms', data);
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            loadManagedReviewerInfo() {
+                let _this = this;
+                $.ajax({
+                    url: '/examRelatedPeople/getReviewerExamListVo?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        page: 1,
+                        size: 10,
+                        reviewerExam: {
+                            examId: this.NowEditExamInfo.id
+                        }
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        data = data.data;
+                        _this.arrangeReviewer.reviewers = data;
+                        for (let i = 0; i < data.length; i++) {
+                            for (let j = 0; j < data[i].examRoomList.length; j++) {
+                                for (let k = 0; k < _this.arrangeReviewer.reviewerExamRooms.length; k++) {
+                                    if (_this.arrangeReviewer.reviewerExamRooms[k].id == data[i].examRoomList[j].id) {
+                                        _this.arrangeReviewer.reviewerExamRooms.splice(k, 1);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                    }, error: function (data) {
+
+                    }
+                });
+            },
+            updateReviewCapacity() {
+
+                for (let i = 0; i < this.arrangeReviewer.reviewers.length; i++) {
+                    let examRoomList = this.arrangeReviewer.reviewers[i].examRoomList;
+                    let num = 0;
+                    for (let j = 0; j < examRoomList.length; j++) {
+                        num += examRoomList[j].capacity;
+                    }
+                    this.arrangeReviewer.reviewers[i].reviewerCapacity = num;
+                }
+            },
+            /**
+             * 阅卷安排结束
+             */
+            prevStep(s) {
+
+                if (s == 2) {
+                    this.step1.active = true;
+                    // this.step1.success = false;
+                    this.step2.active = false;
+                    this.step1div["d-none"] = false;
+                    this.step2div["d-none"] = true;
+                } else {
+                    this.step2.active = true;
+                    // this.step2.success = false;
+                    this.step3.active = false;
+                    this.step2div["d-none"] = false;
+                    this.step3div["d-none"] = true;
+                }
+            },
+            nextStep(s) {
+
+                if (s == 1) {
+                    if (this.NowEditExamInfo.num <= this.allCapacity && this.NowEditExamInfo.num != 0) {
+                        this.step1.active = false;
+                        this.step1.success = true;
+                        this.step2.active = true;
+                        this.step1div["d-none"] = true;
+                        this.step2div["d-none"] = false;
+                        this.arrangeInvigilator.examRoom = this.arrangeExamRoom.chosenClassRoom;
+                        this.loadManagedRoomAndInvigilatorsData();
+                        this.loadInvigilatorsData();
+                        if (this.NowEditExamInfo.status == "000")
+                            this.updateStatus("001");
+                        this.invigilatorEditIndex = 0;
+                    } else {
+                        toast("容量必须大于报考人数", "danger");
+                    }
+
+                } else {
+                    for (let i = 0; i < this.arrangeInvigilator.examRoom.length; i++) {
+                        let invigilatorNum = this.arrangeInvigilator.examRoom[i].invigilatorNum;
+                        if (this.arrangeInvigilator.examRoom[i].invigilatorList == null || invigilatorNum != this.arrangeInvigilator.examRoom[i].invigilatorList.length) {
+                            toast("请按照要求安排监考人员！", "danger");
+                            return;
+                        }
+                    }
+                    if (this.NowEditExamInfo.status == "001")
+                        this.updateStatus("101");
+                    this.refreshUi3();
+                    this.step2.active = false;
+                    this.step2.success = true;
+                    this.step3.active = true;
+                    this.step2div["d-none"] = true;
+                    this.step3div["d-none"] = false;
+
+                }
+            },
+            updateStatus(status) {
+                let _this = this;
+                $.ajax({
+                    url: '/exam/updateExam?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        id: this.NowEditExamInfo.id,
+                        status: status
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        _this.NowEditExamInfo.status = data.data.status;
+                        _this.changeProcessStatus(data.data.status);
+                    }, error: function (data) {
+
+                    }
+
+                });
+            },
+            resetAll() {
+                this.resetExamRoom();
+
+                this.loadFreeRoomData();
+                this.loadManagedRoomData();
+                this.step1.active = true;
+                this.step2.active = false;
+                this.step3.active = false;
+
+                this.step1.success = false;
+                this.step2.success = false;
+                this.step3.success = false;
+
+                this.step1div["d-none"] = false;
+                this.step2div["d-none"] = true;
+                this.step3div["d-none"] = true;
+
+
+                //this.arrangeInvigilator.examRoom = [];
+                this.invigilatorEditIndex = 0;
+            },
+            successStep() {
+                if (this.arrangeReviewer.reviewers.length == 0) {
+                    toast("没有任何阅卷信息安排", "danger");
+                    return;
+                }
+                if (this.arrangeReviewer.reviewerExamRooms.length != 0) {
+                    toast("还有阅卷考场没有安排", "danger");
+                    return;
+                }
+
+                for (let i = 0; i < this.arrangeReviewer.reviewers.length; i++) {
+                    if (this.arrangeReviewer.reviewers[i].examRoomList.length == 0) {
+                        toast("每个阅卷老师一定要有对应的考场安排", "danger");
+                        return;
+                    }
+                }
+                if (this.NowEditExamInfo.status == "101") {
+                    this.updateStatus("111");
+                }
+
+            },
+            ListSearch() {
+                this.examListInfo.exam_search =
+                    this.showExamInfoOfPage();
+            },
+
+            showExamInfoOfPage() {
+                let _this = this;
+                let exam = {};
+                if (_this.examListInfo.show_who != 0) {
+                    exam['publishManId'] = _this.examListInfo.show_publish_man_id
+                }
+                if (_this.examListInfo.examStatus != -2) {
+                    exam['status'] = _this.examListInfo.examStatus
+                }
+                if (_this.examListInfo.exam_search != null) {
+                    exam['name'] = _this.examListInfo.exam_search;
+                    exam['titleName'] = _this.examListInfo.exam_search;
+                    exam['publishManName'] = _this.examListInfo.exam_search;
+
+                }
+                $.ajax({
+                    url: '/exam/getExamInfoList?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        "page": _this.examListInfo.active_paper,
+                        "size": _this.examListInfo.page_size,
+                        "exam": exam
+                    }),
+                    cache: false,
+                    async: false,
+                    success: function (examList) {
+                        _this.examListInfo.examList = examList.data;
+                        if (parseInt(examList.count) % _this.examListInfo.page_size == 0) {
+                            _this.examListInfo.all_page = parseInt(examList.count / _this.examListInfo.page_size);
+                        } else {
+                            _this.examListInfo.all_page = parseInt(examList.count / _this.examListInfo.page_size) + 1;
+                        }
+
+                        if (_this.examListInfo.all_page == 0) {
+                            _this.examListInfo.all_page = 1;
+                        }
+
+                        _this.examListInfo.showtext = "第" + _this.examListInfo.active_paper + "页/共" + _this.examListInfo.all_page + "页";
+                    }, error: function (data) {
+
+                    }
+
+                });
+            },
+
+
+            reviewersPrevStart() {
+                this.arrangeReviewer.page.active_paper = 1;
+                this.arrangeReviewer.page.keyPage = this.arrangeReviewer.page.active_paper;
+                //change(this.page.active_paper);
+                $("#reviewersPage").val("第" + this.arrangeReviewer.page.active_paper + "页/共" + this.arrangeReviewer.page.all_page + "页");
+                this.loadReviewersData();
+            },
+            reviewersNextTop() {
+                this.arrangeReviewer.page.active_paper = this.arrangeReviewer.page.all_page;
+                this.arrangeReviewer.page.keyPage = this.arrangeReviewer.page.active_paper;
+                //change(this.page.active_paper);
+                $("#reviewersPage").val("第" + this.arrangeReviewer.page.active_paper + "页/共" + this.arrangeReviewer.page.all_page + "页");
+                this.loadReviewersData();
+            },
+            reviewersNext() {
+                if (this.arrangeReviewer.page.active_paper == this.arrangeReviewer.page.all_page) {
+                    console.log("当前页：" + this.arrangeReviewer.page.active_paper + "，无法继续点击");
+                    return false; //如果大于总页数就禁用下一页
+                } else {
+                    $("#reviewersPage").text(++this.arrangeReviewer.page.active_paper); //点击下一页的时候当前页数的值就加1
+                    this.arrangeReviewer.page.keyPage = this.arrangeReviewer.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#reviewersPage").val("第" + this.arrangeReviewer.page.active_paper + "页/共" + this.arrangeReviewer.page.all_page + "页");
+                }
+                this.loadReviewersData();
+            },
+            reviewersPrev() {
+                if (this.arrangeReviewer.page.active_paper == 1) {
+                    console.log("当前页：" + this.arrangeReviewer.page.active_paper + "，无法继续点击");
+                    return false;
+                } else {
+                    $("#reviewersPage").text(--this.arrangeReviewer.page.active_paper);
+                    this.arrangeReviewer.page.keyPage = this.arrangeReviewer.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#reviewersPage").val("第" + this.arrangeReviewer.page.active_paper + "页/共" + this.arrangeReviewer.page.all_page + "页");
+                }
+                this.loadReviewersData();
+            },
+            reviewersPageFocus() {
+                $("#reviewersPage").val(this.arrangeReviewer.page.active_paper).select();
+            },
+            reviewersPageFocusOut() {
+                this.arrangeReviewer.page.keyPage = parseInt($("#reviewersPage").val());
+                if (this.arrangeReviewer.page.keyPage > this.arrangeReviewer.page.all_page | this.arrangeReviewer.page.keyPage < 0 | isNaN(this.arrangeReviewer.page.keyPage)) {
+                    $("#reviewersPage").val("第" + this.arrangeReviewer.page.active_paper + "页/共" + this.arrangeReviewer.page.all_page + "页")
+                } else {
+
+                    this.arrangeReviewer.page.active_paper = this.arrangeReviewer.page.keyPage;
+                    //change(this.page.active_paper);
+                    $("#reviewersPage").val("第" + this.arrangeReviewer.page.active_paper + "页/共" + this.arrangeReviewer.page.all_page + "页")
+                }
+                this.loadReviewersData();
+            },
+            reviewersPageKeyUp() {
+                let key = event.keyCode;
+                if (key == 13) {
+                    this.arrangeReviewer.page.keyPage = parseInt($("#reviewersPage").val());
+                    if (this.arrangeReviewer.page.keyPage > this.arrangeReviewer.page.all_page | this.arrangeReviewer.page.keyPage < 0 | isNaN(this.arrangeReviewer.page.keyPage)) {
+                        $("#reviewersPage").val("第" + this.arrangeReviewer.page.active_paper + "页/共" + this.arrangeReviewer.page.all_page + "页")
+                    } else {
+                        this.arrangeReviewer.page.active_paper = this.arrangeReviewer.page.keyPage;
+                        $("#reviewersPage").val("第" + this.arrangeReviewer.page.active_paper + "页/共" + this.arrangeReviewer.page.all_page + "页")
+                        this.loadReviewersData();
+                    }
+                }
+            },
+
+
+            invigilatorsPrevStart() {
+                this.arrangeInvigilator.page.active_paper = 1;
+                this.arrangeInvigilator.page.keyPage = this.arrangeInvigilator.page.active_paper;
+                //change(this.page.active_paper);
+                $("#invigilatorsPage").val("第" + this.arrangeInvigilator.page.active_paper + "页/共" + this.arrangeInvigilator.page.all_page + "页");
+                this.loadInvigilatorsData();
+            },
+            invigilatorsNextTop() {
+                this.arrangeInvigilator.page.active_paper = this.arrangeInvigilator.page.all_page;
+                this.arrangeInvigilator.page.keyPage = this.arrangeInvigilator.page.active_paper;
+                //change(this.page.active_paper);
+                $("#invigilatorsPage").val("第" + this.arrangeInvigilator.page.active_paper + "页/共" + this.arrangeInvigilator.page.all_page + "页");
+                this.loadInvigilatorsData();
+            },
+            invigilatorsNext() {
+                if (this.arrangeInvigilator.page.active_paper == this.arrangeInvigilator.page.all_page) {
+                    console.log("当前页：" + this.arrangeInvigilator.page.active_paper + "，无法继续点击");
+                    return false; //如果大于总页数就禁用下一页
+                } else {
+                    $("#invigilatorsPage").text(++this.arrangeInvigilator.page.active_paper); //点击下一页的时候当前页数的值就加1
+                    this.arrangeInvigilator.page.keyPage = this.arrangeInvigilator.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#invigilatorsPage").val("第" + this.arrangeInvigilator.page.active_paper + "页/共" + this.arrangeInvigilator.page.all_page + "页");
+                }
+                this.loadInvigilatorsData();
+            },
+            invigilatorsPrev() {
+                if (this.arrangeInvigilator.page.active_paper == 1) {
+                    console.log("当前页：" + this.arrangeInvigilator.page.active_paper + "，无法继续点击");
+                    return false;
+                } else {
+                    $("#invigilatorsPage").text(--this.arrangeInvigilator.page.active_paper);
+                    this.arrangeInvigilator.page.keyPage = this.arrangeInvigilator.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#invigilatorsPage").val("第" + this.arrangeInvigilator.page.active_paper + "页/共" + this.arrangeInvigilator.page.all_page + "页");
+                }
+                this.loadInvigilatorsData();
+            },
+            invigilatorsPageFocus() {
+                $("#invigilatorsPage").val(this.arrangeInvigilator.page.active_paper).select();
+            },
+            invigilatorsPageFocusOut() {
+                this.arrangeInvigilator.page.keyPage = parseInt($("#invigilatorsPage").val());
+                if (this.arrangeInvigilator.page.keyPage > this.arrangeInvigilator.page.all_page | this.arrangeInvigilator.page.keyPage < 0 | isNaN(this.arrangeInvigilator.page.keyPage)) {
+                    $("#invigilatorsPage").val("第" + this.arrangeInvigilator.page.active_paper + "页/共" + this.arrangeInvigilator.page.all_page + "页")
+                } else {
+
+                    this.arrangeInvigilator.page.active_paper = this.arrangeInvigilator.page.keyPage;
+                    //change(this.page.active_paper);
+                    $("#invigilatorsPage").val("第" + this.arrangeInvigilator.page.active_paper + "页/共" + this.arrangeInvigilator.page.all_page + "页")
+                }
+                this.loadInvigilatorsData();
+            },
+            invigilatorsPageKeyUp() {
+                let key = event.keyCode;
+                if (key == 13) {
+                    this.arrangeInvigilator.page.keyPage = parseInt($("#invigilatorsPage").val());
+                    if (this.arrangeInvigilator.page.keyPage > this.arrangeInvigilator.page.all_page | this.arrangeInvigilator.page.keyPage < 0 | isNaN(this.arrangeInvigilator.page.keyPage)) {
+                        $("#invigilatorsPage").val("第" + this.arrangeInvigilator.page.active_paper + "页/共" + this.arrangeInvigilator.page.all_page + "页")
+                    } else {
+                        this.arrangeInvigilator.page.active_paper = this.arrangeInvigilator.page.keyPage;
+                        $("#invigilatorsPage").val("第" + this.arrangeInvigilator.page.active_paper + "页/共" + this.arrangeInvigilator.page.all_page + "页")
+                        this.loadInvigilatorsData();
+                    }
+                }
+            },
+
+
+            roomPrevStart() {
+                this.arrangeExamRoom.page.active_paper = 1;
+                this.arrangeExamRoom.page.keyPage = this.arrangeExamRoom.page.active_paper;
+                //change(this.page.active_paper);
+                $("#roomPage").val("第" + this.arrangeExamRoom.page.active_paper + "页/共" + this.arrangeExamRoom.page.all_page + "页");
+                this.loadFreeRoomData();
+            },
+            roomNextTop() {
+                this.arrangeExamRoom.page.active_paper = this.arrangeExamRoom.page.all_page;
+                this.arrangeExamRoom.page.keyPage = this.arrangeExamRoom.page.active_paper;
+                //change(this.page.active_paper);
+                $("#roomPage").val("第" + this.arrangeExamRoom.page.active_paper + "页/共" + this.arrangeExamRoom.page.all_page + "页");
+                this.loadFreeRoomData();
+            },
+            roomNext() {
+                if (this.arrangeExamRoom.page.active_paper == this.arrangeExamRoom.page.all_page) {
+                    console.log("当前页：" + this.arrangeExamRoom.page.active_paper + "，无法继续点击");
+                    return false; //如果大于总页数就禁用下一页
+                } else {
+                    $("#roomPage").text(++this.arrangeExamRoom.page.active_paper); //点击下一页的时候当前页数的值就加1
+                    this.arrangeExamRoom.page.keyPage = this.arrangeExamRoom.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#roomPage").val("第" + this.arrangeExamRoom.page.active_paper + "页/共" + this.arrangeExamRoom.page.all_page + "页");
+                }
+                this.loadFreeRoomData();
+            },
+            roomPrev() {
+                if (this.arrangeExamRoom.page.active_paper == 1) {
+                    console.log("当前页：" + this.arrangeExamRoom.page.active_paper + "，无法继续点击");
+                    return false;
+                } else {
+                    $("#roomPage").text(--this.arrangeExamRoom.page.active_paper);
+                    this.arrangeExamRoom.page.keyPage = this.arrangeExamRoom.page.active_paper;
+                    //change(this.page.active_paper);
+                    $("#roomPage").val("第" + this.arrangeExamRoom.page.active_paper + "页/共" + this.arrangeExamRoom.page.all_page + "页");
+                }
+                this.loadFreeRoomData();
+            },
+            roomPageFocus() {
+                $("#roomPage").val(this.arrangeExamRoom.page.active_paper).select();
+            },
+            roomPageFocusOut() {
+                this.arrangeExamRoom.page.keyPage = parseInt($("#roomPage").val());
+                if (this.arrangeExamRoom.page.keyPage > this.arrangeExamRoom.page.all_page | this.arrangeExamRoom.page.keyPage < 0 | isNaN(this.arrangeExamRoom.page.keyPage)) {
+                    $("#roomPage").val("第" + this.arrangeExamRoom.page.active_paper + "页/共" + this.arrangeExamRoom.page.all_page + "页")
+                } else {
+
+                    this.arrangeExamRoom.page.active_paper = this.arrangeExamRoom.page.keyPage;
+                    //change(this.page.active_paper);
+                    $("#roomPage").val("第" + this.arrangeExamRoom.page.active_paper + "页/共" + this.arrangeExamRoom.page.all_page + "页")
+                }
+                this.loadFreeRoomData();
+            },
+            roomPageKeyUp() {
+                let key = event.keyCode;
+                if (key == 13) {
+                    this.arrangeExamRoom.page.keyPage = parseInt($("#roomPage").val());
+                    if (this.arrangeExamRoom.page.keyPage > this.arrangeExamRoom.page.all_page | this.arrangeExamRoom.page.keyPage < 0 | isNaN(this.arrangeExamRoom.page.keyPage)) {
+                        $("#roomPage").val("第" + this.arrangeExamRoom.page.active_paper + "页/共" + this.arrangeExamRoom.page.all_page + "页")
+                    } else {
+                        this.arrangeExamRoom.page.active_paper = this.arrangeExamRoom.page.keyPage;
+                        $("#roomPage").val("第" + this.arrangeExamRoom.page.active_paper + "页/共" + this.arrangeExamRoom.page.all_page + "页")
+                        this.loadFreeRoomData();
+                    }
+                }
+            }
+
+        },
+
+        created() {
+            this.showExamInfoOfPage();
+
+        },
+        filters: {
+            examStatus(value) {
+                if (value == "000") {
+                    return "考场安排中"
+                }
+                if (value == "001") {
+                    return "监考安排中"
+                }
+                if (value == "011") {
+                    return "阅卷安排中"
+                }
+                if (value == "111") {
+                    return "安排完成"
+                }
+                if (value == "101") {
+                    return "阅卷安排中";
+                }
+                if (value === "0") {
+                    return "考试报名未开始"
+                }
+                if (value === "1") {
+                    return "正在报名"
+                }
+                if (value === "4") {
+                    return "考试安排结束"
+                }
+                if (value === "5") {
+                    return "准考证发布"
+                }
+                if (value === "6") {
+                    return "考试进行中"
+                }
+                if (value === "7") {
+                    return "考试结束"
+                }
+                if (value === "8") {
+                    return "阅卷中"
+                }
+                if (value === "9") {
+                    return "阅卷结束"
+                }
+                if (value === "10") {
+                    return "成绩公布"
+                }
+            }
+        }
+    });
+
+    $('.datepicker').pickadate({
+        monthsFull: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+        monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+        weekdaysFull: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'],
+        weekdaysShort: ['一', '二', '三', '四', '五', '六', '日'],
+
+        today: '今天',
+        clear: '清除',
+        close: '关闭',
+
+        labelMonthNext: '下个月',
+        labelMonthPrev: '上个月',
+        labelMonthSelect: '选择月份',
+        labelYearSelect: '选择年份',
+        format: 'yyyy-mm-dd'
+    });
+
+    $('.timepicker').pickatime({
+        donetext: '完成',
+        cleartext: '清空'
+    });
+
+
+    //分页方法
+    //点击至首页
+    $('#exam_info_top').click(function () {
+        vm.examListInfo.active_paper = 1;
+        vm.examListInfo.keyPage = vm.examListInfo.active_paper;
+        // change(vm.examListInfo.active_paper);
+        $("#exam_info_input").val("第" + vm.examListInfo.active_paper + "页/共" + vm.examListInfo.all_page + "页");
+        vm.showExamInfoOfPage();
+    });
+
+    //点击至尾页
+    $('#exam_info_end').click(function () {
+        vm.examListInfo.active_paper = vm.examListInfo.all_page;
+        vm.examListInfo.keyPage = vm.examListInfo.active_paper;
+        // change(vm.examListInfo.active_paper);
+        $("#exam_info_input").val("第" + vm.examListInfo.active_paper + "页/共" + vm.examListInfo.all_page + "页");
+        vm.showExamInfoOfPage();
+    });
+
+    //下一页
+    $("#exam_info_next").click(function () {
+        if (vm.examListInfo.active_paper == vm.examListInfo.all_page) {
+            console.log("当前页：" + vm.examListInfo.active_paper + "，无法继续点击");
+            return false; //如果大于总页数就禁用下一页
+        } else {
+            $("#exam_info_input").text(++vm.examListInfo.active_paper); //点击下一页的时候当前页数的值就加1
+            vm.examListInfo.keyPage = vm.examListInfo.active_paper;
+            // change(vm.examListInfo.active_paper);
+            $("#exam_info_input").val("第" + vm.examListInfo.active_paper + "页/共" + vm.examListInfo.all_page + "页");
+        }
+        vm.showExamInfoOfPage();
+    });
+
+    //上一页
+    $("#exam_info_prev").click(function () {
+        if (vm.examListInfo.active_paper == 1) {
+            console.log("当前页：" + vm.examListInfo.active_paper + "，无法继续点击");
+            return false;
+        } else {
+            $("#exam_info_input").text(--vm.examListInfo.active_paper);
+            vm.examListInfo.keyPage = vm.examListInfo.active_paper;
+            // change(vm.examListInfo.active_paper);
+            $("#exam_info_input").val("第" + vm.examListInfo.active_paper + "页/共" + vm.examListInfo.all_page + "页");
+        }
+        vm.showExamInfoOfPage();
+    });
+
+    $("#exam_info_input").focus(function (event) {
+        $(this).val(vm.examListInfo.active_paper).select();
+    });
+
+    $("#exam_info_input").focusout(function (event) {
+        vm.examListInfo.keyPage = $(this).val();
+        if (vm.examListInfo.keyPage > vm.examListInfo.all_page | vm.examListInfo.keyPage < 0 | isNaN(vm.examListInfo.keyPage)) {
+            $(this).val("第" + vm.examListInfo.active_paper + "页/共" + vm.examListInfo.all_page + "页")
+        } else {
+            vm.examListInfo.active_paper = vm.examListInfo.keyPage;
+            // change(vm.examListInfo.active_paper);
+            $(this).val("第" + vm.examListInfo.active_paper + "页/共" + vm.examListInfo.all_page + "页")
+        }
+        //vm.showExamInfoOfPage();
+    });
+
+    $("#exam_info_input").keyup(function (event) {
+        /* Act on the event */
+        let key = event.keyCode;
+
+        if (key == 13) {
+            vm.examListInfo.keyPage = $(this).val();
+            if (vm.examListInfo.keyPage > vm.examListInfo.all_page | vm.examListInfo.keyPage < 0 | isNaN(vm.examListInfo.keyPage)) {
+                $(this).val("第" + vm.examListInfo.active_paper + "页/共" + vm.examListInfo.all_page + "页")
+            } else {
+                vm.examListInfo.active_paper = vm.examListInfo.keyPage;
+                $(this).val("第" + vm.examListInfo.active_paper + "页/共" + vm.examListInfo.all_page + "页")
+                vm.showExamInfoOfPage();
+            }
+        }
+    });
+
+
+</script>
+
+
+</body>
+
+</html>

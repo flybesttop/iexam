@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+    <!--<link th:href="@{/css/iexam/scrollbar.css}" rel="stylesheet">-->
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/fontAwesome/css/v4-shims.css}">
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link th:href="@{/css/mdb.min.css}" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link th:href="@{/css/addonss/bootstrap-table.min.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/emmo_Apparence.css}" rel="stylesheet">
+
+    <link th:href="@{/css/iexam/bootoast.css}" rel="stylesheet">
+    <link th:href="@{/css/addonss/bootstrap-datetimepicker.min.css}" rel="stylesheet">
+
+    <style type="text/css">
+        td {
+            padding: 4px !important;
+        }
+
+        [type="checkbox"] + label {
+            padding: 10px;
+            height: 0;
+        }
+
+        label {
+            margin: 0;
+        }
+
+        .nav-link {
+            padding: .4rem 1rem;
+        }
+
+        nav ul {
+            border-top: 1px solid black;
+        }
+
+        .navPointer {
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .navItem:hover .navPointer, .navUlItem:hover .navPointer {
+            opacity: 1;
+            transition: 0.5s all;
+        }
+
+        .navItem {
+            cursor: pointer;
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .navItemLeft {
+            padding: .4rem 0;
+            width: 100%
+        }
+
+        .navUl {
+            padding: .1rem
+        }
+
+        .navUlItem {
+            padding: .4rem 0;
+            width: 100%
+        }
+    </style>
+
+
+</head>
+
+<body>
+<div id="app" class="container-fluid">
+    <div id="operator_url" path="/xNode" dataBase="x_node"></div>
+
+    <div id="toolbar" class="justify-content-between">
+        <div class="btn-group">
+            <!--            <button type="button" class="btn btn-default" onclick="deleteChecked();">-->
+            <!--                <span class="fa fa-remove" aria-hidden="true"></span> 批量删除-->
+            <!--            </button>-->
+            <button type="button" class="btn btn-default" onclick="openSearch(this)">
+                打开搜索
+            </button>
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editColumns">
+                编辑列属性
+            </button>
+            <button type="button" class="btn btn-default" onclick="editNodesModal(this)">
+                节点管理
+            </button>
+        </div>
+    </div>
+
+
+    <table id="mytable" class="table table-hover"></table>
+
+
+    <!-- Modal -->
+
+    <!-- Modal -->
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="editNodes" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document" style="width: 800px;max-width: 800px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">节点管理</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-type="confirm" for="editNodesConfirm"
+                            data-dismiss="modal">关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="editNode" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">节点修改</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-type="confirm" for="editNodeConfirm">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="addNode" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">节点添加</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-type="confirm" for="addNodeConfirm">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirmAgain" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">再次确认</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" data-type="confirm" for="confirm"
+                            data-dismiss="modal">
+                        确认
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <add_record></add_record>
+    <edit_row></edit_row>
+    <show_record></show_record>
+
+</div>
+<template id="edit_row">
+    <div>
+        <div class="modal fade" id="editColumns" tabindex="-1" role="dialog"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document" style="width: 900px;max-width: 900px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">修改列属性(拖拽可排列顺序)</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+
+                            <thead>
+                            <tr>
+                                <th scope="col">列名</th>
+                                <th scope="col">别名</th>
+                                <th scope="col">列类型</th>
+                                <th>能否编辑</th>
+                                <th>是否显示</th>
+                            </tr>
+                            </thead>
+                            <tbody id="editColumnsTBody">
+                            <tr draggable="false" data-dragname="id" ondragstart="editColumnModeDragStart()"
+                                ondragover="editColumnModeDragover()" ondrop="editColumnModeDrop()" :data-id="item.id"
+                                v-for=" (item,index) in columninfo">
+
+                                <td>{{item.code}}</td>
+                                <td>
+                                    <div class="md-form mb-2 my-2" style="width: 100%"><input type="text" name="id"
+                                                                                              v-model="item.columnName"
+                                                                                              class="form-control"><label
+                                            class="active">{{item.code}}</label></div>
+                                </td>
+                                <td>
+                                    <button @click="choseType(index,'text')" for="editColumns" data-type="text"
+                                            data-name="id"
+                                            :class="['btn','btn-sm','waves-effect','waves-light',{'blue':item.value=='text'}]"
+                                            style="border-radius: 50px">text
+                                    </button>
+                                    <button @click="choseType(index,'file')" for="editColumns" data-type="file"
+                                            data-name="id"
+                                            :class="['btn','btn-sm','waves-effect','waves-light',{'blue':item.value=='file'}]"
+                                            style="border-radius: 50px">file
+                                    </button>
+                                    <button @click="choseType(index,'pic')" for="editColumns" data-type="pic"
+                                            data-name="id"
+                                            :class="['btn','btn-sm','waves-effect','waves-light',{'blue':item.value=='pic'}]"
+                                            style="border-radius: 50px">pic
+                                    </button>
+                                    <button @click="choseType(index,'date')" for="editColumns" data-type="date"
+                                            data-name="id"
+                                            :class="['btn','btn-sm','waves-effect','waves-light',{'blue':item.value=='date'}]"
+                                            style="border-radius: 50px">date
+                                    </button>
+                                </td>
+                                <td>
+                                    <input type="checkbox" checked name="id" data-name="canEdit" :id="'canEdit'+index"
+                                           v-model="item.canEdit"
+                                           v-if="item.canEdit">
+                                    <input type="checkbox" name="id" data-name="canEdit" :id="'canEdit'+index"
+                                           v-model="item.canEdit"
+                                           v-else="!item.canEdit">
+                                    <label :for="'canEdit'+index" class="active"></label>
+                                </td>
+                                <td>
+                                    <input type="checkbox" checked name="id" data-name="canSee" :id="'canSee'+index"
+                                           v-model="item.canSee"
+                                           v-if="item.canSee">
+                                    <input type="checkbox" name="id" data-name="canSee" :id="'canSee'+index"
+                                           v-model="item.canSee"
+                                           v-if="!item.canSee">
+                                    <label :for="'canSee'+index" class="active"></label>
+                                </td>
+                            </tr>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" @click="editRowConfirm">确认
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>
+<template id="add_record">
+    <div>
+        <div class="modal fade" id="addRecord" tabindex="-1" role="dialog" aria-labelledby="addRecord"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">添加信息</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class='form-row mb-1' v-for="item in columninfo">
+                            <div class='md-form mb-2 my-2' style='width: 100%' v-if="item.canEdit">
+                                <input type='text' :name='item.code' class='form-control' :id="'add'+item.code"
+                                       v-model="FormData[item.code]">
+                                <label :for="'add'+item.code" class=''>{{item.columnName}}</label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" @click="addRecord">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>
+<template id="show_record">
+    <div>
+        <!-- Modal -->
+        <div class="modal fade" id="showRecord" tabindex="-1" role="dialog" aria-labelledby="editRecord"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">节点信息</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class='form-row mb-1' v-for="item in columninfo">
+
+                            <div class='md-form mb-2 my-2' style='width: 100%' v-if="item.canSee">
+                                <input type='text' :name='item.code' class='form-control' :id="'show'+item.code"
+                                       :value="row_info[item.code]">
+                                <label :for="'show'+item.code" class="active">{{item.columnName}}</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" data-type="confirm" for="edit">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<!-- JQuery -->
+<script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}" src="/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" th:src="@{/js/Vue/vue.js}"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/js/popper.min.js}" src="/js/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/js/bootstrap.js}" src="/js/bootstrap.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/js/mdb.min.js}" src="/js/mdb.min.js"></script>
+
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table.min.js}"
+        src="/js/addons/bootstrap-table.min.js"></script>
+<script type="text/javascript" th:src="@{/js/addons/bootstrap-table-locale-all.js}"
+        src="/js/addons/bootstrap-table-locale-all.js"></script>
+
+<script type="text/javascript" th:src="@{/js/iexam/bootoast.js}"></script>
+
+
+<script type="text/javascript" th:src="@{/js/iexam/emmo_backTable_basicOperator.js}"></script>
+<!--<script type="text/javascript" th:src="@{/js/addons/datepicker/bootstrap-datetimepicker.min.js}"></script>-->
+<!--<script type="text/javascript" th:src="@{/js/addons/datepicker/locales/bootstrap-datetimepicker.zh-CN.js}"></script>-->
+<script type="text/javascript" th:src="@{/js/Vue/IexamBack/backTemplates.js}"></script>
+
+<script type="text/javascript">
+    dic();
+
+    let vm = new Vue({
+        el: "#app",
+        data: {
+            test: 111
+        },
+        components: {
+            edit_row, add_record, show_record
+        },
+        methods: {}
+    })
+
+    var _table;
+
+    var searchOpen = false;
+    var searchItemInLine = 3;
+    var deleteComfirmMessage_batch = "是否确定删除选中的这些信息？";
+    var deleteComfirmMessage_only = "是否确定删除这条信息？";
+    var notSupportEdit = "本列暂时不支持修改";
+    var __url = $("#operator_url").attr("path");
+
+
+    let vue_operations = Vue.extend({
+        template: `<div><button @click.stop='rowDetail(id)'  class='btn btn-sm waves-effect waves-light green'>查看</button></div>`,
+        props: ['id'],
+        data() {
+            return {
+                edit_row_info: {}
+            }
+        },
+        methods: {
+            rowDetail(id) {
+                console.log(id);
+                bus.$emit('show_row_info', (_table.bootstrapTable('getRowByUniqueId', id)));
+                $("#showRecord").modal('show');
+            },
+        }
+
+    })
+
+
+    InitMainTable();
+
+    //初始化bootstrap-table的内容
+    function InitMainTable() {
+        var columns = getColumns();
+        //记录页面bootstrap-table全局变量_table，方便应用
+        _table = $('#mytable').bootstrapTable({
+            url: __url + "/findForTable",                      //请求后台的URL（*）
+            locale: "zh-CN",
+            method: 'GET',                      //请求方式（*）
+            toolbar: '#toolbar',              //工具按钮用哪个容器
+            striped: true,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true,                   //是否显示分页（*）
+            sortable: true,                     //是否启用排序
+            sortOrder: "asc",                   //排序方式
+            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
+            pageSize: 10,                     //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+            search: false,                      //是否显示表格搜索
+            strictSearch: true,
+            //showColumns: true,                  //是否显示所有的列（选择显示的列）
+            // showRefresh: true,                  //是否显示刷新按钮
+            minimumCountColumns: 2,             //最少允许的列数
+            clickToSelect: true,                //是否启用点击选中行
+            //height: 500,                      //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "id",                     //每一行的唯一标识，一般为主键列
+            showToggle: false,                   //是否显示详细视图和列表视图的切换按钮
+            cardView: false,                    //是否显示详细视图
+            detailView: false,                  //是否显示父子表
+            //得到查询的参数
+            queryParams: function (params) {
+                var temp = {
+                    limitSize: params.limit,                         //页面大小
+                    limitPage: (params.offset / params.limit),   //页码
+                    orderBy: humbToLine(params.sort) === "undefined" ? params.sort : humbToLine(params.sort),      //排序列名
+                    direction: params.orderMain, //排位命令（desc，asc）
+                };
+                if (searchOpen) {
+                    var form = $("form[name=search_form]");
+                    var JsonObj = serializeArrayToJson(form.serializeArray());
+                    for (var i in JsonObj) {
+                        if (temp[i] == undefined)
+                            temp[i] = JsonObj[i];
+                    }
+                }
+                return temp;
+            },
+            columns: columns,
+            onLoadSuccess: function () {
+                $(".operator").each(function () {
+                    let id = ($(this).attr("id"));
+                    new vue_operations({
+                        propsData: {
+                            id: id.substring("RECORD_".length)
+                        }
+                    }).$mount(`#${id}`)
+                })
+            },
+            onLoadError: function () {
+            },
+            onDblClickRow: function (row, $element) {
+
+            },
+        });
+    };
+
+    addSearchDiv();
+
+    // //连接字段格式化
+    // function linkFormatter(value, row, index) {
+    //     return "<a href='" + value + "' title='单击打开连接' target='_blank'>" + value + "</a>";
+    // }
+    //
+    // //Email字段格式化
+    // function emailFormatter(value, row, index) {
+    //     return "<a href='mailto:" + value + "' title='单击打开连接'>" + value + "</a>";
+    // }
+    //
+    // //性别字段格式化
+    // function sexFormatter(value) {
+    //     if (value == "女") {
+    //         color = 'Red';
+    //     } else if (value == "男") {
+    //         color = 'Green';
+    //     } else {
+    //         color = 'Yellow';
+    //     }
+    //
+    //     return '<div  style="color: ' + color + '">' + value + '</div>';
+    // }
+    //
+
+    //操作栏的格式化
+    function actionFormatter(value, row, index) {
+        var id = row.id;
+        var result = `<div class="operator" id="RECORD_${id}" data="${row}"></div>`;
+        return result;
+    }
+
+
+    function checkboxFormatter(value, row, index) {
+        return "<label for='row" + index + "'></label>";
+    }
+
+    function textFormatter(value, row, index) {
+        if (value == undefined || "") {
+            return "";
+        } else {
+            if (value.length > 10) {
+                return value.substring(0, 10) + "...";
+            } else {
+                return value;
+            }
+
+        }
+    }
+
+
+    $("input[name=btSelectAll]").attr("id", "selectAll");
+    $("input[name=btSelectAll]").after("  <label for='selectAll'></label>")
+
+    function editNodesModal() {
+        var _modal = $("#editNodes").modal("show");
+        var _modal_body = _modal.find(".modal-body");
+        var operator2 = "<i class='fas fa-plus navPointer'  onclick='addNode()'></i> <i class='fas fa-edit navPointer' onclick='editNode()'></i> <i class='fa fa-remove navPointer' onclick='removeNode()'></i>";
+        var operatorMaxLevel = "<i class='fas fa-edit navPointer' onclick='editNode()'></i> <i class='fa fa-remove navPointer' onclick='removeNode()'></i>";
+        _modal_body.empty();
+        _modal_body.append("<div class='navItemLeft' data-p='0' data-id='0' data-level='0'>" +
+            "<i class='fas fa-plus navPointer' onclick='addNode()' style='opacity: 1;'><span style='font-weight: 100'>添加一级节点</span></i></div>")
+        var nodes = getXNodes();
+        if (nodes.length != 0) {
+            var temp = sortNodesData(nodes);
+            for (var i = 0, len = temp.length; i < len; i++) {
+                var arr = temp[i].arr;
+                for (var j = 0, len1 = arr.length; j < len1; j++) {
+                    var pid = arr[j].pid;
+                    var id = arr[j].id;
+                    var name = arr[j].name;
+                    var level = arr[j].level;
+                    var div = $("div[data-NavCreateId=" + pid + "]")[0];
+                    div = $(div || _modal_body);
+                    if (arr[j].level !== len) {
+                        div.append(
+                            "<nav class='navbar  mb-1' style='width: 100%' data-id='" + id + "' >" +
+                            "<div class='navItem'" +
+                            " onclick='NavCliker(this)' data-toggle='collapse' data-target='#nav-" + id + "'" +
+                            " aria-controls='nav-" + id + "' aria-expanded='false'>" +
+                            "<div draggable='false' ondragstart='editNodesDragStart()' ondrop='editNodesDrop()' ondragover='editNodesDragover()' class='navItemLeft' data-p='" + pid + "'  data-id='" + id + "' data-level='" + level + "' >" +
+                            "<span>" + name + "</span>" + (i + 1 == len ? operatorMaxLevel : operator2) + "</div>" +
+                            "<button class='navbar-toggler second-button'>" +
+                            "<div class='animated-icon'>" +
+                            "    <span></span>" +
+                            "    <span></span>" +
+                            "    <span></span>" +
+                            "    <span></span></div>" +
+                            "</button>" +
+                            "</div>" +
+                            "<div class='collapse navbar-collapse' data-NavCreateId='" + id + "' id='nav-" + id + "'>" +
+                            "</div>" +
+                            "</nav>"
+                        );
+                    } else {
+                        var length = div.find("ul").length;
+                        if (length == 0) {
+                            div.append("<ul class='navbar-nav mr-auto ' class='navUl'  >" +
+                                "    <li class='nav-item'>" +
+                                "        <div draggable='false' ondragstart='editNodesDragStart()' ondrop='editNodesDrop()' ondragover='editNodesDragover()' class='navUlItem' data-p='" + pid + "' data-level='" + level + "' data-id='" + id + "' >" +
+                                "<span>" + name + "</span>" + (i + 1 == len ? operatorMaxLevel : operator2) + "</div>" +
+                                "    </li>" +
+                                "</ul>"
+                            )
+                        } else {
+                            div.find("ul").append(
+                                "    <li class='nav-item'>" +
+                                "        <div draggable='false' ondragstart='editNodesDragStart()' ondrop='editNodesDrop()' ondragover='editNodesDragover()' class='navUlItem' data-p='" + pid + "'  data-level='" + level + "' data-id='" + id + "' >" +
+                                "<span>" + name + "</span>" + (i + 1 == len ? operatorMaxLevel : operator2) + "</div>" +
+                                "    </li>");
+                        }
+                    }
+                }
+            }
+        } else {
+
+        }
+        $("div[data-type=nodesNavEditor]").on({
+            click: function () {
+                $(this).find('.animated-icon').toggleClass('open');
+            }
+        })
+    }
+
+    function addNode() {
+        var ev = getEvent();
+        ev.stopPropagation();
+        var _this = ev.currentTarget;
+        var _addNode = $("#addNode");
+        var form = createEditForm(0);   //0忽视可见不可见  1不忽视
+        var _body = _addNode.find(".modal-body");
+        _body.empty();
+        _body.append(form);
+        var _parent = ($(_this).parent());
+        var pid = _parent.attr("data-id");
+        var level = parseInt(_parent.attr("data-level"));
+        var cancelData = [];
+        if (level + 1 != 3) {
+            cancelData = ["id", "createTime", "modifiedTime", "isMenu", "iconClass", "email", "sortId", "url"];
+        } else {
+            cancelData = ["id", "createTime", "modifiedTime", "isMenu", "iconClass", "email", "sortId"];
+        }
+        var disableData = ["pid", "level"];
+        CancelInputs(_body, cancelData);
+        disableInputs(_body, disableData);
+        _body.find("input[name=pid]").val(pid);
+        _body.find("input[name=level]").val(level + 1);
+        _addNode.modal("show");
+        var _button = _addNode.find("button[for=addNodeConfirm]");
+        _button.off();
+        _button.on({
+            click: function () {
+                var JsonStr = (serializeArrayToJson(_body.find("form").serializeArray()));
+                var navBody = undefined;
+                if (pid != 0) {
+                    var nav = $("div[aria-controls=nav-" + pid + "]");
+                    if (nav.attr("aria-expanded") == "false") {
+                        nav.click();
+                    }
+                    navBody = ($("#nav-" + pid));
+
+                } else {
+                    navBody = $("#editNodes").find(".modal-body");
+                }
+                console.log(navBody);
+                var child = navBody.find("div[draggable=true][data-p=" + pid + "]");
+                JsonStr['sortId'] = parseInt(child.length) + 1;
+                $.ajax({
+                    url: '/xNode/insert?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(JsonStr),
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+
+                        if (data.status == 1) {
+                            var nodeInfo = data.data;
+                            toast(data.info + " 刷新页面后生效", "success");
+                            if (pid != 0) {
+                                if (nodeInfo.level != 3) {
+                                    navBody.append("<nav class='navbar  mb-1' style='width: 100%' data-id='" + nodeInfo.id + "'>" +
+                                        "<div class='navItem collapsed' onclick='NavCliker(this)' data-toggle='collapse' " +
+                                        "data-target='#nav-" + nodeInfo.id + "' aria-controls='nav-" + nodeInfo.id + "' aria-expanded='false'>" +
+                                        "<div draggable='false' ondragstart='editNodesDragStart()' ondrop='editNodesDrop()' ondragover='editNodesDragover()' class='navItemLeft' data-p='" + nodeInfo.pid + "' data-id='" + nodeInfo.id + "' data-level='" + nodeInfo.level + "'><span>" + nodeInfo.name + "</span>" +
+                                        "<i class='fas fa-plus navPointer' onclick='addNode()'></i> " +
+                                        "<i class='fas fa-edit navPointer' onclick='editNode()'></i> " +
+                                        "<i class='fa fa-remove navPointer' onclick='removeNode()'></i></div>" +
+                                        "<button class='navbar-toggler second-button'><div class='animated-icon'>" +
+                                        "<span></span><span></span><span></span><span></span></div>" +
+                                        "</button></div><div class='navbar-collapse collapse' data-navcreateid='" + nodeInfo.id + "' id='nav-" + nodeInfo.id + "' style=''></div></nav>");
+                                } else {
+                                    if (navBody.find("ul").length == 0) {
+                                        navBody.append("<ul class='navbar-nav mr-auto '>" +
+                                            "<li class='nav-item'>" +
+                                            "<div draggable='false' ondragstart='editNodesDragStart()' ondrop='editNodesDrop()' ondragover='editNodesDragover()' class='navUlItem' data-p='" + nodeInfo.pid + "' data-level='" + nodeInfo.level + "' data-id='" + nodeInfo.id + "'><span>" + nodeInfo.name + "</span>" +
+                                            "<i class='fas fa-edit navPointer' onclick='editNode()'></i>" +
+                                            "<i class='fa fa-remove navPointer' onclick='removeNode()'></i></div>" +
+                                            "</li></ul>")
+                                    } else {
+                                        var ul = navBody.find("ul");
+                                        ul.append(" <li class='nav-item'>" +
+                                            "<div draggable='false' ondragstart='editNodesDragStart()' ondrop='editNodesDrop()' ondragover='editNodesDragover()' class='navUlItem' data-p='" + nodeInfo.pid + "' data-level='" + nodeInfo.level + "' data-id='" + nodeInfo.id + "'><span>" + nodeInfo.name + "</span>" +
+                                            "<i class='fas fa-edit navPointer' onclick='editNode()'></i>" +
+                                            "<i class='fa fa-remove navPointer' onclick='removeNode()'></i></div>" +
+                                            "</li>"
+                                        )
+                                    }
+                                }
+                            } else {
+                                navBody.append("<nav class='navbar  mb-1' style='width: 100%' data-id='" + nodeInfo.id + "'>" +
+                                    "<div class='navItem collapsed' onclick='NavCliker(this)' data-toggle='collapse' " +
+                                    "data-target='#nav-" + nodeInfo.id + "' aria-controls='nav-" + nodeInfo.id + "' aria-expanded='false'>" +
+                                    "<div draggable='false' ondragstart='editNodesDragStart()' ondrop='editNodesDrop()' ondragover='editNodesDragover()' class='navItemLeft' data-p='" + nodeInfo.pid + "' data-id='" + nodeInfo.id + "' data-level='" + nodeInfo.level + "'><span>" + nodeInfo.name + "</span>" +
+                                    "<i class='fas fa-plus navPointer' onclick='addNode()'></i> " +
+                                    "<i class='fas fa-edit navPointer' onclick='editNode()'></i> " +
+                                    "<i class='fa fa-remove navPointer' onclick='removeNode()'></i></div>" +
+                                    "<button class='navbar-toggler second-button'><div class='animated-icon'>" +
+                                    "<span></span><span></span><span></span><span></span></div>" +
+                                    "</button></div><div class='navbar-collapse collapse' data-navcreateid='" + nodeInfo.id + "' id='nav-" + nodeInfo.id + "' style=''></div></nav>");
+                            }
+                            _addNode.modal("hide");
+                            _button.off();
+                            _table.bootstrapTable("refresh");
+                        }
+                    },
+                    error: function (data) {
+                    }
+                });
+            }
+        })
+    }
+
+    function editNode() {
+        var ev = getEvent();
+        ev.stopPropagation();
+        var _this = ev.currentTarget;
+        var id = $(_this).parent().attr("data-id");
+        var level = $(_this).parent().attr("data-level");
+
+        var _editNode = $("#editNode");
+        var form = createEditForm(0);  //0忽视可见不可见  1不忽视
+        var _body = _editNode.find(".modal-body");
+        _body.empty();
+        _body.append(form);
+        var cancelData = [];
+        if (level != 3) {
+            cancelData = ["createTime", "modifiedTime", "isMenu", "iconClass", "email", "pid", "sortId", "level", "url"];
+        } else {
+            cancelData = ["createTime", "modifiedTime", "isMenu", "iconClass", "email", "pid", "sortId", "level"];
+        }
+        CancelInputs(_body, cancelData);
+        $.ajax({
+            url: '/xNode/findById?PAGE_FROM_TYPE=BACK',
+            type: "post",
+            dataType: "json",
+            data: {
+                id: id
+            },
+            cache: false,
+            async: false,
+            success: function (data) {
+                for (var i in data) {
+                    _body.find("input[name=" + i + "]").val(data[i]);
+                    _body.find("input[name=" + i + "]").parent().find("label").toggleClass("active");
+                }
+            },
+            error: function (data) {
+            }
+        });
+        _editNode.modal("show");
+        var _button = _editNode.find("button[for=editNodeConfirm]");
+        _button.off();
+        _button.on({
+            click: function () {
+                var JsonStr = (_body.find("form").serializeArray());
+                JsonStr.push({
+                    name:"id",
+                    value:id
+                })
+                let data ={};
+                for (let i = 0; i < JsonStr.length; i++) {
+                    data[JsonStr[i].name] = JsonStr[i].value;
+                }
+
+                $.ajax({
+                    url: '/xNode/modify?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        if (data.status == 1) {
+                            toast(data.info + " 刷新页面后生效", "success");
+                            $(_this).parent().find("span").html(data.data.name)
+                            _button.off()
+                        } else {
+                            toast(data.info + " 刷新页面后生效", "danger");
+                        }
+                        _editNode.modal("hide");
+                        _table.bootstrapTable("refresh");
+                    },
+                    error: function (data) {
+                    }
+                });
+            }
+        })
+
+    }
+
+    function removeNode() {
+        var ev = getEvent();
+        ev.stopPropagation();
+        var _this = ev.currentTarget;
+        var container = $(_this).parent().parent().parent();
+        var tag = (container[0].tagName);
+        var id = $(_this).parent().attr("data-id");
+        var _confirmAgain = $("#confirmAgain");
+        _confirmAgain.find(".modal-body");
+        _confirmAgain.find(".modal-body").empty();
+        _confirmAgain.find(".modal-body").append("是否确定删除此节点信息和它的附属信息？");
+        _confirmAgain.modal("show");
+        var _button = _confirmAgain.find("button[for=confirm]");
+        _button.off();
+        _button.on({
+            click: function () {
+                $.ajax({
+                    url: '/xNode/delete?PAGE_FROM_TYPE=BACK',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        id: id
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        if (data.status == 1) {
+                            toast(data.info + " 刷新页面后生效", "success");
+                            if (tag == "UL") {
+                                $(_this).parent().parent().remove();
+                                if (container.find("li").length == 0) {
+                                    container.remove();
+                                }
+                            } else if (tag == "NAV") {
+                                container.remove();
+                            }
+                            _button.off();
+                            _confirmAgain.modal("hide");
+                            _table.bootstrapTable("refresh");
+                        }
+                    },
+                    error: function (data) {
+                    }
+                });
+            }
+        })
+    }
+
+    function NavCliker(_this) {
+        var id = $(_this).attr("data-target");
+        var nav = $(id);
+        nav.off();
+        nav.on('show.bs.collapse', function () {
+            $(_this).addClass("disableClick")
+
+        });
+        nav.on('shown.bs.collapse', function () {
+            $(_this).removeClass("disableClick")
+        });
+        nav.on('hide.bs.collapse', function () {
+            $(_this).addClass("disableClick")
+        });
+        nav.on('hidden.bs.collapse', function () {
+            $(_this).removeClass("disableClick")
+        });
+        $(_this).find('.animated-icon').toggleClass('open');
+    }
+
+    function CancelInputs(body, data) {
+        for (var i = 0; i < data.length; i++) {
+            body.find("input[name=" + data[i] + "]").parent().remove();
+        }
+    }
+
+    function disableInputs(body, data) {
+        for (var i = 0; i < data.length; i++) {
+            body.find("input[name=" + data[i] + "]").prop("readonly", true);
+            var label = body.find("input[name=" + data[i] + "]").parent().find("label");
+            label.toggleClass("active");
+            var str = label.html();
+            label.html(str + "<span style='color: red'>[" + notSupportEdit + "]</span>")
+        }
+    }
+
+    //
+    // function editNodesDragStart() {
+    //     var event = getEvent();
+    //     var _this = $(event.currentTarget);
+    //     event.dataTransfer.setData("level", _this.attr("data-level"));
+    //     event.dataTransfer.setData("startId", _this.attr("data-id"));
+    //     event.dataTransfer.setData("startPid", _this.attr("data-p"));
+    // }
+    //
+    // function editNodesDrop() {
+    //     var event = getEvent();
+    //     var _this = $(event.currentTarget);
+    //     var tempContainer = $("#tempContainer");
+    //     var tempContainer2 = $("#tempContainer2");
+    //     var startlevel = (event.dataTransfer.getData("level"));
+    //     var startId = (event.dataTransfer.getData("startId"));
+    //     var startPid = (event.dataTransfer.getData("startPid"));
+    //     var start = $("div[draggable=true][data-id=" + startId + "][data-p=" + startPid + "]");
+    //
+    //     var startParent = start.parent();
+    //     var targetlevel = (_this.attr("data-level"));
+    //     var targetId = (_this.attr("data-id"));
+    //     var targetPid = (_this.attr("data-p"));
+    //     var target = $("div[draggable=true][data-id=" + targetId + "][data-p=" + targetPid + "]");
+    //     var targetParent = target.parent();
+    //     if (startlevel == targetlevel && targetPid == startPid) {//同级对调
+    //         if (startlevel == 3 && targetlevel == 3) {
+    //             tempContainer.html(start[0]);
+    //             tempContainer2.html(target[0]);
+    //             startParent.html(tempContainer2.html());
+    //             targetParent.html(tempContainer.html());
+    //         } else {
+    //             startParent = startParent.parent();
+    //             targetParent = targetParent.parent();
+    //             tempContainer.html(startParent.html());
+    //             tempContainer2.html(targetParent.html());
+    //             startParent.html(tempContainer2.html());
+    //             targetParent.html(tempContainer.html());
+    //             startParent.attr("data-id", targetId);
+    //             targetParent.attr("data-id", startId);
+    //         }
+    //     }
+    //     $.ajax({
+    //         url: __url + '/changeOrder',
+    //         type: "post",
+    //         dataType: "json",
+    //         data: {
+    //             startId: startId,
+    //             targetId: targetId,
+    //         },
+    //         cache: false,
+    //         async: false,
+    //         success: function (data) {
+    //             if (data.status == 1) {
+    //                 toast(data.info, "success");
+    //             }
+    //         },
+    //         error: function (data) {
+    //         }
+    //     });
+    // }
+    //
+    // function editNodesDragover() {
+    //     var event = getEvent();
+    //     event.preventDefault();
+    // }
+</script>
+
+
+</body>
+
+</html>

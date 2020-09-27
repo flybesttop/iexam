@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" th:href="@{/door-static/css/bootstrap.min.css}">
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" th:href="@{/door-static/css/mdb.min.css}">
+    <link th:href="@{/css/iexam/bootoast.css}" rel="stylesheet">
+    <style>
+        .rgba-gradient {
+            background: -moz-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: -webkit-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: -webkit-gradient(linear, 45deg, from(rgba(42, 27, 161, 0.7)), to(rgba(29, 210, 177, 0.7)));
+            background: -o-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: linear-gradient(to 45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+        }
+
+        .attribute_Name {
+            /*text-align: right;*/
+            font-size: 18px;
+        }
+
+        .attrubute_Content {
+            text-align: left;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body class="single-page cloudy-knoxville-gradient ">
+<div id="app">
+    <header class="rgba-gradient">
+        <img th:src="@{/door-static/img/banner.png}" class="img-fluid" alt="placeholder"
+             style="height: 130px;width: 100%;">
+        <!--Navbar -->
+        <nav class="mb-1 navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item "><a href="/door/index" class="white-text">主页</a></li>
+                        <!--<li class="breadcrumb-item "><a href="/door/allExams" class="white-text">报名考试</a></li>-->
+                        <li class="breadcrumb-item "><a href="#" class="white-text">考试详情</a></li>
+                    </ol>
+                </nav>
+
+                <!--<form class="form-inline my-1 offset-2">-->
+                <!--<div class="md-form form-sm my-0">-->
+                <!--<input class="form-control form-control-sm mr-sm-2 mb-0" type="text" placeholder="Search"-->
+                <!--aria-label="Search">-->
+                <!--</div>-->
+                <!--<button class="btn btn-outline-white btn-sm my-0" type="submit">Search</button>-->
+                <!--</form>-->
+
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto nav-flex-icons">
+                        <!-- Dropdown -->
+                        <li class="nav-item dropdown notifications-nav">
+                            <a class="nav-link dropdown-toggle waves-effect" id="navbarDropdownMenuLink"
+                               data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <span class="badge red">3</span> <i class="fas fa-bell"></i>
+                                <span class="d-none d-md-inline-block">提醒</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="#">
+                                    <i class="far fa-money-bill-alt mr-2" aria-hidden="true"></i>
+                                    <span>考试提醒</span>
+                                    <span class="float-right"><i class="far fa-clock"
+                                                                 aria-hidden="true"></i> 13 min</span>
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="far fa-money-bill-alt mr-2" aria-hidden="true"></i>
+                                    <span>New order received</span>
+                                    <span class="float-right"><i class="far fa-clock"
+                                                                 aria-hidden="true"></i> 33 min</span>
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-chart-line mr-2" aria-hidden="true"></i>
+                                    <span>Your campaign is about to end</span>
+                                    <span class="float-right"><i class="far fa-clock"
+                                                                 aria-hidden="true"></i> 53 min</span>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle waves-effect" href="#" id="userDropdown"
+                               data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-user"></i> <span class="clearfix d-none d-sm-inline-block"
+                                                                  th:text="${session.FRONT_USER.name}"></span>
+                                <div class="d-none" id="userId" th:data="${session.FRONT_USER.id}"></div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="/door/userinfo?PAGE_FROM_TYPE=DOOR">个人信息</a>
+                                <a class="dropdown-item" href="#" @click.prevent="logout()"><i
+                                        class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;安全退出</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container" style="background-color: white;margin-top: -6px;">
+        <main>
+            <div>
+                <!-- Section: Blog v.4 -->
+                <section class="mt-2 pb-3 wow fadeIn">
+                    <!-- Grid row -->
+                    <div class="row">
+                        <!-- Grid column -->
+                        <div class="col-md-12">
+                            <!-- Featured image -->
+                            <div class="justify-content-between d-flex">
+                                <div class="mt-3 card p-3 col-12">
+                                    <!-- Section: exams -->
+                                    <section class="section card-body">
+                                        <div class="container col-12">
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <div class="row">
+                                                        <!-- Card Light -->
+                                                        <div class="card">
+
+                                                            <!-- Card image -->
+                                                            <div class="view overlay">
+
+                                                                <img class="card-img-top"
+                                                                     th:src="@{/img/title.png}"
+                                                                     th:if="${title.photoPath==''}">
+
+                                                                <img class="card-img-top"
+                                                                     th:src="${title.photoPath}"
+                                                                     th:if="${title.photoPath!=''}">
+                                                            </div>
+                                                            <!-- Card content -->
+                                                            <div class="card-body">
+                                                                <!-- Title -->
+                                                                <h4 class="card-title">职称</h4>
+                                                                <hr>
+                                                                <!-- Text -->
+                                                                <p class="card-text" th:text="${exam.titleName}"></p>
+                                                            </div>
+
+                                                        </div>
+                                                        <!-- Card Light -->
+                                                    </div>
+                                                    <div class="row" th:if="${exam.status=='1'}">
+                                                        <button type="button"
+                                                                class="btn btn-primary waves-effect waves-light col-11"
+                                                                data-toggle="modal" data-target="#registerExamModel">
+                                                            我要报名
+                                                        </button>
+                                                    </div>
+                                                    <div class="row" th:if="${exam.status=='5'}">
+                                                        <button type="button"
+                                                                class="btn btn-primary waves-effect waves-light col-11"
+                                                                data-toggle="modal" data-target="#fullHeightModalTop">
+                                                            获取准考证
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-9">
+                                                    <div class="row mb-1">
+                                                        <div class="d-none" id="examId" th:data="${exam.id}"></div>
+                                                        <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                            考试名：
+                                                        </div>
+                                                        <div class="col-7 attrubute_Content"
+                                                             th:text="${exam.name}"></div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                            报名时间：
+                                                        </div>
+                                                        <div class="col-7  attrubute_Content"
+                                                             th:text="${exam.registrationStartTime}+'~'+${exam.registrationFinishTime}"></div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                            获取准考证时间：
+                                                        </div>
+                                                        <div class="col-7  attrubute_Content"
+                                                             th:text="${exam.ticketPublicizeTime}"></div>
+                                                    </div>
+
+                                                    <div class="row mb-1">
+                                                        <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                            考试时间：
+                                                        </div>
+                                                        <div class="col-7  attrubute_Content"
+                                                             th:text="${exam.examinationStartTime}+'~'+${exam.examinationEndTime}"></div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                            成绩获取时间：
+                                                        </div>
+                                                        <div class="col-7  attrubute_Content"
+                                                             th:text="${exam.gradePublicizeTime}"></div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                            考试地点：
+                                                        </div>
+                                                        <div class="col-7  attrubute_Content"
+                                                             th:text="${exam.place}"></div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                            报名费用：
+                                                        </div>
+                                                        <div class="col-7  attrubute_Content"
+                                                             th:text="${exam.examFee}+'￥'"></div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                            报名人数：
+                                                        </div>
+                                                        <div class="col-7  attrubute_Content">
+                                                            <span id="regNum" th:text="${exam.num}"></span>/
+                                                            <span th:text="${exam.capacity}"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="offset-1 col-3 font-weight-bolder attribute_Name">
+                                                            考试说明：
+                                                        </div>
+                                                        <p class="col-7 attrubute_Content"
+                                                           th:text="${exam.comment}"></p>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="col-10 offset-1">
+                                                            <div class="font-weight-bolder attribute_Name">注意事项：</div>
+                                                            <p th:text="${exam.precautions}"></p>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="col-10 offset-1">
+                                                            <h5 class="my-3 text-lg-left "><i class="fas fa-link"></i> 相关链接：</h5>
+                                                            <ol>
+                                                                <li th:each="item:${map.data}">
+                                                                    <p><a th:href="${item.filePath}"><i class="far fa-file-alt"></i> <span th:text="${item.fileTitle}"></span></a></p>
+                                                                </li>
+                                                                <!--<li style="list-style: none">-->
+                                                                    <!--<p>考纲2：<a href="#"><i class="far fa-file-alt"></i> 未知的危险链接</a></p>-->
+                                                                <!--</li>-->
+                                                            </ol>
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Full Height Modal Right -->
+    <div class="modal fade top" id="fullHeightModalTop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+        <div class="modal-dialog modal-full-height modal-top" role="document">
+
+
+            <div class="modal-content">
+                <!--<div class="modal-header">-->
+                <!--<h4 class="modal-title w-100" id="myModalLabel">考试报名</h4>-->
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+                <!--<span aria-hidden="true">&times;</span>-->
+                <!--</button>-->
+                <!--</div>-->
+                <div class="modal-body">
+                    <h3>报名信息确认(如有问题，请前往个人信息页面修改)</h3>
+                    <hr>
+                    <div class="container">
+                    <div class="row">
+                        <div class="col-1">
+                            &nbsp;
+                        </div>
+                        <div class="col-2">
+                            <img class="float-left" th:src="@{/door-static/img/bglogin.jpg}"
+                                 style="width: 180px;height: 270px">
+                        </div>
+                        <div class="col-8">
+                            <div class="form-group row">
+                                <label class="col-3 col-form-label text-right">考试：</label>
+                                <label class="col-sm-6 col-form-label text-left">软件工程</label>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-3 col-form-label text-right">职称：</label>
+                                <label class="col-sm-6 col-form-label text-left">软件工程</label>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-3 col-form-label text-right">姓名：</label>
+                                <label class="col-sm-6 col-form-label text-left">Aim</label>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-3 col-form-label text-right">身份证：</label>
+                                <label class="col-sm-6 col-form-label text-left">123123123123123123</label>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-3 col-form-label text-right" for="inputPhoneNum">联系方式：</label>
+                                <div class="col-3">
+                                    <input type="number" class="form-control" id="inputPhoneNum">
+                                </div>
+
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="inputIDcode" class="col-3 col-form-label text-right">验证码：</label>
+                                <div class="col-3">
+                                    <input type="text" class="form-control" id="inputIDcode">
+                                </div>
+                                <div class="col-3" style="max-width:100%;">
+                                    <div class="md-form">
+                                        <div class="file-field">
+                                            <button style="border:0.4px solid #4285F4!important; margin-top: -24px ; margin-left: -4px;padding: 0px;height: 36px;"
+                                                    type="button"
+                                                    class="btn btn-outline-primary waves-effect float-left btn-yzm">
+                                                <img th:src="@{/door-static/img/sample.jpg}"
+                                                     style="width: 100%;height: 100%;">
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-info mb-1" data-toggle="modal"
+                            data-target="#registerExamModel">报名考试 <i class="fas fa-sign-in-alt ml-1"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Full Height Modal Right -->
+
+
+    <!-- 确认模态框 -->
+    <div class="modal fade" id="registerExamModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2"
+         aria-hidden="true">
+        <div class="modal-dialog cascading-modal" role="document">
+            <div class="modal-content">
+
+                <div class="modal-body mb-0 text-center">
+                    <div>
+                        <h3><i class="fas fa-exclamation ml-1 text-danger"></i> 温馨提示</h3>
+                        <hr>
+                        <p class="text-left">考试报名将以您的个人信息作为报名信息，请确认您的信息填写正确，确认报名后将完成登记，届时无法更改报名的信息</p>
+                    </div>
+                    <button type="button" class="btn btn-info mb-1" data-dismiss="modal">取消
+                        <i class="fas fa-times ml-1"></i></button>
+                    <button type="button" class="btn btn-info mb-1" @click="registerExam">确认报名 <i class="fas fa-check ml-1"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-copyright py-3 text-center wow fadeIn" data-wow-delay="0.3s">
+            © 2019 Copyright: IEXAM
+        </div>
+    </footer>
+</div>
+
+<script th:src="@{/door-static/js/jquery-3.4.1.min.js}"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/door-static/js/popper.min.js}"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/bootstrap.js}"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/mdb.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/iexam/bootoast.js}"></script>
+<script type="text/javascript" th:src="@{/door-static/js/vue.js}"></script>
+<script>
+
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            user: {
+                id: 1,
+                username: "张三"
+            }
+        },
+        methods: {
+            logout() {
+                $.ajax({
+                    url: "/examinees/logout?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        window.location.href = "/door/login?PAGE_FROM_TYPE=DOOR";
+                    },
+                    error: function () {
+                    }
+                });
+            },
+            registerExam(){
+                var userid = $("#userId").attr("data");
+                var examid=$("#examId").attr("data");
+                console.log(userid);
+                $.ajax({
+                    url: "/examinees/getExamInfoByExamineesId?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    data:{
+                        examineesId: userid
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.photoPath==null){
+                            toast("您还未添加照片，请在个人信息中添加照片",'danger');
+                        }else{
+
+                            $.ajax({
+                                url: "/registration/addRegistration?PAGE_FROM_TYPE=DOOR",
+                                type: "post",
+                                async: false,
+                                dataType: "json",
+                                contentType: "application/json",
+                                data:JSON.stringify({
+                                    examineesId: userid,
+                                    examId:examid,
+                                    status:"1"
+                                }),
+                                success: function (data) {
+                                    console.log(data);
+                                    if(data.status==1){
+                                        toast(data.data.result,'primary');
+                                        $("#regNum").text(parseInt($("#regNum").text())+1);
+                                    }else{
+                                        toast(data.data.result,'danger');
+                                    }
+
+                                },
+                                error: function () {
+                                }
+                            });
+                        }
+
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        }
+    })
+
+</script>
+
+</body>
+
+</html>

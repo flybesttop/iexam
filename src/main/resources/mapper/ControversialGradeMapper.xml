@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sot.iexam.DAO.mybatis.mapper.ControversialGradeMapper">
+
+    <resultMap id="controversialGrade" type="com.sot.iexam.DO.controversialGrade">
+        <id column="id" property="id"></id>
+        <result column="examinee_id" property="examineeId"></result>
+        <result column="grade_id" property="gradeId"></result>
+        <result column="type" property="type"></result>
+        <result column="status" property="status"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="modify_time" property="modifyTime"></result>
+        <result column="respond" property="respond"></result>
+    </resultMap>
+
+
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into controversial_grade (examinee_id, grade_id, type, status, create_time, modify_time, respond)
+        values (#{controversialGrade.examineeId}, #{controversialGrade.gradeId}, #{controversialGrade.type},
+                #{controversialGrade.status},
+                #{controversialGrade.createTime}, #{controversialGrade.modifyTime},
+                #{controversialGrade.respond});    </insert>
+    <update id="update">
+        update controversial_grade
+        <trim prefix="set" suffixOverrides=",">
+            <if test="controversialGrade.examineeId != null ">examinee_id = #{controversialGrade.examineeId},</if>
+            <if test="controversialGrade.gradeId != null ">grade_id = #{controversialGrade.gradeId},</if>
+            <if test="controversialGrade.type != null ">type = #{controversialGrade.type},</if>
+            <if test="controversialGrade.status != null ">status = #{controversialGrade.status},</if>
+            <if test="controversialGrade.createTime != null ">create_time = #{controversialGrade.createTime},</if>
+            <if test="controversialGrade.modifyTime != null ">modify_time = #{controversialGrade.modifyTime},</if>
+            <if test="controversialGrade.respond != null ">respond = #{controversialGrade.respond}</if>
+        </trim>
+
+        where id = #{controversialGrade.id}
+    </update>
+
+
+
+    <select id="getCG" resultType="com.sot.iexam.DO.controversialGrade">
+        select controversialGrade.* from controversial_grade controversialGrade
+        where grade_id=#{gradeId}
+    </select>
+
+    <select id="getControversialGradeListVoCount" resultType="java.lang.Integer">
+        select count(1) from controversial_grade controversialGrade
+        <include refid="controversialGradeWhereSQL"></include>
+    </select>
+    <resultMap id="ControversialGradeListVo" type="com.sot.iexam.VO.controversialGradeVo">
+        <association column="controversialGrade" property="controversialGrade"
+                     resultMap="controversialGrade"></association>
+        <association column="examinees" property="examinees"
+                     resultMap="com.sot.iexam.DAO.mybatis.mapper.examineesMapper.examinees"></association>
+        <association column="grade" property="grade"
+                     resultMap="com.sot.iexam.DAO.mybatis.mapper.gradeMapper.grade"></association>
+    </resultMap>
+    <select id="getControversialGradeListVo" resultMap="ControversialGradeListVo">
+        select controversialGrade.*,examinees.*,grade.* from controversial_grade controversialGrade,examinees
+        examinees,grade grade
+        <include refid="controversialGradeWhereSQL2"></include>
+    </select>
+
+    <sql id="controversialGradeWhereSQL">
+        <trim prefix="where" prefixOverrides="and |or ">
+            <if test="controversialGrade.examineeId != null ">and controversialGrade.examinee_id =
+                #{controversialGrade.examineeId}
+            </if>
+            <if test="controversialGrade.gradeId != null ">and controversialGrade.grade_id =
+                #{controversialGrade.gradeId}
+            </if>
+            <if test="controversialGrade.type != null ">and controversialGrade.type = #{controversialGrade.type}</if>
+            <if test="controversialGrade.status != null ">and controversialGrade.status = #{controversialGrade.status}
+            </if>
+            <if test="controversialGrade.createTime != null ">and controversialGrade.create_time =
+                #{controversialGrade.createTime}
+            </if>
+            <if test="controversialGrade.modifyTime != null ">and controversialGrade.modify_time =
+                #{controversialGrade.modifyTime}
+            </if>
+            <if test="controversialGrade.respond != null ">and controversialGrade.respond like
+                concat('%',#{controversialGrade.respond},'%')
+            </if>
+        </trim>
+    </sql>
+    <sql id="controversialGradeWhereSQL2">
+        <trim prefix="where" prefixOverrides="and |or ">
+            <if test="controversialGrade.examineeId != null ">and controversialGrade.examinee_id =
+                #{controversialGrade.examineeId}
+            </if>
+            <if test="controversialGrade.gradeId != null ">and controversialGrade.grade_id =
+                #{controversialGrade.gradeId}
+            </if>
+            <if test="controversialGrade.type != null ">and controversialGrade.type = #{controversialGrade.type}</if>
+            <if test="controversialGrade.status != null ">and controversialGrade.status = #{controversialGrade.status}
+            </if>
+            <if test="controversialGrade.createTime != null ">and controversialGrade.create_time =
+                #{controversialGrade.createTime}
+            </if>
+            <if test="controversialGrade.modifyTime != null ">and controversialGrade.modify_time =
+                #{controversialGrade.modifyTime}
+            </if>
+            <if test="controversialGrade.respond != null ">and controversialGrade.respond like
+                concat('%',#{controversialGrade.respond},'%')
+            </if>
+            and grade.id = controversialGrade.grade_id and examinees.id = controversialGrade.examinee_id
+        </trim>
+    </sql>
+</mapper>

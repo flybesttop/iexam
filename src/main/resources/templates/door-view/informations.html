@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>IEXAM</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" th:href="@{/door-static/css/bootstrap.min.css}">
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" th:href="@{/door-static/css/mdb.min.css}">
+    <!-- Custom styles -->
+    <style>
+        .rgba-gradient {
+            background: -moz-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: -webkit-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: -webkit-gradient(linear, 45deg, from(rgba(42, 27, 161, 0.7)), to(rgba(29, 210, 177, 0.7)));
+            background: -o-linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+            background: linear-gradient(to 45deg, rgba(42, 27, 161, 0.7), rgba(29, 210, 177, 0.7) 100%);
+        }
+
+        .bg {
+            /* The image used */
+            background-image: url("https://mdbootstrap.com/img/Photos/Horizontal/Nature/full page/img(11).jpg");
+
+            /* Half height */
+            height: 50%;
+
+            /* Center and scale the image nicely */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+    </style>
+</head>
+
+<body class="single-page cloudy-knoxville-gradient ">
+<div class="d-none" th:data="${type}" id="typeNum"></div>
+<div id="app">
+    <header class="rgba-gradient">
+        <img th:src="@{/door-static/img/banner.png}" class="img-fluid" alt="placeholder"
+             style="height: 130px;width: 100%;">
+        <!--Navbar -->
+        <nav class="mb-1 navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item "><a href="/door/index?PAGE_FROM_TYPE=DOOR" class="white-text">主页</a></li>
+                        <li class="breadcrumb-item "><a href="#" class="white-text">新闻</a></li>
+                        <!--<li class="breadcrumb-item "><a href="#" class="white-text">Library</a></li>-->
+                    </ol>
+                </nav>
+
+                <!--<form class="form-inline my-1 offset-2">-->
+                <!--<div class="md-form form-sm my-0">-->
+                <!--<input class="form-control form-control-sm mr-sm-2 mb-0" type="text" placeholder="Search"-->
+                <!--aria-label="Search">-->
+                <!--</div>-->
+                <!--<button class="btn btn-outline-white btn-sm my-0" type="submit">Search</button>-->
+                <!--</form>-->
+
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto nav-flex-icons">
+                        <!-- Dropdown -->
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle waves-effect" href="#" id="userDropdown"
+                               data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-user"></i> <span class="clearfix d-none d-sm-inline-block"
+                                                                  th:text="${session.FRONT_USER.name}"></span>
+                                <div class="d-none" id="userId" th:text="${session.FRONT_USER.id}"></div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="/door/userinfo?PAGE_FROM_TYPE=DOOR">个人信息</a>
+                                <a class="dropdown-item" href="#" @click.prevent="logout()"><i
+                                        class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;安全退出</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container" style="margin-top: -6px;">
+        <main>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="tab-content pr-0 pl-0" id="TabContent">
+                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                            <section class="pb-3 fadeIn px-3">
+                                <div class="row">
+                                    <div class="col-md-12">
+
+                                        <div class="mt-0 card p-3 col-12">
+                                            <nav class="navbar navbar-expand-lg navbar-dark info-color">
+
+                                                <!-- Collapse button -->
+                                                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                                                        data-target="#basicExampleNav"
+                                                        aria-controls="basicExampleNav" aria-expanded="false"
+                                                        aria-label="Toggle navigation">
+                                                    <span class="navbar-toggler-icon"></span>
+                                                </button>
+
+                                                <!-- Collapsible content -->
+                                                <div class="collapse navbar-collapse" id="basicExampleNav">
+
+                                                    <!-- Links -->
+                                                    <ul class="navbar-nav mr-auto">
+                                                        <li :class="['nav-item',{'active':news_selection.news_type===1}]"
+                                                            id="news1">
+                                                            <a class="nav-link" href="#"
+                                                               @click.present="changeNewsType(1)">考试新闻</a>
+                                                        </li>
+                                                        <li :class="['nav-item',{'active':news_selection.news_type===2}]"
+                                                            id="news2">
+                                                            <a class="nav-link" href="#"
+                                                               @click.present="changeNewsType(2)">招考政策</a>
+                                                        </li>
+                                                        <li :class="['nav-item',{'active':news_selection.news_type===3}]"
+                                                            id="news3">
+                                                            <a class="nav-link" href="#"
+                                                               @click.present="changeNewsType(3)">信息公告</a>
+                                                        </li>
+                                                    </ul>
+                                                    <!-- Links -->
+
+                                                    <form class="form-inline">
+                                                        <div class="md-form my-0">
+                                                            <input class="form-control mr-sm-0" type="text"
+                                                                   v-model="news_selection.search_title"
+                                                                   placeholder="搜索"
+                                                                   aria-label="搜索">
+                                                            <button class="btn btn-outline-white btn-md my-2 my-sm-0 ml-0"
+                                                                    type="button" @click="getNewsList">搜索
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <!-- Collapsible content -->
+                                            </nav>
+                                            <!-- Section: exams -->
+                                            <section class="section card-body">
+                                                <div class="container col-12">
+                                                    <div class="row">
+                                                        <div class="mt-3 p-3 col-12">
+                                                            <!-- Small news -->
+                                                            <div v-for="(item,index) in news_List">
+                                                                <div class="single-news mb-3">
+                                                                    <!-- Title -->
+                                                                    <div class="d-flex justify-content-between"
+                                                                         @click="gotoNewsDetail(item.examNews.id)">
+                                                                        <div class="text-truncate pl-0">
+                                                                            <a v-text="item.examNews.title"></a>
+                                                                        </div>
+                                                                        <div>
+                                                                            <span class="mr-1">{{item.examNews.publishTime | formatTime}}</span>
+                                                                            <a><i class="fas fa-angle-double-right"></i></a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="md-form input-group d-flex justify-content-center">
+                                                        <div class="input-group-prepend">
+                                                            <button class="pages-first btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" @click="newsPrevStart"><i
+                                                                    class="fas fa-angle-double-left"></i></button>
+                                                            <button class="pages-prev btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" @click="newsPrev"><i
+                                                                    class="fas fa-angle-left"></i></button>
+                                                        </div>
+                                                        <input type="text"
+                                                               class="form-control text-center col-4 pages-active"
+                                                               @focus="newsPageFocus" @blur="newsPageFocusOut"
+                                                               @keyup="newsPageKeyUp"
+                                                               v-model="pageInfo.text">
+                                                        <div class="input-group-append">
+                                                            <button class="pages-next btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" @click="newsNext"><i
+                                                                    class="fas fa-angle-right"></i></button>
+                                                            <button class="pages-last btn btn-md btn-primary m-0 px-3"
+                                                                    type="button" @click="newsNextTop"><i
+                                                                    class="fas fa-angle-double-right"></i></button>
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+                                            </section>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+
+    <footer>
+        <div class="footer-copyright py-3 text-center wow fadeIn" data-wow-delay="0.3s">
+            © 2019 Copyright: IEXAM
+        </div>
+    </footer>
+</div>
+<!-- SCRIPTS -->
+<!-- JQuery -->
+<script th:src="@{/door-static/js/jquery-3.4.1.min.js}"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" th:src="@{/door-static/js/popper.min.js}"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/bootstrap.js}"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" th:src="@{/door-static/js/mdb.min.js}"></script>
+<script type="text/javascript" th:src="@{/door-static/js/vue.js}"></script>
+<!-- Custom scripts -->
+<script>
+
+    var type = $("#typeNum").attr("data");
+
+    var vm = new Vue({
+
+        el: "#app",
+        data: {
+            user: {
+                id: 1,
+                username: "张三"
+            },
+
+            exam_name: null,
+            news_selection: {
+                news_type: type,
+                search_title: null,
+            },
+            news_NowInfo: {
+                examNews: {},
+                xUser: {},
+                files: [],
+                prevNews: {
+                    id: 0,
+                    title: "没有上一条了",
+                },
+                nextNews: {
+                    id: 0,
+                    title: "没有下一条了"
+                },
+            },
+            news_List: [],
+            //文件链接
+            file_links: [],
+            addFileInfo: {
+                show_name: "",
+                id_index: 0
+            },
+            pageInfo: {
+                page: 1,
+                size: 10,
+                count: 0,
+                text: "",
+                totalPages: 0
+            }
+
+        },
+        methods: {
+            gotoNewsDetail(value) {
+                window.location.href = "/examNews/gotoNewsDetail?PAGE_FROM_TYPE=DOOR&newsId=" + value;
+            },
+            logout() {
+                $.ajax({
+                    url: "/examinees/logout?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        window.location.href = "/door/login?PAGE_FROM_TYPE=DOOR";
+                    },
+                    error: function () {
+                    }
+                });
+            },
+            showNewsDetail(value) {
+                $("#NewsInfo").modal();
+                var _this = this;
+                $.ajax({
+                    url: "/examNews/getExamNewsInfoByIdPrevAndNext?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    async: false,
+                    data: {
+                        newsId: value,
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+
+                        _this.news_NowInfo.examNews = data.nowExamNews;
+
+                        _this.file_links = data.nowExamNews.newsFilesList;
+
+                        if (data.nextExamNews != null) {
+                            _this.news_NowInfo.nextNews = data.nextExamNews;
+                        }
+
+                        if (data.prevExamNews != null) {
+                            _this.news_NowInfo.prevNews = data.prevExamNews;
+                        }
+
+
+                    },
+                    error: function () {
+                        toast("系统繁忙，请稍后重试", 'warning');
+                    }
+                });
+
+            },
+            getNewsList() {
+                let _this = this;
+                let examNews = {
+                    type: this.news_selection.news_type,
+                    title: this.news_selection.search_title,
+                };
+                $.ajax({
+                    url: "/examNews/getExamNewsList?PAGE_FROM_TYPE=DOOR",
+                    type: "post",
+                    async: false,
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        page: this.pageInfo.page,
+                        size: this.pageInfo.size,
+                        examNews: examNews
+                    }),
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        _this.news_List = data.data;
+                        _this.pageInfo.count = data.count;
+                        _this.changePageData();
+                    },
+                    error: function () {
+                        toast("系统繁忙，请稍后重试", 'warning');
+                    }
+                });
+            },
+
+            newsPrevStart() {
+                if (this.pageInfo.page === 1)
+                    return;
+                this.pageInfo.page = 1;
+                this.getNewsList();
+            },
+            newsNextTop() {
+                if (this.pageInfo.page === this.pageInfo.totalPages)
+                    return;
+                this.pageInfo.page = this.pageInfo.totalPages;
+                this.getNewsList();
+            },
+            newsNext() {
+                if (this.pageInfo.page === this.pageInfo.totalPages)
+                    return;
+                this.pageInfo.page++;
+                this.getNewsList();
+            },
+            newsPrev() {
+                if (this.pageInfo.page === 1)
+                    return;
+                this.pageInfo.page--;
+                this.getNewsList();
+            },
+            newsPageFocus() {
+                this.pageInfo.text = "";
+            },
+            newsPageFocusOut() {
+                if (isNaN(parseInt(this.pageInfo.text))) {
+                    this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+                    return;
+                }
+                let page = parseInt(this.pageInfo.text);
+                if (page < 1 || page > this.pageInfo.totalPages) {
+                    this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+                    return;
+                }
+                this.pageInfo.page = page;
+                this.getNewsList();
+            },
+
+            newsPageKeyUp() {
+                let key = event.keyCode;
+                if (key == 13) {
+                    if (isNaN(parseInt(this.pageInfo.text))) {
+                        this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+                        return;
+                    }
+                    let page = parseInt(this.pageInfo.text);
+                    if (page < 1 || page > this.pageInfo.totalPages) {
+                        this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+                        return;
+                    }
+                    this.pageInfo.page = page;
+                    this.getNewsList();
+                }
+            },
+            changePageData() {
+                this.pageInfo.totalPages = Math.ceil(this.pageInfo.count / this.pageInfo.size);
+                if (this.pageInfo.totalPages==0){
+                    this.pageInfo.totalPages=1;
+                }
+                this.pageInfo.text = "第" + this.pageInfo.page + "页/共" + this.pageInfo.totalPages + "页";
+            },
+            changeNewsType(type) {
+                console.log(type);//这里获取newslist
+                this.news_selection.news_type = type;
+                this.getNewsList();
+            },
+
+        },
+        created() {
+            this.news_selection.news_type=parseInt(type);
+            this.getNewsList();
+        },
+        filters: {
+            formatTime(value) {
+                var date = value.substr(0, 10);
+                return date;
+            }
+        }
+    });
+
+</script>
+
+</body>
+
+</html>
+
